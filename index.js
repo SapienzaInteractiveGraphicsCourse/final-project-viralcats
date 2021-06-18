@@ -6,13 +6,17 @@ import * as THREE from './libs/threejs/build/three.module.js';
 import { OrbitControls } from './libs/threejs/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from './libs/threejs/examples/jsm/loaders/GLTFLoader.js';
 
+// physijs lib initialization
+// Physijs.scripts.worker = './libs/physijs_worker.js';
+// Physijs.scripts.ammo = './libs/ammo.js';
+
 var root;
 var hemisphere_light;
 var directional_light;
 
 function main() {
   const canvas = document.querySelector('#c');
-  const renderer = new THREE.WebGLRenderer({canvas});
+  const renderer = new THREE.WebGLRenderer({ canvas });
 
   const fov = 45;
   const aspect = 2;  // the canvas default
@@ -25,7 +29,17 @@ function main() {
   controls.target.set(0, 5, 0);
   controls.update();
 
+  // choose normal of physijs scene
+
   const scene = new THREE.Scene();
+
+  // const scene_phy = new Physijs.Scene(); // create Physijs scene
+  // scene_phy.setGravity(new THREE.Vector3(0, -50, 0)); // set gravity
+  // scene_phy.addEventListener('update', function () {
+  //   scene_phy.simulate(); // simulate on every scene update
+  // });
+
+
   scene.background = new THREE.Color('black');
 
   {
@@ -66,6 +80,21 @@ function main() {
     scene.add(directional_light.target);
   }
 
+  {
+    var plane = new Physijs.BoxMesh( // Physijs mesh
+      new THREE.CubeGeometry(100, 100, 2, 10, 10), // Three.js geometry
+      Physijs.createMaterial( // Physijs material
+        new THREE.MeshLambertMaterial({ // Three.js material
+          color: 0xeeeeee
+        }),
+        .4, // friction
+        .8 // restitution
+      ),
+      0 // weight, 0 is for zero gravity
+    );
+    // scene_phy.add(plane)
+  }
+
   function frameArea(sizeToFitOnScreen, boxSize, boxCenter, camera) {
     const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
     const halfFovY = THREE.MathUtils.degToRad(camera.fov * .5);
@@ -73,9 +102,9 @@ function main() {
     // compute a unit vector that points in the direction the camera is now
     // in the xz plane from the center of the box
     const direction = (new THREE.Vector3())
-        .subVectors(camera.position, boxCenter)
-        .multiply(new THREE.Vector3(1, 1, 1))
-        .normalize();
+      .subVectors(camera.position, boxCenter)
+      .multiply(new THREE.Vector3(1, 1, 1))
+      .normalize();
 
     // move the camera to a position distance units way from the center
     // in whatever direction the camera was from the center already
@@ -95,17 +124,17 @@ function main() {
   {
     const gltfLoader = new GLTFLoader();
     gltfLoader.load('./scene.gltf', (gltf) => {
-      
-      gltf.scene.traverse( function ( child ) {
 
-        if ( child.isMesh ) {
-          if( child.castShadow !== undefined ) {
+      gltf.scene.traverse(function (child) {
+
+        if (child.isMesh) {
+          if (child.castShadow !== undefined) {
             child.castShadow = true;
             child.receiveShadow = true;
           }
         }
-    
-      } );
+
+      });
 
       root = gltf.scene.getObjectByName('RootNode');
       root.scale.set(0.5, 0.5, 0.5);
@@ -131,8 +160,8 @@ function main() {
       //Bone016_026 ginocchio destro
       //Bone007_029 ginocchio sinistro
 
-      root.traverse( o => {
-        if (o.isBone && o.name === 'Bone029_024') { 
+      root.traverse(o => {
+        if (o.isBone && o.name === 'Bone029_024') {
           root.bones = o;
         }
       });
@@ -179,6 +208,7 @@ function main() {
     }
 
     renderer.render(scene, camera);
+    // renderer.render(scene_phy, camera);
 
     requestAnimationFrame(render);
   }
@@ -187,25 +217,28 @@ function main() {
 }
 
 function dumpObject(obj, lines = [], isLast = true, prefix = '') {
-	const localPrefix = isLast ? '└─' : '├─';
-	lines.push(`${prefix}${prefix ? localPrefix : ''}${obj.name || '*no-name*'} [${obj.type}]`);
-	const newPrefix = prefix + (isLast ? '  ' : '│ ');
-	const lastNdx = obj.children.length - 1;
-	obj.children.forEach((child, ndx) => {
-		const isLast = ndx === lastNdx;
-		dumpObject(child, lines, isLast, newPrefix);
-	});
-	return lines;
+  const localPrefix = isLast ? '└─' : '├─';
+  lines.push(`${prefix}${prefix ? localPrefix : ''}${obj.name || '*no-name*'} [${obj.type}]`);
+  const newPrefix = prefix + (isLast ? '  ' : '│ ');
+  const lastNdx = obj.children.length - 1;
+  obj.children.forEach((child, ndx) => {
+    const isLast = ndx === lastNdx;
+    dumpObject(child, lines, isLast, newPrefix);
+  });
+  return lines;
 }
 
-function degtorad(degrees)
-{
+function degtorad(degrees) {
   var pi = Math.PI;
-  return degrees * (pi/180);
+  return degrees * (pi / 180);
 }
 
 main();
 
+// test tweenjs
+// var TWEEN = require('@tweenjs/tween.js');
+var t = new TWEEN.Tween( /* etc */);
+t.start();
 
 var c1 = -180;
 setInterval(() => {
