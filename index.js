@@ -9,6 +9,11 @@ import { OutlineEffect } from './libs/threejs/examples/jsm/effects/OutlineEffect
 import TWEEN from './libs/tween.esm.js';
 
 
+
+// physijs lib initialization
+// Physijs.scripts.worker = './libs/physijs_worker.js';
+// Physijs.scripts.ammo = './libs/ammo.js';
+
 var hemisphere_light;
 var directional_light;
 var ambient_light;
@@ -50,6 +55,7 @@ const boxCollisionMaterial = new THREE.MeshStandardMaterial( {color: 0xffffff, t
 
 window.onload = loadModel;
 
+
 var camera_x_pos = 0;
 var camera_y_pos = 50;
 var camera_z_pos = 100;
@@ -63,6 +69,7 @@ function init(){
   const fov = 150;
   const aspect = 1;
   const near = 0.1;
+
   const far = 2000000;
 
 
@@ -157,6 +164,7 @@ function moveForward(who,target){
 }
 
 function initScene(){
+
 
   controls = new OrbitControls(camera, canvas);
 
@@ -308,6 +316,7 @@ function loadModel(){
 
       } );
 
+
       zombie.gltf = gltf.scene.getObjectByName('RootNode');
       init();
     },0,() => {
@@ -325,28 +334,26 @@ function render(){
 
 
 function dumpObject(obj, lines = [], isLast = true, prefix = '') {
-	const localPrefix = isLast ? '└─' : '├─';
-	lines.push(`${prefix}${prefix ? localPrefix : ''}${obj.name || '*no-name*'} [${obj.type}]`);
-	const newPrefix = prefix + (isLast ? '  ' : '│ ');
-	const lastNdx = obj.children.length - 1;
-	obj.children.forEach((child, ndx) => {
-		const isLast = ndx === lastNdx;
-		dumpObject(child, lines, isLast, newPrefix);
-	});
-	return lines;
+  const localPrefix = isLast ? '└─' : '├─';
+  lines.push(`${prefix}${prefix ? localPrefix : ''}${obj.name || '*no-name*'} [${obj.type}]`);
+  const newPrefix = prefix + (isLast ? '  ' : '│ ');
+  const lastNdx = obj.children.length - 1;
+  obj.children.forEach((child, ndx) => {
+    const isLast = ndx === lastNdx;
+    dumpObject(child, lines, isLast, newPrefix);
+  });
+  return lines;
 }
 
-function degtorad(degrees)
-{
+function degtorad(degrees) {
   var pi = Math.PI;
-  return degrees * (pi/180);
+  return degrees * (pi / 180);
 }
 
 function radtodeg(rad){
   var pi = Math.PI;
   return rad*180/pi;
 }
-
 
 var c1 = -180;
 var timer;
