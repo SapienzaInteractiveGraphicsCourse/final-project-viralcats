@@ -2,9 +2,30 @@
 
 Physijs.scripts.worker = '/libs/physijs_worker.js';
 Physijs.scripts.ammo = '/libs/ammo.js';
+import * as utils from './utils.js';
+import { OrbitControls } from './libs/threejs/examples/jsm/controls/OrbitControls.js';
 
-var plane;
+// defintion of the object for the level
+var plane,box, box2,sphere;
 
+// definition of the boudnds for the level
+var plane_bottom;
+var plane_top ;
+var plane_left ;
+var plane_right ;
+var plane_front ;
+var plane_behind;
+var distance_bound = 1000;
+// definition and instatiation of the groups
+var bounds_group = [];
+var cubes_group = [];
+var objects_group = [];
+
+
+
+
+
+var controls;
 function main() {
     const canvas = document.querySelector('#c');
     var renderer = new THREE.WebGLRenderer({ canvas });
@@ -12,120 +33,73 @@ function main() {
     const fov = 45;
     const aspect = 2;  // the canvas default
     const near = 0.1;
-    const far = 100;
+    const far = 10000;
 
-    var scene = new Physijs.Scene();
+    var scene = new Physijs.Scene(); // create Physijs scene
 
     var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     camera.position.set(0, 10, 70);
     camera.lookAt(scene.position);
+
+    controls = new OrbitControls(camera, canvas);
+    controls.update();
+
     scene.add(camera);
 
+    scene.background = new THREE.Color('black');
 
-
-
-    // const scene = new THREE.Scene();
-    // scene.background = new THREE.Color('black');
-
-    // const scene = new Physijs.Scene(); // create Physijs scene
-    scene.setGravity(new THREE.Vector3(0, -9.8, 0)); // set gravity
+    scene.setGravity(new THREE.Vector3(0, - 9.8, 0)); // set gravity
     scene.addEventListener('update', function () {
         scene.simulate(); // simulate on every scene update
     });
 
-
+    /* ************************* PLANES ***********************************/
 
     {
-        const planeSize = 20;
-
-        const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize, 0); //third parameter to make the object static
-        const planeMat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-
-        // plane = new Physijs.PlaneMesh(planeGeo, planeMat);
-        plane = new Physijs.BoxMesh(
-            new THREE.CubeGeometry(40, 0, 40),
-            new THREE.MeshBasicMaterial({ color: 0x00ff00 },
-            0)
-        );
-        // plane.rotation.x = Math.PI * -.5;
-        plane.__dirtyPosition = true;
-        plane.__dirtyRotation = true;
-        plane.setCcdMotionThreshold(1);
-        plane.name = "plane";
-
+        plane = utils.create_Box_Plane( 20,[0,0,0],[0,0,0], 40, scene);
         scene.add(plane);
     }
 
+    /* ************************* BOXES ***********************************/
+
     {
-        var box = new Physijs.BoxMesh(
-            new THREE.CubeGeometry(3, 3, 3),
-            new THREE.MeshBasicMaterial({ color: 0x0000ff })
-        );
-        box.__dirtyPosition = true;
-        box.__dirtyRotation = true;
-        box.position.set(-0, 20, 0);
-        box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-            console.log("Che botta!");
+        box  = utils.create_Box("Namecc", [0, 20, 0], false);
+        box2 = utils.create_Box("Namecc", [0, 10, 0], false);
 
-            // box.setAngularVelocity(new THREE.Vector3(20, 0, 0));
-            // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+        cubes_group.push(box);        cubes_group.push(box2);
 
-        });
-
-        box.setCcdMotionThreshold(0.1);
-        scene.add(box);
+        // put all the cubes in the group into the scene
+        cubes_group.forEach(Element => scene.add(Element));
     }
 
-    // {
-    //     const cubeSize = 4;
-    //     const cubeGeo = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-    //     const cubeMat = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-    //     const mesh = new THREE.Mesh(cubeGeo, cubeMat);
-    //     mesh.position.set(cubeSize + 1, cubeSize / 2, 0);
-    //     scene.add(mesh);
-    // }
+    /* ************************* SPHERES ***********************************/
+
     {
-        const sphereRadius = 3;
-        const sphereWidthDivisions = 32;
-        const sphereHeightDivisions = 16;
-        var sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
-        var sphereMat = new THREE.MeshBasicMaterial({ color: 0xff0000})
-        var sphere = new Physijs.SphereMesh(sphereGeo, sphereMat);
-        sphere.position.set(-sphereRadius - 1 -25, sphereRadius + 20, 0);
-
-
-        sphere.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-            console.log("Colpita la sfera");
-
-            // remove object after being hit
-            // if (scene.getObjectByName('plane')){
-            //     scene.remove(plane);
-            // }
-        });
+        sphere= utils.create_Sphere(3, 0xff0000);
         scene.add(sphere);
     }
-    // {
-    //     const color = 0xFFFFFF;
-    //     const intensity = 1;
-    //     const light = new THREE.AmbientLight(color, intensity);
-    //     scene.add(light);
-    // }
 
-    function resizeRendererToDisplaySize(renderer) {
-        const canvas = renderer.domElement;
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
-        const needResize = canvas.width !== width || canvas.height !== height;
-        if (needResize) {
-            renderer.setSize(width, height, false);
-        }
-        return needResize;
+    /* ************************* BOUNDS ***********************************/
+    {
+        plane_bottom = utils.create_Box_Plane( 20, [0,-distance_bound/2,0] ,[0,0,0]  ,distance_bound, scene);
+        plane_top    = utils.create_Box_Plane( 20, [0,distance_bound/2,0]  ,[0,0,0]  ,distance_bound, scene);
+        plane_left   = utils.create_Box_Plane( 20, [-distance_bound/2,0,0] ,[0,0,90] ,distance_bound, scene);
+        plane_right  = utils.create_Box_Plane( 20, [distance_bound/2,0,0]  ,[0,0,90] ,distance_bound, scene);     
+        plane_front  = utils.create_Box_Plane( 20, [0,0,distance_bound/2]  ,[90,0,0] ,distance_bound, scene);
+        plane_behind = utils.create_Box_Plane( 20, [0,0,-distance_bound/2] ,[90,0,0] ,distance_bound, scene);
+         
+        scene.add(plane_bottom);
+        scene.add(plane_top);
+        scene.add(plane_left);
+        scene.add(plane_right);
+        scene.add(plane_front);
+        scene.add(plane_behind);
     }
 
-
+    
     function render() {
 
-        if (resizeRendererToDisplaySize(renderer)) {
+        if (utils.resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
