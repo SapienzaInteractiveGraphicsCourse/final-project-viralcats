@@ -38,6 +38,9 @@ var canvas_width            = 0;
 var canvas_y                = 0;
 var canvas_height           = 0;
 
+var cameraCenterNode;
+var cameraPositionNode;
+
 // Navigate
 var mouse_x;
 var mouse_y;
@@ -131,6 +134,8 @@ function init(){
   camera.position.z = camera_z_pos;
 	camera.position.y = camera_y_pos;
   camera.position.x = camera_x_pos;
+
+
 
 
   eye = (0,0,0);
@@ -242,7 +247,14 @@ function init(){
 
 
 
-
+    // // now make nodes for camera
+    // cameraCenterNode = new THREE.Object3D();
+    // cameraPositionNode = new THREE.Object3D();
+    // scene.add(cameraCenterNode);
+    // cameraCenterNode.add(cameraPositionNode);
+    // cameraPositionNode.position.x = camera_x_pos;
+    // cameraPositionNode.position.y = camera_y_pos;
+    // cameraPositionNode.position.y = camera_z_pos;
 
   initZombiePosition();
   // movePartIntoThePlane(zombie.mesh.position,zombie.mesh.position.z,200,"z",2000).start();
@@ -445,7 +457,7 @@ function moveSx(who,steps){
   }
   if(diff_time(curr_time,last_time) > 20){
 
-    movePartIntoThePlane(terrain.position,terrain.position.x,terrain.position.x-20,"x",85).start();
+    movePartIntoThePlane(terrain.position,terrain.position.x,terrain.position.x+20,"x",85).start();
   }
 
   
@@ -472,7 +484,7 @@ function moveDown(who,steps){
       isCharacterAnimationRun = true;
       moveLegs(who,time,steps);
       moveArms(who,time,steps);
-      movePartIntoThePlane(terrain.position,terrain.position.y,terrain.position.y-20,"y",time*4).start();
+      movePartIntoThePlane(terrain.position,terrain.position.y,terrain.position.y+20,"y",time*4).start();
       
   }
 }
@@ -491,7 +503,7 @@ function moveDx(who,steps){
     
     if(diff_time(curr_time,last_time) > 20){
 
-      movePartIntoThePlane(terrain.position,terrain.position.x,terrain.position.x+20,"x",85).start();
+      movePartIntoThePlane(terrain.position,terrain.position.x,terrain.position.x-20,"x",85).start();
     }
 }
 
@@ -510,7 +522,7 @@ function moveForward(who,steps){
 
     if(diff_time(curr_time,last_time) > 20){
 
-      movePartIntoThePlane(terrain.position,terrain.position.z,terrain.position.z-20,"z",85).start();//who.mesh.position
+      movePartIntoThePlane(terrain.position,terrain.position.z,terrain.position.z+20,"z",85).start();//who.mesh.position
     }
     
 }
@@ -528,7 +540,7 @@ function moveBackward(who,steps){
 
     if(diff_time(curr_time,last_time) > 20){
 
-        movePartIntoThePlane(terrain.position,terrain.position.z,terrain.position.z+20,"z",85).start();
+        movePartIntoThePlane(terrain.position,terrain.position.z,terrain.position.z-20,"z",85).start();
         
     }
 
@@ -568,12 +580,15 @@ function moveJump(what,initial_value,value,evaluate_on,time){
       if(evaluate_on == "x"){
           what.x = _initial_value.pos;
           camera.position.x = _initial_value.pos
+          // cameraCenterNode.rotation.x = _initial_value.pos
       }else if(evaluate_on == "y"){
           what.y = _initial_value.pos;
           camera.position.y = _initial_value.pos + 50;
+          // cameraCenterNode.rotation.y = _initial_value.pos + 50
       }else if(evaluate_on == "z"){
           what.z = _initial_value.pos;
           camera.position.z = _initial_value.pos + 80;
+          // cameraCenterNode.rotation.z = _initial_value.pos + 80
       }
   }); 
 
@@ -585,9 +600,11 @@ function moveJump(what,initial_value,value,evaluate_on,time){
       if(evaluate_on == "x"){
           what.x = _value.pos;
           camera.position.x = _value.pos;
+          // cameraCenterNode.rotation.x = _value.pos
       }else if(evaluate_on == "y"){
           what.y = _value.pos;
           camera.position.y = _value.pos + 50;
+          // cameraCenterNode.rotation.y = _value.pos + 50;
       }else if(evaluate_on == "z"){
           what.z = _value.pos;
           // camera.position.z = _value.pos + 80;
@@ -616,12 +633,14 @@ function movePartIntoThePlane(what,initial_value,value,evaluate_on,time){
       if(evaluate_on == "x"){
           what.x = initial_value.pos;
           // camera.position.x = initial_value.pos;
+          // cameraCenterNode.rotation.x = initial_value.pos
           console.log("----------------------------------")
       }else if(evaluate_on == "y"){
           what.y = initial_value.pos;
       }else if(evaluate_on == "z"){
           what.z = initial_value.pos;
           // camera.position.z = initial_value.pos + 80;
+          // cameraCenterNode.rotation.z = initial_value.pos + 80
       }
   }); 
 
@@ -804,6 +823,10 @@ function render(){
     // console.log("camera.position.y: " + camera.position.y);
     // console.log("camera.position.z: " + camera.position.z);
     // console.log("\n"+Date.now());
+
+    // point camera at center
+    // camera.lookAt(cameraCenterNode.position);
+    renderer.render(scene, camera);
 
     effect.render(scene, camera);
 }
