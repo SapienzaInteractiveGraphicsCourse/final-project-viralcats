@@ -8,13 +8,26 @@ var prog_cubes = 0;
 var prog_planes = 0
 var prog_spheres = 0
 
+// groups
+var bounds_group = [];
+var cubes_group = [];
+var objects_group = [];
+
+
 // dictionary that shows wich textures must be used, in order: top texture, side texture, bottom texture
 const cubes_type = {     
     "Dirt": ["Dirt","Dirt","Dirt"],
-    "Grass": ["Moss","Dirt","Dirt"],
+    "Moss": ["Moss","Dirt","Dirt"],
+    "Grass": ["grass","grass_side","Dirt"],
     "Namecc": ["namecc_top","namecc_side","namecc_bottom"],
-
+    "Lava": ["crimson","crimson_side","crimson_bottom"],
+    "Rock": ["rock","rock","rock"],
+    "Amethyst": ["amethyst","amethyst","amethyst"],
+    "Terracotta": ["terracotta","terracotta","terracotta"]
 }
+
+
+/* ************************************* internal functions ************************************* */
 function load_texture_cube(tex_top_name, tex_side_name, tex_bottom_name){
     const textureLoader = new THREE.TextureLoader();
 
@@ -22,14 +35,13 @@ function load_texture_cube(tex_top_name, tex_side_name, tex_bottom_name){
     var texture_side = textureLoader.load( tex_side_name );
     var texture_bottom = textureLoader.load(tex_bottom_name);
 
-
     var materials = [
-        new THREE.MeshBasicMaterial( { map: texture_side } ),     // right face
-        new THREE.MeshBasicMaterial( { map: texture_side } ),     // left face
-        new THREE.MeshBasicMaterial( { map: texture_top } ),      //  upper face
-        new THREE.MeshBasicMaterial( { map: texture_bottom } ),   // lower face
-        new THREE.MeshBasicMaterial( { map: texture_side } ),     // front face
-        new THREE.MeshBasicMaterial( { map: texture_side } )      // opposite face
+        new THREE.MeshBasicMaterial( { map: texture_side    ,transparent: true} ),     // right face
+        new THREE.MeshBasicMaterial( { map: texture_side    ,transparent: true} ),     // left face
+        new THREE.MeshBasicMaterial( { map: texture_top     ,transparent: true} ),      //  upper face
+        new THREE.MeshBasicMaterial( { map: texture_bottom  ,transparent: true} ),   // lower face
+        new THREE.MeshBasicMaterial( { map: texture_side    ,transparent: true} ),     // front face
+        new THREE.MeshBasicMaterial( { map: texture_side    ,transparent: true} )      // opposite face
     ];
 
     return materials;
@@ -40,6 +52,9 @@ function degrees_to_radians(degrees)
   var pi = Math.PI;
   return degrees * (pi/180);
 }
+
+
+/* ************************************* external functions ************************************* */
 
 export function create_Box_Plane(planeSize, pos, rot, dim, scene){
 
@@ -76,18 +91,17 @@ export function create_Box_Plane(planeSize, pos, rot, dim, scene){
     prog_planes ++; 
     plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
         // scene.remove(other_object)
-        console.log("the object: " + String(other_object.name) + " has been removed, map limit exceeded.\nHitten the bound: "+ String(plane_box.name));
+        // console.log("the object: " + String(other_object.name) + " has been removed, map limit exceeded.\nHitten the bound: "+ String(plane_box.name));
         // console.log("Che botta!");
         // box.setAngularVelocity(new THREE.Vector3(20, 0, 0));
         // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
     });
-    return plane_box;
+    bounds_group.push(plane_box);
+    scene.add(plane_box);
 }
 
 
-export function create_Box(type, pos, is_static){
-
-
+export function create_Box(type, pos, is_static, scene){
     var path1 = './textures/blocks/' + String(cubes_type[type][0]) + ".png";  // top
     var path2 = './textures/blocks/' + String(cubes_type[type][1]) + ".png";  // side
     var path3 = './textures/blocks/' + String(cubes_type[type][2]) + ".png";  // base
@@ -98,7 +112,7 @@ export function create_Box(type, pos, is_static){
     var geometry_cube = new THREE.CubeGeometry(3, 3, 3)
     geometry_cube.dynamic = is_static;
     
-    console.log(is_static);
+    // console.log(is_static);
     
     var box = new Physijs.BoxMesh(
         geometry_cube,
@@ -116,10 +130,11 @@ export function create_Box(type, pos, is_static){
         // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
     });
     box.setCcdMotionThreshold(0.1);
-    return box;
+    cubes_group.push(box);
+    scene.add(box)
 }
 
-export function create_Sphere(dim, color){
+export function create_Sphere(dim, color, scene){
     const sphereRadius = dim;
     const sphereWidthDivisions = 32;
     const sphereHeightDivisions = 32;
@@ -136,7 +151,76 @@ export function create_Sphere(dim, color){
         //     scene.remove(plane);
         // }
     });
-    return sphere;
+    objects_group.push(sphere);
+    scene.add(sphere);
+}
+
+
+
+export function create_teleport(pos,scene){
+
+    var path = "./textures/blocks/grass.png";
+    // first solution 
+    
+    // var temp = load_texture_teloport(path);
+
+    // var mat_box = new THREE.MeshFaceMaterial(temp);
+    // var geometry_cube = new THREE.CubeGeometry(5, 0.2, 5)
+    // geometry_cube.dynamic = true;
+
+    // var teleport = new Physijs.BoxMesh(
+    //     geometry_cube,
+    //     mat_box
+    // );
+
+    //second solution
+
+    var radius = 5;
+    var subdivs = 32;
+    var telGeo = new THREE.CylinderGeometry(radius,radius,radius*4,subdivs, 1, false)
+
+    var tex = new THREE.TextureLoader().load(path);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(2, 2);
+
+    var material_tel = new THREE.MeshBasicMaterial({
+        map: tex,
+        color: 0x15B7FF,
+        transparent: true,
+        opacity: 0.8
+
+        // specular: 0x6C00FF,
+        // emissive: 0x6C00FF,
+        // emissiveIntensity : 1,
+        // shininess: 0 
+        // side: THREE.DoubleSide
+    });
+
+    var myBoxMaterial = Physijs.createMaterial(
+        material_tel,
+        0,  // friction
+        0 // restitution / bounciness
+    );
+    var teleport = new Physijs.CylinderMesh(telGeo,myBoxMaterial);
+    teleport.name = "teleport";
+    teleport.position.set(pos[0],pos[1],pos[2]);
+    teleport.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        // console.log("level ended!")
+    });
+    objects_group.push(teleport);
+    scene.add(teleport);
+    return teleport
+}
+
+
+export function animateTeleport(scene){
+    var teleport = scene.getObjectByName( "teleport" );
+    teleport.setAngularVelocity(
+        new THREE.Vector3(0., 6.0, 0. )
+    );
+    // teleport.rotation.x += degrees_to_radians(1);  //  attention to the friction of the plane where is situated
+    scene.simulate();
 }
 
 /* Rendering functions*/
@@ -150,5 +234,38 @@ export function resizeRendererToDisplaySize(renderer) {
         renderer.setSize(width, height, false);
     }
     return needResize;
+}
+
+export function create_pointLIght(pos, color, scene){
+    const light = new THREE.PointLight( color, 1, 0);
+    light.position.set( pos[0], pos[1], pos[2] );
+    scene.add( light );
+}
+
+/* ************************************* resetting the level functions ************************************* */
+
+export function reset_data(){
+    prog_cubes   = 0;
+    prog_planes  = 0;
+    prog_spheres = 0;
+
+    bounds_group  = [];
+    cubes_group   = [];
+    objects_group = [];
+}
+
+export function remove_allBoxes(scene){
+    cubes_group.forEach(Element => scene.remove(Element));
+    scene.simulate()
+}
+
+export function remove_allBounds(scene){
+    bounds_group.forEach(Element => scene.remove(Element));
+    scene.simulate()
+}
+
+export function remove_OtherObjects(scene){
+    objects_group.forEach(Element => scene.remove(Element));
+    scene.simulate()
 }
 
