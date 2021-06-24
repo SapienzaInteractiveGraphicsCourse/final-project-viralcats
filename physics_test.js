@@ -10,6 +10,7 @@ import { OrbitControls } from './libs/threejs/examples/jsm/controls/OrbitControl
 var distance_bound = 1000;
 // definition and instatiation of the groups
 
+var ascent, descent;
 var controls;
 
 function main() {
@@ -24,7 +25,7 @@ function main() {
     var scene = new Physijs.Scene(); // create Physijs scene
 
     var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 10, 70);
+    camera.position.set(0, 10, 100);
     camera.lookAt(scene.position);
 
     controls = new OrbitControls(camera, canvas);
@@ -42,30 +43,35 @@ function main() {
     /* ************************* PLANES ***********************************/
 
     {
-        utils.create_Box_Plane( 20,[0,0,0],[0,0,0], 40, scene);
+        utils.create_Box_Plane( 20,[0,0,0],[0,0,0], 40, scene, false);
     }
 
     /* ************************* BOXES ***********************************/
 
     {
-        utils.create_Box("Namecc",   [0, 20, 0], false, scene);
-        utils.create_Box("Moss",     [-5, 20, 0], false, scene);
-        utils.create_Box("Dirt",     [5, 20, 0], false, scene);
-        utils.create_Box("Lava",     [10, 20, 0], false, scene);
-        utils.create_Box("Rock",     [-10, 20, 0], false, scene);
-        utils.create_Box("Amethyst", [15, 20, 0], false, scene);
-        utils.create_Box("Grass",    [-15, 20, 0], false, scene);
+        utils.create_Box("Namecc",   [0, 20, 0], 1, scene);
+        utils.create_Box("Moss",     [-5, 20, 0], 1, scene);
+        utils.create_Box("Dirt",     [5, 20, 0], 1, scene);
+        utils.create_Box("Lava",     [10, 20, 0], 1, scene);
+        utils.create_Box("Rock",     [-10, 20, 0], 1, scene);
+        utils.create_Box("Amethyst", [15, 20, 0], 1, scene);
+        utils.create_Box("Grass",    [-15, 20, 0], 1, scene);
 
-        utils.create_Box("Terracotta", [0, 20, -10], false, scene);
-
-
+        utils.create_Box("Terracotta", [0, 20, -10], 1, scene);
 
 
-        // utils.create_Box("Rock", [-10, 20, 10], false, scene);
+        utils.createFlatLand(4,4,"Namecc",[30,0,30],scene);
 
-        // utils.create_Box("Grass", [-10, 20, 0], false, scene);
+        utils.createUphillLand(10,10,10,"Lava", [0,0,-80], scene)
 
-        // cubes_group.push(box);        cubes_group.push(box2);
+        ascent = utils.createAscentGround(5,5,10,"Amethyst", [-39,0,-5], scene)
+
+        descent = utils.createDescentGround(5,5,10,"Rock", [-39,0,-5], scene)
+
+        // ascent.forEach(Element => Element.rotation.y = -20);
+
+
+        // cubes_group.forEach(Element => scene.remove(Element));
 
         // put all the cubes in the group into the scene
         // cubes_group.forEach(Element => scene.add(Element));
@@ -78,7 +84,7 @@ function main() {
     }
 
     {
-        utils.create_teleport([0,10,10],scene); // emissive light of the teleport
+        utils.create_teleport([0,20,10],scene); // emissive light of the teleport
     }
 
     /* ************************* LIGHT ***********************************/  
@@ -88,20 +94,22 @@ function main() {
 
     /* ************************* BOUNDS ***********************************/
     {
-        utils.create_Box_Plane( 20, [0,-distance_bound/2,0] ,[0,0,0]  ,distance_bound, scene);
-        utils.create_Box_Plane( 20, [0,distance_bound/2,0]  ,[0,0,0]  ,distance_bound, scene);
-        utils.create_Box_Plane( 20, [-distance_bound/2,0,0] ,[0,0,90] ,distance_bound, scene);
-        utils.create_Box_Plane( 20, [distance_bound/2,0,0]  ,[0,0,90] ,distance_bound, scene);     
-        utils.create_Box_Plane( 20, [0,0,distance_bound/2]  ,[90,0,0] ,distance_bound, scene);
-        utils.create_Box_Plane( 20, [0,0,-distance_bound/2] ,[90,0,0] ,distance_bound, scene);
+        utils.create_Box_Plane( 20, [0,-distance_bound/2,0] ,[0,0,0]  ,distance_bound, scene, true);
+        utils.create_Box_Plane( 20, [0,distance_bound/2,0]  ,[0,0,0]  ,distance_bound, scene, true);
+        utils.create_Box_Plane( 20, [-distance_bound/2,0,0] ,[0,0,90] ,distance_bound, scene, true);
+        utils.create_Box_Plane( 20, [distance_bound/2,0,0]  ,[0,0,90] ,distance_bound, scene, true);     
+        utils.create_Box_Plane( 20, [0,0,distance_bound/2]  ,[90,0,0] ,distance_bound, scene, true);
+        utils.create_Box_Plane( 20, [0,0,-distance_bound/2] ,[90,0,0] ,distance_bound, scene, true);
     }
 
+
+    // problem: try to change the time of activation of this functions, is it's less than 5s all ok, otherwise the cubes become static without sense
     // setTimeout(function(){
     //     utils.remove_OtherObjects(scene);
-    //     utils.remove_allBounds(scene);
-    //     utils.remove_allBoxes(scene);
+    //     // utils.remove_allBounds(scene);
+    //     // utils.remove_allBoxes(scene);
     // },
-    // 5000
+    // 10000
     // )
 
     
@@ -112,7 +120,8 @@ function main() {
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
         }
-        
+
+        scene.setGravity(new THREE.Vector3(0, - 9.8, 0)); // set gravity
         utils.animateTeleport(scene);
         scene.simulate()
         renderer.render(scene, camera);

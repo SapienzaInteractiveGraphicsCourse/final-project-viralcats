@@ -102,7 +102,8 @@ var camera_x_pos = 0;
 var camera_y_pos = 50;
 var camera_z_pos = 50;
 
-var at = (camera_x_pos, camera_y_pos, camera_z_pos);
+// var at = (camera_x_pos, camera_y_pos, camera_z_pos);
+var at = (zombie.mesh.x,zombie.mesh.y,zombie.mesh.z)
 var up = (0.0, 1.0, 0.0);
 
 
@@ -131,16 +132,23 @@ function init(){
 
   camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   // camera.position.set(0, 180,45);
-  camera.position.z = camera_z_pos;
-	camera.position.y = camera_y_pos;
-  camera.position.x = camera_x_pos;
+  // camera.position.z = camera_z_pos;
+	// camera.position.y = camera_y_pos;
+  // camera.position.x = camera_x_pos;
+  camera.position.z =  70 +zombie.mesh.position.z;
+  camera.position.y = 70 + zombie.mesh.position.y;
+  camera.position.x =  zombie.mesh.position.x;
+  
 
 
 
 
-  eye = (0,0,0);
+  eye = (zombie.mesh.position.x ,zombie.mesh.position.y,  -100+zombie.mesh.position.z);
+  // eye = (0,0,0)
 
-	camera.lookAt(eye, at, up);
+	// camera.lookAt(eye, at, up);
+  
+	camera.lookAt(zombie.mesh.position.x ,zombie.mesh.position.y,zombie.mesh.position.z);
 
   // camera.position.set(0,2.5,2.5); // Set position like this
   // camera.lookAt(new THREE.Vector3(0,0,0)); // Set look at coordinate like this
@@ -634,7 +642,7 @@ function movePartIntoThePlane(what,initial_value,value,evaluate_on,time){
           what.x = initial_value.pos;
           // camera.position.x = initial_value.pos;
           // cameraCenterNode.rotation.x = initial_value.pos
-          console.log("----------------------------------")
+          // console.log("----------------------------------")
       }else if(evaluate_on == "y"){
           what.y = initial_value.pos;
       }else if(evaluate_on == "z"){
@@ -891,9 +899,30 @@ function onMouseMove(event) {
           mouseY = -90;
       }
 
-      console.log(x);
+      // console.log(x);
+
+      var terr_posx = terrain.position.x;
+      var terr_posy = terrain.position.x;
+      var terr_posz = terrain.position.x;
+      console.log(terr_posx)
+      console.log(terr_posy)
+      console.log(terr_posz)
+      console.log("********************")
+
+
+      // (zombie.mesh.x,zombie.mesh.y,zombie.mesh.z)
+      terrain.position.x = 0; //zombie.mesh.x;
+      terrain.position.y = 0; //zombie.mesh.y;
+      terrain.position.z = 0; //zombie.mesh.z;
 
       terrain.rotation.set(degtorad(0), (temp_x/(canvas_width/4)), degtorad(0));
+      terrain.position.set(terr_pos);
+
+      // terrain.position.x = terr_pos.x;
+      // terrain.position.y = terr_pos.y;
+      // terrain.position.z = terr_pos.z;
+
+
   }
 }
 
