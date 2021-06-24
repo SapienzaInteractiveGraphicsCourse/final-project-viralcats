@@ -135,6 +135,7 @@ function init(){
   // camera.position.z = camera_z_pos;
 	// camera.position.y = camera_y_pos;
   // camera.position.x = camera_x_pos;
+
   camera.position.z =  70 +zombie.mesh.position.z;
   camera.position.y = 70 + zombie.mesh.position.y;
   camera.position.x =  zombie.mesh.position.x;
@@ -902,25 +903,43 @@ function onMouseMove(event) {
       // console.log(x);
 
       var terr_posx = terrain.position.x;
-      var terr_posy = terrain.position.x;
-      var terr_posz = terrain.position.x;
+      var terr_posy = terrain.position.y;
+      var terr_posz = terrain.position.z;
+      
       console.log(terr_posx)
       console.log(terr_posy)
       console.log(terr_posz)
-      console.log("********************")
+      console.log("********* pos init ***********")
 
 
       // (zombie.mesh.x,zombie.mesh.y,zombie.mesh.z)
-      terrain.position.x = 0; //zombie.mesh.x;
-      terrain.position.y = 0; //zombie.mesh.y;
-      terrain.position.z = 0; //zombie.mesh.z;
+      terrain.position.x =  70 +zombie.mesh.position.z; //zombie.mesh.position.x;//0; //zombie.mesh.x;
+      terrain.position.y = 70 + zombie.mesh.position.y; //zombie.mesh.position.y;//0; //zombie.mesh.y;
+      terrain.position.z =  zombie.mesh.position.x; //zombie.mesh.position.z;//0; //zombie.mesh.z;
 
+      console.log("**********rot init/new**********")
+      console.log(terrain.rotation);
       terrain.rotation.set(degtorad(0), (temp_x/(canvas_width/4)), degtorad(0));
-      terrain.position.set(terr_pos);
+      console.log(terrain.rotation);
+      console.log("********************")
 
-      // terrain.position.x = terr_pos.x;
-      // terrain.position.y = terr_pos.y;
-      // terrain.position.z = terr_pos.z;
+      console.log(terrain.position.x)
+      console.log(terrain.position.y)
+      console.log(terrain.position.z)
+      console.log("********* pos 0 ***********")
+
+      // terrain.position.set(terr_pos);
+
+      terrain.position.x = terr_posx;
+      terrain.position.y = terr_posy;
+      terrain.position.z = terr_posz;
+
+      console.log("********** return old pos **********")
+      console.log(terrain.position.x)
+      console.log(terrain.position.y)
+      console.log(terrain.position.z)
+      console.log("********************")
+
 
 
   }

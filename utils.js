@@ -1,6 +1,7 @@
 /* utils functions */
 
 // import { ObjectLoader } from "./libs/threejs/build/three.module";
+import TWEEN from './libs/tween.esm.js';
 
 // progressives objects
 var prog_cubes = 0;
@@ -140,12 +141,26 @@ export function create_Box(type, pos, is_dynamic, scene) {
     return box;
 }
 
-export function create_Sphere(dim, color, scene) {
+export function create_Sphere(dim, color, type, scene) {
+    var path = "./textures/blocks/" + String(type) + ".png";
+
+    var tex = new THREE.TextureLoader().load(path);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(5, 5);
+
+    var sphereMat = new THREE.MeshBasicMaterial({
+        map: tex,
+        color: color,
+        // transparent: true,
+        // opacity: 0.8
+    });
+
     const sphereRadius = dim;
     const sphereWidthDivisions = 32;
     const sphereHeightDivisions = 32;
     var sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
-    var sphereMat = new THREE.MeshBasicMaterial({ color: color })
+    // var sphereMat = new THREE.MeshBasicMaterial({ color: color })
     var sphere = new Physijs.SphereMesh(sphereGeo, sphereMat);
     sphere.position.set(-sphereRadius - 1 - 25, sphereRadius + 20, 0);
     sphere.name = "sphere_" + String(prog_spheres);
@@ -222,18 +237,6 @@ export function create_teleport(pos, scene) {
     return teleport
 }
 
-
-export function animateTeleport(scene) {
-    var teleport = scene.getObjectByName("teleport");
-    if (teleport) {
-        teleport.setAngularVelocity(
-            new THREE.Vector3(0., 6.0, 0.)
-        );
-        // teleport.rotation.x += degrees_to_radians(1);  //  attention to the friction of the plane where is situated
-        scene.simulate();
-    }
-}
-
 export function create_pointLIght(pos, color, scene) {
     const light = new THREE.PointLight(color, 1, 0);
     light.position.set(pos[0], pos[1], pos[2]);
@@ -307,6 +310,58 @@ export function createDescentGround(n_width, n_depth, actual_height, type, left_
         }
     }
     return descent_group;
+}
+
+
+export function animateTeleport(scene) {
+    var teleport = scene.getObjectByName("teleport");
+    if (teleport) {
+        teleport.setAngularVelocity(
+            new THREE.Vector3(0., 6.0, 0.)
+        );
+        // teleport.rotation.x += degrees_to_radians(1);  //  attention to the friction of the plane where is situated
+        scene.simulate();
+    }
+}
+
+export function animatePlatform(name, scene) {
+    // group.forEach(Element => {
+
+    // console.log(scene);
+    console.log("animatePlatform");
+    
+    var platform = scene.getObjectByName(name);
+    
+
+    if(platform){
+        platform.is_dynamic = 0;
+        platform.__dirtyPosition = true;
+        platform.__dirtyRotation = true; 
+
+        var initial_value = {pos:platform.position.x}
+        var animation = new TWEEN.Tween(initial_value).to({pos: 30 }, 5000);
+
+        animation.easing(TWEEN.Easing.Linear.None)
+        animation.onUpdate( function(){
+            platform.position.x = initial_value.pos;
+            console.log(platform.position.x);
+
+            // console.log(initial_value.pos);
+        }).onComplete(function(){
+            console.log(platform.position.x);
+            platform.__dirtyPosition = true;
+            platform.__dirtyRotation = true; 
+        });
+
+        animation.start();
+
+        // platform.position.x += 0.5;
+
+        scene.simulate();
+        return platform;
+        // requestAnimationFrame(animatePlatform);
+    }
+    // })
 }
 
 /* Rendering functions*/
