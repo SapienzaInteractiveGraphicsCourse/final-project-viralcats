@@ -284,15 +284,29 @@ function init(){
     //     angle_of_camera_rotation = camera.rotation.z + degtorad(val) + radtodeg(90);
     // }
     
-    angle_of_camera_rotation = radtodeg(camera.rotation.z);
+    angle_of_camera_rotation = radtodeg(camera.rotation.z) + 90;
 
-    if(angle_of_camera_rotation > 90){
-        angle_of_camera_rotation = angle_of_camera_rotation - 90;
+    if(angle_of_camera_rotation < 0){
+        angle_of_camera_rotation = 360 + angle_of_camera_rotation;
+
+
+        if((angle_of_camera_rotation > 180) && (angle_of_camera_rotation < 360)){
+            turn_angle = true;  
+        }else{
+            turn_angle = false;
+        }
+
         angle_of_camera_rotation = degtorad(angle_of_camera_rotation);
-        turn_angle = true;
+
     }else{
+
+        if((angle_of_camera_rotation > 180) && (angle_of_camera_rotation < 360)){
+          turn_angle = true;  
+        }else{
+          turn_angle = false;
+        }
+
         angle_of_camera_rotation = degtorad(angle_of_camera_rotation);
-        turn_angle = false;
     }
 
     
@@ -485,7 +499,7 @@ function moveSx(who,steps){
   }
   if(diff_time(curr_time,last_time) > 20){
 
-    movePartIntoThePlane(terrain.position,terrain.position.x,terrain.position.x+20,"x",85).start();
+    movePartIntoThePlane(who.mesh.position,who.mesh.position.x,who.mesh.position.x+20,"x",85).start();
   }
 
   
@@ -500,7 +514,7 @@ function moveUp(who,steps){
       isCharacterAnimationRun = true;
       moveLegs(who,time,steps);
       moveArms(who,time,steps);
-      movePartIntoThePlane(terrain.position,terrain.position.y,terrain.position.y+20,"y",time*4).start();
+      movePartIntoThePlane(who.mesh.position,who.mesh.position.y,who.mesh.position.y+20,"y",time*4).start();
       
   }
 }
@@ -512,7 +526,7 @@ function moveDown(who,steps){
       isCharacterAnimationRun = true;
       moveLegs(who,time,steps);
       moveArms(who,time,steps);
-      movePartIntoThePlane(terrain.position,terrain.position.y,terrain.position.y+20,"y",time*4).start();
+      movePartIntoThePlane(who.mesh.position,who.mesh.position.y,who.mesh.position.y+20,"y",time*4).start();
       
   }
 }
@@ -531,7 +545,7 @@ function moveDx(who,steps){
     
     if(diff_time(curr_time,last_time) > 20){
 
-      movePartIntoThePlane(terrain.position,terrain.position.x,terrain.position.x-20,"x",85).start();
+      movePartIntoThePlane(who.mesh.position,who.mesh.position.x,who.mesh.position.x-20,"x",85).start();
     }
 }
 
@@ -549,8 +563,12 @@ function moveForward(who,steps){
     }
 
     if(diff_time(curr_time,last_time) > 20){
-
-      movePartIntoThePlane(terrain.position,terrain.position.z,terrain.position.z+20,"z",85).start();//who.mesh.position
+      if(turn_angle == false){
+          movePartIntoThePlane(who.mesh.position,who.mesh.position.z,who.mesh.position.z+20,"z",85).start();
+      }else{
+          movePartIntoThePlane(who.mesh.position,who.mesh.position.z,who.mesh.position.z-20,"z",85).start();
+      }
+      
     }
 
     
@@ -570,7 +588,7 @@ function moveBackward(who,steps){
 
     if(diff_time(curr_time,last_time) > 20){
 
-        movePartIntoThePlane(terrain.position,terrain.position.z,terrain.position.z-20,"z",85).start();
+        movePartIntoThePlane(who.mesh.position,who.mesh.position.z,who.mesh.position.z-20,"z",85).start();
         
     }
 
@@ -661,28 +679,23 @@ function movePartIntoThePlane(what,initial_value,value,evaluate_on,time){
   .onUpdate( function(){     
     
       if(evaluate_on == "x"){
-          if(turn_angle){
-            what.x = initial_value.pos + Math.cos(angle_of_camera_rotation);
-            what.z = what.z + Math.sin(angle_of_camera_rotation);
-          }else{
+
             what.x = initial_value.pos + Math.sin(angle_of_camera_rotation);
             what.z = what.z + Math.cos(angle_of_camera_rotation);
-          }
+            camera.position.set(what.x, 50, what.z + camera_z_pos);
           // camera.position.x = initial_value.pos;
           // cameraCenterNode.rotation.x = initial_value.pos
           console.log("----------------------------------")
       }else if(evaluate_on == "y"){
           what.y = initial_value.pos;
       }else if(evaluate_on == "z"){
-          if(turn_angle){
 
-            what.z = initial_value.pos + Math.cos(angle_of_camera_rotation);
-            what.x = what.x + Math.sin(angle_of_camera_rotation);
-          }else{
 
             what.z = initial_value.pos + Math.sin(angle_of_camera_rotation);
-            what.x = what.x + Math.cos(angle_of_camera_rotation);
-          }
+            what.x = what.x - Math.cos(angle_of_camera_rotation);
+            camera.position.z = what.z + camera_z_pos;
+            camera.position.set(what.x, 50, what.z + camera_z_pos);
+
 
           // camera.position.z = initial_value.pos + 80;
           // cameraCenterNode.rotation.z = initial_value.pos + 80
