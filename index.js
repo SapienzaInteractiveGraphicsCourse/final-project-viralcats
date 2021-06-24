@@ -21,6 +21,8 @@ var ambient_light;
 
 var scene, camera, renderer, controls, effect, eye;
 
+var angle_of_camera_rotation,turn_angle = 0;
+
 var phi                     = 16.6328125;
 var _theta                  = -75.58349609375;
 
@@ -236,9 +238,9 @@ function init(){
 	// };
 
 
-  canvas.addEventListener( 'mousemove', onMouseMove, false );
-  canvas.addEventListener( 'mouseup', onMouseUp, false );
-  canvas.addEventListener('mousedown',onMouseDown,false);
+  // canvas.addEventListener( 'mousemove', onMouseMove, false );
+  // canvas.addEventListener( 'mouseup', onMouseUp, false );
+  // canvas.addEventListener('mousedown',onMouseDown,false);
 
   effect = new OutlineEffect( renderer, {defaultThickness: 0.0025, defaultColor: [ 0, 0, 0 ], defaultAlpha: 0.5, defaultKeepAlive: true // keeps outline material in cache even if material is removed from scene
   }); 
@@ -272,7 +274,29 @@ function init(){
 
 
   var timer_key = setInterval(function(){
-  
+    var val = 0;
+    //i try to catch the angle of the rotation
+    // if(camera.rotation.z < 0){
+    //     val = 180+radtodeg(camera.rotation.z);
+    //     val += 180;
+    //     angle_of_camera_rotation = degtorad(val) + radtodeg(90);
+    // }else{
+    //     angle_of_camera_rotation = camera.rotation.z + degtorad(val) + radtodeg(90);
+    // }
+    
+    angle_of_camera_rotation = radtodeg(camera.rotation.z);
+
+    if(angle_of_camera_rotation > 90){
+        angle_of_camera_rotation = angle_of_camera_rotation - 90;
+        angle_of_camera_rotation = degtorad(angle_of_camera_rotation);
+        turn_angle = true;
+    }else{
+        angle_of_camera_rotation = degtorad(angle_of_camera_rotation);
+        turn_angle = false;
+    }
+
+    
+    console.log(radtodeg(angle_of_camera_rotation));
 
     setCurrentTime();
     if (key_pressed[0]) {
@@ -295,6 +319,10 @@ function init(){
       if(diff_time(curr_time,last_time) > 100)
         getTime();
     }
+
+
+    zombie.mesh.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z); 
+    controls.update();
 
   
   
@@ -524,6 +552,8 @@ function moveForward(who,steps){
 
       movePartIntoThePlane(terrain.position,terrain.position.z,terrain.position.z+20,"z",85).start();//who.mesh.position
     }
+
+    
     
 }
 
@@ -631,14 +661,29 @@ function movePartIntoThePlane(what,initial_value,value,evaluate_on,time){
   .onUpdate( function(){     
     
       if(evaluate_on == "x"){
-          what.x = initial_value.pos;
+          if(turn_angle){
+            what.x = initial_value.pos + Math.cos(angle_of_camera_rotation);
+            what.z = what.z + Math.sin(angle_of_camera_rotation);
+          }else{
+            what.x = initial_value.pos + Math.sin(angle_of_camera_rotation);
+            what.z = what.z + Math.cos(angle_of_camera_rotation);
+          }
           // camera.position.x = initial_value.pos;
           // cameraCenterNode.rotation.x = initial_value.pos
           console.log("----------------------------------")
       }else if(evaluate_on == "y"){
           what.y = initial_value.pos;
       }else if(evaluate_on == "z"){
-          what.z = initial_value.pos;
+          if(turn_angle){
+            console.log(turn_angle + " == true");
+            what.z = initial_value.pos + Math.cos(angle_of_camera_rotation);
+            what.x = what.x + Math.sin(angle_of_camera_rotation);
+          }else{
+            console.log(turn_angle + " == false");
+            what.z = initial_value.pos + Math.sin(angle_of_camera_rotation);
+            what.x = what.x + Math.cos(angle_of_camera_rotation);
+          }
+
           // camera.position.z = initial_value.pos + 80;
           // cameraCenterNode.rotation.z = initial_value.pos + 80
       }
@@ -650,7 +695,7 @@ function movePartIntoThePlane(what,initial_value,value,evaluate_on,time){
 function initScene(){
 
 
-    // controls = new OrbitControls(camera, canvas);
+    controls = new OrbitControls(camera, canvas);
 
 
     // controls = new OrbitControls(camera, canvas);
@@ -893,7 +938,11 @@ function onMouseMove(event) {
 
       console.log(x);
 
-      terrain.rotation.set(degtorad(0), (temp_x/(canvas_width/4)), degtorad(0));
+      //terrain.rotation.set(degtorad(0), (temp_x/(canvas_width/4)), degtorad(0));
+      camera.rotation.set(degtorad(0), (temp_x/(canvas_width/4)), degtorad(0));
+      camera.position.set((temp_x/(canvas_width/4)), camera.position.y, camera.position.z);
+      zombie.mesh.rotation.set(degtorad(0), (temp_x/(canvas_width/4)), degtorad(0));
+
   }
 }
 
