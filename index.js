@@ -675,11 +675,11 @@ function movePartIntoThePlane(what,initial_value,value,evaluate_on,time){
           what.y = initial_value.pos;
       }else if(evaluate_on == "z"){
           if(turn_angle){
-            console.log(turn_angle + " == true");
+
             what.z = initial_value.pos + Math.cos(angle_of_camera_rotation);
             what.x = what.x + Math.sin(angle_of_camera_rotation);
           }else{
-            console.log(turn_angle + " == false");
+
             what.z = initial_value.pos + Math.sin(angle_of_camera_rotation);
             what.x = what.x + Math.cos(angle_of_camera_rotation);
           }
