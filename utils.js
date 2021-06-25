@@ -59,16 +59,27 @@ function degrees_to_radians(degrees) {
 export function create_Box_Plane(planeSize, pos, rot, dim, scene, is_bound) {
 
     const textureLoader = new THREE.TextureLoader();
-    var texture = textureLoader.load('./textures/blocks/test_wall.png');
+    // var texture = textureLoader.load('./textures/blocks/test_wall.png');
+
+    // var materials = [
+    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
+    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
+    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
+    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
+    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
+    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 })
+    // ];
 
     var materials = [
-        new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
-        new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
-        new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
-        new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
-        new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
-        new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 })
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 })
     ];
+
+
 
     var mat_box = new THREE.MeshFaceMaterial(materials);
 
@@ -324,44 +335,122 @@ export function animateTeleport(scene) {
     }
 }
 
-export function animatePlatform(name, scene) {
-    // group.forEach(Element => {
-
-    // console.log(scene);
-    console.log("animatePlatform");
-    
+export function animatePlatformByName(name, scene, axis, new_position_a, time, new_position_b) {  //last parameter is not strictly rewired for just a single animation
+    var value_axis_from;
+    var value_axis_to;
     var platform = scene.getObjectByName(name);
-    
 
-    if(platform){
+    if (typeof new_position_b !== 'undefined') {
+        console.log("start position defined");
+        value_axis_from = new_position_b;
+        value_axis_to = new_position_a;
+    } else {
+        if (axis == "x") value_axis_from = platform.position.x;
+        else if (axis == 'y') value_axis_from = platform.position.y;
+        else if (axis == 'z') value_axis_from = platform.position.z;
+        value_axis_to = new_position_a;
+    }
+
+    if (platform) {
         platform.is_dynamic = 0;
         platform.__dirtyPosition = true;
-        platform.__dirtyRotation = true; 
+        platform.__dirtyRotation = true;
 
-        var initial_value = {pos:platform.position.x}
-        var animation = new TWEEN.Tween(initial_value).to({pos: 30 }, 5000);
+        var initial_value = { pos: value_axis_from }
+        var animation = new TWEEN.Tween(initial_value).to({ pos: value_axis_to }, time);
 
         animation.easing(TWEEN.Easing.Linear.None)
-        animation.onUpdate( function(){
-            platform.position.x = initial_value.pos;
-            console.log(platform.position.x);
-
-            // console.log(initial_value.pos);
-        }).onComplete(function(){
-            console.log(platform.position.x);
+        animation.onUpdate(function () {
+            if (axis == "x") platform.position.x = initial_value.pos;
+            else if (axis == 'y') platform.position.y = initial_value.pos;
+            else if (axis == 'z') platform.position.z = initial_value.pos;
+        }).onComplete(function () {
             platform.__dirtyPosition = true;
-            platform.__dirtyRotation = true; 
+            platform.__dirtyRotation = true;
         });
 
-        animation.start();
-
-        // platform.position.x += 0.5;
+        // or not using Tween -> platform.position.x += 0.5 ....
 
         scene.simulate();
-        return platform;
-        // requestAnimationFrame(animatePlatform);
+        return animation;
     }
-    // })
+}
+
+
+export function animatePlatformByGroupInstance(platform, scene, axis, new_position_a, time, new_position_b) {
+    // group.forEach(platform => {
+    //     var animations = [];
+    var value_axis_from;
+    var value_axis_to;
+
+    console.log("animatePlatform");
+
+    if (typeof new_position_b !== 'undefined') {
+        console.log("start position defined");
+        value_axis_from = new_position_b;
+        value_axis_to = new_position_a;
+    }
+    else {
+        if (axis == "x") value_axis_from = platform.position.x;
+        else if (axis == 'y') value_axis_from = platform.position.y;
+        else if (axis == 'z') value_axis_from = platform.position.z;
+        value_axis_to = new_position_a;
+    }
+
+    if (platform) {
+        platform.is_dynamic = 0;
+        platform.__dirtyPosition = true;
+        platform.__dirtyRotation = true;
+
+        var initial_value = { pos: value_axis_from }
+        var animation = new TWEEN.Tween(initial_value).to({ pos: value_axis_to }, time);
+
+        animation.easing(TWEEN.Easing.Linear.None)
+        animation.onUpdate(function () {
+            if (axis == "x") platform.position.x = initial_value.pos;
+            else if (axis == 'y') platform.position.y = initial_value.pos;
+            else if (axis == 'z') platform.position.z = initial_value.pos;
+        }).onComplete(function () {
+            platform.__dirtyPosition = true;
+            platform.__dirtyRotation = true;
+        });
+
+        // or not using Tween -> platform.position.x += 0.5 ....
+
+        scene.simulate();
+
+        // animations.push(animation);
+    }
+    // });
+    // return animations;
+    return animation;
+}
+
+export function animateBackAndForwardName(name, scene, axis, new_position_a, new_position_b, time) {
+    var animation_a;
+    var animation_b;
+
+    animation_a = animatePlatformByName(name, scene, axis, new_position_a, time);
+    animation_b = animatePlatformByName(name, scene, axis, new_position_b, time, new_position_a);
+
+    animation_a.chain(animation_b);
+    animation_b.chain(animation_a);
+
+    return animation_a;
+}
+
+
+export function animateBackAndForwardInstance(instance, scene, axis, new_position_a, new_position_b, time) {
+    var animation_a;
+    var animation_b;
+
+    animation_a = animatePlatformByGroupInstance(instance, scene, axis, new_position_a, time);
+    animation_b = animatePlatformByGroupInstance(instance, scene, axis, new_position_b, time, new_position_a);
+
+    animation_a.chain(animation_b);
+    animation_b.chain(animation_a);
+
+    return animation_a;
 }
 
 /* Rendering functions*/
