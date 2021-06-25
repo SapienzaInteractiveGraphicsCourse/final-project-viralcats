@@ -21,7 +21,7 @@ var ambient_light;
 
 var scene, camera, renderer, controls, effect, eye;
 
-var angle_of_camera_rotation,turn_angle = 0;
+var angle_of_camera_rotation=0,turn_angle = 0;
 
 var phi                     = 16.6328125;
 var _theta                  = -75.58349609375;
@@ -133,16 +133,19 @@ function init(){
 
   camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   // camera.position.set(0, 180,45);
-  camera.position.z = camera_z_pos;
-	camera.position.y = camera_y_pos;
-  camera.position.x = camera_x_pos;
+  camera.position.z = zombie.mesh.position.z + camera_z_pos;
+	camera.position.y = zombie.mesh.position.y + camera_y_pos;
+  camera.position.x = zombie.mesh.position.x;
 
 
 
 
   eye = (0,0,0);
 
-	camera.lookAt(eye, at, up);
+  zombie.mesh.add(camera);
+
+  camera.lookAt(zombie.mesh.position);
+	// camera.lookAt(eye, at, up);
 
   // camera.position.set(0,2.5,2.5); // Set position like this
   // camera.lookAt(new THREE.Vector3(0,0,0)); // Set look at coordinate like this
@@ -164,6 +167,8 @@ function init(){
   initScene();
   initZombie();
 
+  //controls.target = zombie.mesh.position;
+
   window.addEventListener('resize', () => {
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		camera.aspect = window.innerWidth/window.innerHeight;
@@ -171,54 +176,76 @@ function init(){
 		// camera.updateProjectionMatrix();
 	});
 
-  // document.addEventListener('keypress', KeysListener);
-  document.onkeydown = function(e){
-		if (e.key=="w"||e.key=="W") {
-			// moveForward(zombie,1); 
-      key_pressed[0] = true;
-		}
-    if (e.key=="a"||e.key=="A") {
-			// moveSx(zombie,1);
-      key_pressed[1] = true;
-		}
-    if (e.key=="s"||e.key=="S") {
-			// moveBackward(zombie,1);
-      key_pressed[2] = true;
-		}
-    if (e.key=="d"||e.key=="D") {
-			// moveDx(zombie,1);
-      key_pressed[3] = true;
-		}
-    if(e.key == " "){
-      // moveJump(zombie.mesh.position,zombie.mesh.position.y,zombie.mesh.position.y+20,"y",160);
-      key_pressed[4] = true;
-    }
-	};
+  // // document.addEventListener('keypress', KeysListener);
+  // document.onkeydown = function(e){
+	// 	if (e.key=="w"||e.key=="W") {
+	// 		// moveForward(zombie,1); 
+  //     key_pressed[0] = true;
+	// 	}
+  //   if (e.key=="a"||e.key=="A") {
+	// 		// moveSx(zombie,1);
+  //     key_pressed[1] = true;
+	// 	}
+  //   if (e.key=="s"||e.key=="S") {
+	// 		// moveBackward(zombie,1);
+  //     key_pressed[2] = true;
+	// 	}
+  //   if (e.key=="d"||e.key=="D") {
+	// 		// moveDx(zombie,1);
+  //     key_pressed[3] = true;
+	// 	}
+  //   if(e.key == " "){
+  //     // moveJump(zombie.mesh.position,zombie.mesh.position.y,zombie.mesh.position.y+20,"y",160);
+  //     key_pressed[4] = true;
+  //   }
+	// };
 
-  document.onkeyup = function(e){
+  // document.onkeyup = function(e){
 
-		if (e.key=="w"||e.key=="W") {
-			// moveForward(zombie,1); 
-      key_pressed[0] = false;
-		}
-    if (e.key=="a"||e.key=="A") {
-			// moveSx(zombie,1);
-      key_pressed[1] = false;
-		}
-    if (e.key=="s"||e.key=="S") {
-			// moveBackward(zombie,1);
-      key_pressed[2] = false;
-		}
-    if (e.key=="d"||e.key=="D") {
-			// moveDx(zombie,1);
-      key_pressed[3] = false;
-		}
-    if(e.key == " "){
-      // moveJump(zombie.mesh.position,zombie.mesh.position.y,zombie.mesh.position.y+20,"y",160);
-      key_pressed[4] = false;
-    }
-	};
+	// 	if (e.key=="w"||e.key=="W") {
+	// 		// moveForward(zombie,1); 
+  //     key_pressed[0] = false;
+	// 	}
+  //   if (e.key=="a"||e.key=="A") {
+	// 		// moveSx(zombie,1);
+  //     key_pressed[1] = false;
+	// 	}
+  //   if (e.key=="s"||e.key=="S") {
+	// 		// moveBackward(zombie,1);
+  //     key_pressed[2] = false;
+	// 	}
+  //   if (e.key=="d"||e.key=="D") {
+	// 		// moveDx(zombie,1);
+  //     key_pressed[3] = false;
+	// 	}
+  //   if(e.key == " "){
+  //     // moveJump(zombie.mesh.position,zombie.mesh.position.y,zombie.mesh.position.y+20,"y",160);
+  //     key_pressed[4] = false;
+  //   }
+	// };
 
+
+  
+keys = {
+  a: false,
+  s: false,
+  d: false,
+  w: false
+};
+document.body.addEventListener( 'keydown', function(e) {
+  
+  var key = e.code.replace('Key', '').toLowerCase();
+  if ( keys[ key ] !== undefined )
+    keys[ key ] = true;
+  
+});
+document.body.addEventListener( 'keyup', function(e) {
+  
+  var key = e.code.replace('Key', '').toLowerCase();
+  if ( keys[ key ] !== undefined )
+    keys[ key ] = false;
+  
+});
 
 
 	// canvas.onmousedown = function(e){
@@ -310,7 +337,7 @@ function init(){
     }
 
     
-    console.log(radtodeg(angle_of_camera_rotation));
+    //console.log(radtodeg(angle_of_camera_rotation));
 
     setCurrentTime();
     if (key_pressed[0]) {
@@ -335,7 +362,7 @@ function init(){
     }
 
 
-    zombie.mesh.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z); 
+    //zombie.mesh.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z); 
     controls.update();
 
   
@@ -349,7 +376,7 @@ function init(){
 
 
 
-
+  
   render();
 }
 
@@ -682,23 +709,34 @@ function movePartIntoThePlane(what,initial_value,value,evaluate_on,time){
 
             what.x = initial_value.pos + Math.sin(angle_of_camera_rotation);
             what.z = what.z + Math.cos(angle_of_camera_rotation);
-            camera.position.set(what.x, 50, what.z + camera_z_pos);
-          // camera.position.x = initial_value.pos;
-          // cameraCenterNode.rotation.x = initial_value.pos
+            // camera.position.set(what.x, 50, what.z + camera_z_pos);
+
+            
+
+
           console.log("----------------------------------")
       }else if(evaluate_on == "y"){
           what.y = initial_value.pos;
       }else if(evaluate_on == "z"){
 
-
             what.z = initial_value.pos + Math.sin(angle_of_camera_rotation);
-            what.x = what.x - Math.cos(angle_of_camera_rotation);
-            camera.position.z = what.z + camera_z_pos;
-            camera.position.set(what.x, 50, what.z + camera_z_pos);
+            
+            CameraUpdate();
+            
+            zombie.mesh.add(camera);
+
+            //what.x = what.x - Math.cos(angle_of_camera_rotation);
+            // var diff = what.z-camera.position.z;
+            // camera.position.z = what.z + 50;
+
+            //camera.up =  (what.x, what.y, what.z);
+//            camera.position.x = what.x;
 
 
-          // camera.position.z = initial_value.pos + 80;
-          // cameraCenterNode.rotation.z = initial_value.pos + 80
+            //camera.rotation.set(what.rotationX,what.rotationY,what.rotationZ);
+            // camera.position.set(what.x, 50, what.z + camera_z_pos);
+
+
       }
   }); 
 
@@ -709,6 +747,8 @@ function initScene(){
 
 
     controls = new OrbitControls(camera, canvas);
+
+    controls.maxPolarAngle = Math.PI;
 
 
     // controls = new OrbitControls(camera, canvas);
@@ -870,11 +910,65 @@ function loadModel(){
       console.log("ERRORE DURANTE IL CARICAMENTO DEL MODELLO!!!!");
     });
 }
-
+var velocity = 0.0;
+var speed = 0.0;
+var keys;
 function render(){
     requestAnimationFrame(render);
 
     TWEEN.update();
+
+    
+
+    angle_of_camera_rotation = 0;
+    angle_of_camera_rotation = radtodeg(camera.rotation.z);
+
+
+    if(angle_of_camera_rotation < 0){
+      angle_of_camera_rotation = 360 + angle_of_camera_rotation;
+
+      angle_of_camera_rotation = degtorad(angle_of_camera_rotation);
+
+  }else{
+
+      angle_of_camera_rotation = degtorad(angle_of_camera_rotation);
+  }
+  //console.log(radtodeg(angle_of_camera_rotation));
+    
+  console.log(radtodeg(camera.rotation.z));
+
+    // zombie.mesh.rotation.y = camera.rotation.z;
+    controls.update();
+    //zombie.mesh.rotation.y = camera.rotation.y;
+
+
+    speed = 0.0;
+  
+    if ( keys.w )
+      speed = 5;
+    else if ( keys.s )
+      speed = -5;
+  
+    velocity += ( speed - velocity ) * 0.3;
+    zombie.mesh.translateZ( velocity );
+
+    
+    if ( keys.a )
+    zombie.mesh.rotateY(0.05);
+    else if ( keys.d )
+    zombie.mesh.rotateY(-0.05);
+
+
+/*
+    if ( keys.w )
+    zombie.mesh.position.z += (15);
+    else if ( keys.s )
+    zombie.mesh.position.z -= (15);
+*/
+    
+
+      
+    camera.lookAt( zombie.mesh.position );
 
 
     // console.log("camera.position.x: " + camera.position.x);
@@ -884,6 +978,7 @@ function render(){
 
     // point camera at center
     // camera.lookAt(cameraCenterNode.position);
+
     renderer.render(scene, camera);
 
     effect.render(scene, camera);
@@ -957,6 +1052,12 @@ function onMouseMove(event) {
       zombie.mesh.rotation.set(degtorad(0), (temp_x/(canvas_width/4)), degtorad(0));
 
   }
+}
+
+function CameraUpdate(){
+  camera.position.z = zombie.mesh.position.z + camera_z_pos;
+  camera.position.y = zombie.mesh.position.y + camera_y_pos;
+  camera.position.x = zombie.mesh.position.x;
 }
 
 function getTime(){
