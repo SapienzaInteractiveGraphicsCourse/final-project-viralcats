@@ -15,14 +15,16 @@ var anim_box_repeat;
 var anim_box_repeat_instance;
 var anim_box_single;
 var anim_box_single_instance;
+var land_anim_a;
 
-var animation_b;
+var animations_conc = [];
 
-var ascent, descent, land;
+var ascent, descent, land, orbit;
 var box_1;
 var box_3;
 var controls;
 var scene;
+
 function main() {
     const canvas = document.querySelector('#c');
     var renderer = new THREE.WebGLRenderer({ canvas });
@@ -69,7 +71,9 @@ function main() {
         box_3 = utils.create_Box("Terracotta", [0, 20, -10], 0, scene);
 
 
-        land = utils.createFlatLand(4, 4, "Namecc", [30, 0, 30], scene);
+        land = utils.createFlatLand(4,4, "Namecc", [30, 0, 30], scene);
+
+        orbit = utils.createFlatLand(3,5, "Grass", [-30,30,-30], scene);
 
         utils.createUphillLand(10, 10, 10, "Lava", [0, 0, -80], scene)
 
@@ -77,13 +81,6 @@ function main() {
 
         descent = utils.createDescentGround(5, 5, 10, "Rock", [-39, 0, -5], scene)
 
-        // ascent.forEach(Element => Element.rotation.y = -20);
-
-
-        // cubes_group.forEach(Element => scene.remove(Element));
-
-        // put all the cubes in the group into the scene
-        // cubes_group.forEach(Element => scene.add(Element));
     }
 
     /* ************************* SPHERES ***********************************/
@@ -110,55 +107,42 @@ function main() {
         utils.create_Box_Plane(20, [0, 0, distance_bound / 2], [90, 0, 0], distance_bound, scene, true);
         utils.create_Box_Plane(20, [0, 0, -distance_bound / 2], [90, 0, 0], distance_bound, scene, true);
     }
-    // utils.animatePlatform("box_3",scene);
 
-    // utils.animatePlatformByName("box_5",scene, 'y', -100, 5000);
-    // utils.animatePlatformByGroupInstance(ascent, scene, 'y', -100, 5000);
+    /* ************************* ANIMATIONS ******************************/
 
-    // anim_forward  = utils.animatePlatformByGroupInstance(land, scene, 'z', 50, 10000);
-    // anim_back  = utils.animatePlatformByGroupInstance(land, scene, 'z', -50, 10000);
+    utils.animateTeleport(scene);
 
-
-    // anim_forward  = utils.animatePlatformByName("box_5",scene, 'y', 100, 5000);
-
-    // anim_back  = utils.animatePlatformByName("box_5",scene, 'y', 20, 5000, 100);
-
+    // using names
     anim_box_repeat = utils.animateBackAndForwardName("box_5", scene, 'y', 100, 20, 5000);
     anim_box_repeat.start();
 
     anim_box_single = utils.animatePlatformByName("box_1", scene, 'z', 100, 5000);
     anim_box_single.start();
 
-    anim_box_single_instance = utils.animatePlatformByGroupInstance(box_1, scene, 'z', -100, 5000)
+    // using a single instance
+    anim_box_single_instance = utils.animatePlatformByInstance(box_1, scene, 'z', -100, 5000)
     anim_box_single_instance.start();
 
-    // console.log(box_3.position.x);
-    // anim_box_repeat_instance  = utils.animateBackAndForwardInstance(box_1, scene, 'x', -100, 5000, 0);
-    // anim_box_repeat_instance.start();
-
-    anim_box_repeat_instance = utils.animatePlatformByGroupInstance(box_3, scene, 'x', -100, 5000);
-    animation_b = utils.animatePlatformByGroupInstance(box_3, scene, 'x', 0, 5000, -100);
-
-    anim_box_repeat_instance.chain(animation_b);
-    animation_b.chain(anim_box_repeat_instance);
+    anim_box_repeat_instance = utils.animateBackAndForwardInstance(box_3, scene, 'x', -100, 0, 5000);
     anim_box_repeat_instance.start();
 
+    // using groups
+
+    land_anim_a = utils.animateBackAndForwardInstanceGroup(land, scene, 'x', 70, 30, 5000);
+    land_anim_a.forEach(anim => { anim.start()});
+
+    animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'z', 30,5000,-30,[3,5]));//not squared platform i've to specify the shape
+    animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'x', 30,5000,-30,[3,5]));
+    animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'z',-30,5000, 30,[3,5]));
+    animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'x',-30,5000, 30,[3,5]));
+
+    animations_conc = utils.concatenateAnimationsGroup(animations_conc);
+    animations_conc.forEach(elem => elem.start());
 
 
+     /* ************************* RESETS ******************************/
 
-
-
-
-    // problem: try to change the time of activation of this functions, is it's less than 5s all ok, otherwise the cubes become static without sense
-    // setTimeout(function(){
-    //     utils.remove_OtherObjects(scene);
-    //     // utils.remove_allBounds(scene);
-    //     // utils.remove_allBoxes(scene);
-    // },
-    // 10000
-    // )
-
-    var val = 0;
+    //  utils.resetAll(scene,5000); // problem: try to change the time of activation of this functions, is it's less than 5s all ok, otherwise the cubes become static without sense
 
     function render() {
 
@@ -168,31 +152,13 @@ function main() {
             camera.updateProjectionMatrix();
         }
 
-
-
-        // scene.setGravity(new THREE.Vector3(0, - 9.8, 0)); // set gravity
-        utils.animateTeleport(scene);
-
-        // if(is_finished){
-        //     is_finished = false
-        //     utils.animatePlatformByGroupInstance(land, scene, 'z', -50, 3000);
-        // }
-
-        // if(val == 0){
-        //     utils.animatePlatform("box_5",scene);
-        //     val = 1;
-        // }
-
-        // plat.__dirtyPosition = true;
-
         TWEEN.update();
         scene.simulate();
         renderer.render(scene, camera);
         requestAnimationFrame(render);
-
     }
-
     render();
 }
+
 
 main();

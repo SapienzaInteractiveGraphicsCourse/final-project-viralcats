@@ -261,7 +261,6 @@ export function createFlatLand(n_width, n_depth, type, left_top_pos, scene) {
         for (var j = 0; j < n_depth; j++) {
             box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1], left_top_pos[2] + j * dim_cube], false, scene);
             flat_land_group.push(box);
-            cubes_group.push(box);
         }
     }
     return flat_land_group;
@@ -277,10 +276,7 @@ export function createUphillLand(n_width, n_depth, height_desired, type, left_to
         for (var j = 0; j < n_depth; j++) {
 
             box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1] + Math.floor(height_desired * Math.sin(degrees_to_radians((step * i)))), left_top_pos[2] + j * dim_cube], false, scene);
-            // console.log(Math.sin(degrees_to_radians(step * i)) )
-
             uphill_group.push(box);
-            cubes_group.push(box);
         }
     }
     return uphill_group;
@@ -296,10 +292,7 @@ export function createAscentGround(n_width, n_depth, height_desired, type, left_
         for (var j = 0; j < n_depth; j++) {
 
             box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1] + Math.floor(step * (i + 1)), left_top_pos[2] + j * dim_cube], false, scene);
-            // console.log(left_top_pos[1] + Math.floor(step * (i + 1)))
-
             ascent_group.push(box);
-            cubes_group.push(box);
         }
     }
     return ascent_group;
@@ -315,9 +308,7 @@ export function createDescentGround(n_width, n_depth, actual_height, type, left_
         for (var j = 0; j < n_depth; j++) {
 
             box = create_Box(type, [left_top_pos[0] + i * dim_cube, actual_height - Math.floor(step * (i)), left_top_pos[2] + j * dim_cube], false, scene);
-            // console.log(actual_height - Math.floor(step * (i)))
             descent_group.push(box);
-            cubes_group.push(box);
         }
     }
     return descent_group;
@@ -341,7 +332,6 @@ export function animatePlatformByName(name, scene, axis, new_position_a, time, n
     var platform = scene.getObjectByName(name);
 
     if (typeof new_position_b !== 'undefined') {
-        console.log("start position defined");
         value_axis_from = new_position_b;
         value_axis_to = new_position_a;
     } else {
@@ -376,17 +366,12 @@ export function animatePlatformByName(name, scene, axis, new_position_a, time, n
     }
 }
 
+export function animatePlatformByInstance(platform, scene, axis, new_position_a, time, new_position_b) {
 
-export function animatePlatformByGroupInstance(platform, scene, axis, new_position_a, time, new_position_b) {
-    // group.forEach(platform => {
-    //     var animations = [];
     var value_axis_from;
     var value_axis_to;
 
-    console.log("animatePlatform");
-
     if (typeof new_position_b !== 'undefined') {
-        console.log("start position defined");
         value_axis_from = new_position_b;
         value_axis_to = new_position_a;
     }
@@ -414,17 +399,96 @@ export function animatePlatformByGroupInstance(platform, scene, axis, new_positi
             platform.__dirtyPosition = true;
             platform.__dirtyRotation = true;
         });
-
         // or not using Tween -> platform.position.x += 0.5 ....
-
         scene.simulate();
 
-        // animations.push(animation);
     }
-    // });
-    // return animations;
     return animation;
 }
+
+export function animatePlatformByGroupInstance(group, scene, axis, new_position_a, time, new_position_b, irregular_shape) {  //irregular_shape parameter only if is not a squared platform.
+
+    var animations = [];
+    var value_axis_from;
+    var value_axis_to;
+    var max_length;
+
+    if (typeof irregular_shape !== 'undefined') {
+        max_length = irregular_shape[1];
+    }
+    else max_length = Math.sqrt(group.length);
+
+    var i = 0, j = 0;
+
+    group.forEach(platform => {
+
+        if (i >= max_length) {
+            i = 0;
+            j++;
+        }
+
+        // console.log("i: " + String(i));
+        // console.log("j: " + String(j));
+        // console.log("animatePlatform");
+
+        if (typeof new_position_b !== 'undefined') {
+            if (axis == "x") {
+                value_axis_from = new_position_b + j * dim_cube;
+                value_axis_to = new_position_a + j * dim_cube;
+            }
+            else if (axis == 'y') {
+                value_axis_from = new_position_b;
+                value_axis_to = new_position_a;
+            }
+            else if (axis == 'z') {
+                value_axis_from = new_position_b + i * dim_cube;
+                value_axis_to = new_position_a + i * dim_cube;
+            }
+        }
+        else {
+            if (axis == "x") {
+                value_axis_from = platform.position.x;
+                value_axis_to = new_position_a + j * dim_cube;
+            }
+            else if (axis == 'y') {
+                value_axis_from = platform.position.y;
+                value_axis_to = new_position_a;
+            }
+            else if (axis == 'z') {
+                value_axis_from = platform.position.z;
+                value_axis_to = new_position_a + i * dim_cube;
+            }
+        }
+        if (platform) {
+            platform.is_dynamic = 0;
+            platform.__dirtyPosition = true;
+            platform.__dirtyRotation = true;
+
+            var initial_value = { pos: value_axis_from }
+            var animation = new TWEEN.Tween(initial_value).to({ pos: value_axis_to }, time);
+
+            animation.easing(TWEEN.Easing.Linear.None)
+            animation.onUpdate(function () {
+                if (axis == "x") platform.position.x = initial_value.pos;
+                else if (axis == 'y') platform.position.y = initial_value.pos;
+                else if (axis == 'z') platform.position.z = initial_value.pos;
+            }).onComplete(function () {
+                platform.__dirtyPosition = true;
+                platform.__dirtyRotation = true;
+            });
+
+            // or not using Tween -> platform.position.x += 0.5 ....
+
+            scene.simulate();
+
+            animations.push(animation);
+
+            i++;
+        }
+    });
+    return animations;
+}
+
 
 export function animateBackAndForwardName(name, scene, axis, new_position_a, new_position_b, time) {
     var animation_a;
@@ -439,19 +503,63 @@ export function animateBackAndForwardName(name, scene, axis, new_position_a, new
     return animation_a;
 }
 
-
 export function animateBackAndForwardInstance(instance, scene, axis, new_position_a, new_position_b, time) {
     var animation_a;
     var animation_b;
 
-    animation_a = animatePlatformByGroupInstance(instance, scene, axis, new_position_a, time);
-    animation_b = animatePlatformByGroupInstance(instance, scene, axis, new_position_b, time, new_position_a);
+    animation_a = animatePlatformByInstance(instance, scene, axis, new_position_a, time);
+    animation_b = animatePlatformByInstance(instance, scene, axis, new_position_b, time, new_position_a);
 
     animation_a.chain(animation_b);
     animation_b.chain(animation_a);
 
     return animation_a;
 }
+
+
+export function animateBackAndForwardInstanceGroup(group, scene, axis, new_position_a, new_position_b, time) {
+    var animations_a;
+    var animations_b;
+    var i;
+    var length;
+
+    animations_a = animatePlatformByGroupInstance(group, scene, axis, new_position_a, time);
+    animations_b = animatePlatformByGroupInstance(group, scene, axis, new_position_b, time, new_position_a);
+    length = animations_a.length;
+    // console.log(animations_a);
+    for (i = 0; i < length; i++) {
+        animations_a[i].chain(animations_b[i]);
+        animations_b[i].chain(animations_a[i]);
+    }
+    return animations_a;
+}
+
+
+export function concatenateAnimationsGroup(animations) { //todo
+    var length_animations = animations.length;
+    var i, j;
+
+    if (length_animations == 0) return;
+    if (length_animations == 1) return animations[0];
+    var length_singleAnim = animations[0].length;
+
+    for (i = 0; i < length_animations; i++) {
+
+        if (i == (length_animations - 1)) {
+            for (j = 0; j < length_singleAnim; j++) {
+                animations[i][j].chain(animations[0][j]);
+            }
+        }
+        else {
+            for (j = 0; j < length_singleAnim; j++) {
+                animations[i][j].chain(animations[i + 1][j]);
+            }
+        }
+    }
+    return animations[0];
+}
+
+
 
 /* Rendering functions*/
 
@@ -493,5 +601,16 @@ export function remove_allBounds(scene) {
 export function remove_OtherObjects(scene) {
     objects_group.forEach(Element => scene.remove(Element));
     scene.simulate()
+}
+
+export function resetAll(scene,time) {
+    setTimeout(function () {
+        remove_OtherObjects(scene);
+        remove_allBounds(scene);
+        remove_allBoxes(scene);
+        reset_data();
+    },
+        time
+    )
 }
 
