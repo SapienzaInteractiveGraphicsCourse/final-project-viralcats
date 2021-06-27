@@ -5,13 +5,23 @@ import TWEEN from './libs/tween.esm.js';
 
 // progressives objects
 var prog_cubes = 0;
-var prog_planes = 0
-var prog_spheres = 0
+var prog_planes = 0;
+var prog_spheres = 0;
+
+// time
+var curr_time = 0;
+var last_time = 0;
 
 // groups
 var bounds_group = [];
 var cubes_group = [];
 var objects_group = [];
+
+// dynamics and static vectors
+const static_vector = new THREE.Vector3(0, 0, 0);
+const dynamic_vector = new THREE.Vector3(1, 1, 1);
+const distance_bound = 1000;
+
 
 // dictionary that shows wich textures must be used, in order: top texture, side texture, bottom texture
 const cubes_type = {
@@ -54,9 +64,22 @@ function degrees_to_radians(degrees) {
 }
 
 
+function getTime() {
+    last_time = Date.now();
+}
+
+function setCurrentTime() {
+    curr_time = Date.now();
+}
+
+function diff_time(recent_time, old_time) {
+    return (recent_time - old_time);
+}
+
+
 /* ************************************* external functions ************************************* */
 
-export function create_Box_Plane(planeSize, pos, rot, dim, scene, is_bound) {
+export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
 
     const textureLoader = new THREE.TextureLoader();
     // var texture = textureLoader.load('./textures/blocks/test_wall.png');
@@ -87,7 +110,7 @@ export function create_Box_Plane(planeSize, pos, rot, dim, scene, is_bound) {
         new THREE.CubeGeometry(dim, 0, dim),
         mat_box,
         // new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true,opacity: 0.3}), // wireframe: true, 
-        0);
+        0);  // if make static here cannot be chaged during the time
 
     plane_box.__dirtyPosition = true;
     plane_box.__dirtyRotation = true;
@@ -116,10 +139,12 @@ export function create_Box_Plane(planeSize, pos, rot, dim, scene, is_bound) {
 }
 
 
+
 export function create_Box(type, pos, is_dynamic, scene) {
     var path1 = './textures/blocks/' + String(cubes_type[type][0]) + ".png";  // top
     var path2 = './textures/blocks/' + String(cubes_type[type][1]) + ".png";  // side
     var path3 = './textures/blocks/' + String(cubes_type[type][2]) + ".png";  // base
+    var box;
 
     var temp = load_texture_cube(path1, path2, path3);
 
@@ -129,15 +154,41 @@ export function create_Box(type, pos, is_dynamic, scene) {
 
     // console.log(is_dynamic);
 
-    var box = new Physijs.BoxMesh(
-        geometry_cube,
-        mat_box,
-        is_dynamic
-    );
 
+
+    if (is_dynamic) {
+        box = new Physijs.BoxMesh(
+            geometry_cube,
+            mat_box,
+            1
+        );
+
+        // box.setAngularFactor(static_vector);
+        // box.setAngularVelocity(static_vector);
+        // box.setLinearFactor(static_vector);
+        // box.setLinearVelocity(static_vector);
+
+
+        // box.setAngularFactor({x:0, y:0, z:0});
+        // box.setAngularVelocity({x:0,y:0,z:0});
+
+        // box.setLinearFactor({x:0, y:0, z:0});
+        // box.setLinearVelocity({x:0, y:0, z:0});
+    }
+    else {  //static and cannot be changed
+        box = new Physijs.BoxMesh(
+            geometry_cube,
+            mat_box,
+            0
+        );
+
+    }
     box.__dirtyPosition = true;
     box.__dirtyRotation = true;
+
+
     box.position.set(pos[0], pos[1], pos[2]);
+
     box.name = "box_" + String(prog_cubes);
     prog_cubes++;
     box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
@@ -259,8 +310,13 @@ export function createFlatLand(n_width, n_depth, type, left_top_pos, scene) {
     var box;
     for (var i = 0; i < n_width; i++) {
         for (var j = 0; j < n_depth; j++) {
-            box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1], left_top_pos[2] + j * dim_cube], false, scene);
+            box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1], left_top_pos[2] + j * dim_cube], 0, scene);
+            // box.setAngularFactor(static_vector );
+            // box.setAngularVelocity(static_vector);
+            // box.setLinearFactor(static_vector);
+            // box.setLinearVelocity(static_vector);
             flat_land_group.push(box);
+
         }
     }
     return flat_land_group;
@@ -535,7 +591,7 @@ export function animateBackAndForwardInstanceGroup(group, scene, axis, new_posit
 }
 
 
-export function concatenateAnimationsGroup(animations) { //todo
+export function concatenateAnimationsGroup(animations) {
     var length_animations = animations.length;
     var i, j;
 
@@ -557,6 +613,108 @@ export function concatenateAnimationsGroup(animations) { //todo
         }
     }
     return animations[0];
+}
+
+
+export function animateFallenPlatformGroup(platform, scene, irregular_shape) {
+
+    // tremble anim
+    var tremble_anims = [];
+    var tremble_anim_start;
+    var x = platform[0].position.x;
+    var z = platform[0].position.z;
+    var intensity = 0.5;
+
+    // going down anim
+    var goingDown_anims = [];
+    var initial_value = { pos: platform[0].position.y}
+
+    platform.forEach(cube_plat => {
+        var animation = new TWEEN.Tween(initial_value).to({ pos: - distance_bound}, 6000);
+
+        animation.easing(TWEEN.Easing.Cubic.In)
+        animation.onUpdate(function () {
+        cube_plat.position.y = initial_value.pos
+
+        }).onComplete(function () {
+            scene.remove(cube_plat);
+            // cube_plat.__dirtyPosition = true;
+            // cube_plat.__dirtyRotation = true;
+        });
+        goingDown_anims.push(animation);
+    })
+
+
+    if (typeof irregular_shape !== 'undefined') {
+
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'z', z + intensity, 50, z));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'z', z, 50, z + intensity));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'z', z - intensity, 50, z));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'z', z, 50, z - intensity));
+        // x axis trambles
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'x', x + intensity, 50, x));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'x', x, 50, x + intensity));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'x', x - intensity, 50, x));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'x', x, 50, x - intensity));
+
+    } else {
+
+        // z axis trambles
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'z', z + intensity, 50, z));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'z', z, 50, z + intensity));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'z', z - intensity, 50, z));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'z', z, 50, z - intensity));
+
+        // x axis trambles
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'x', x + intensity, 50, x));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'x', x, 50, x + intensity));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'x', x - intensity, 50, x));
+        tremble_anims.push(animatePlatformByGroupInstance(platform, scene, 'x', x, 50, x - intensity));
+
+    }
+    tremble_anim_start = concatenateAnimationsGroup(tremble_anims);
+    tremble_anim_start.forEach(elem => elem.start());
+
+
+    setTimeout(function () {
+        tremble_anims.forEach(anims => anims.forEach(anim => anim.pause()));
+
+        goingDown_anims.forEach(anim => { anim.start();
+
+            // cube_plat._physijs.mass  = true;
+
+
+            // cube_plat.setAngularFactor(dynamic_vector);
+            // cube_plat.setAngularVelocity(dynamic_vector);
+            // cube_plat.setLinearFactor(new THREE.Vector3(0,-5,0));
+
+            // cube_plat.setLinearVelocity(new THREE.Vector3(0,-5,0));
+
+
+
+
+            // cube_plat.setAngularFactor({x:1,y:1,z:1});
+            // cube_plat.setAngularVelocity({x:1,y:1,z:1});
+
+            // cube_plat.setLinearFactor({x:1,y:-5,z:1});
+            // cube_plat.setLinearVelocity({x:1,y:-5,z:1});
+            // cube_plat._physijs.angularVelocity.set(THREE.Vector3(0,4,0));
+
+            // scene.remove(cube_plat);
+
+            // cube_plat.setAngularFactor(dynamic_vector );
+            // cube_plat.setAngularVelocity(dynamic_vector);
+            // cube_plat.setLinearFactor(dynamic_vector);
+            // cube_plat.setLinearVelocity(dynamic_vector);
+
+            // console.log(cube_plat);
+
+
+            // fix this
+            // one possible solution (not optimum) delete and recreate the object making it not static
+        })
+    }, 3000)
+
 }
 
 
@@ -586,6 +744,9 @@ export function reset_data() {
     bounds_group = [];
     cubes_group = [];
     objects_group = [];
+
+    last_time = 0;
+    curr_time = 0;
 }
 
 export function remove_allBoxes(scene) {
@@ -603,7 +764,7 @@ export function remove_OtherObjects(scene) {
     scene.simulate()
 }
 
-export function resetAll(scene,time) {
+export function resetAll(scene, time) {
     setTimeout(function () {
         remove_OtherObjects(scene);
         remove_allBounds(scene);

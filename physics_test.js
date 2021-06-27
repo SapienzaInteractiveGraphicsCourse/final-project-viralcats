@@ -18,8 +18,9 @@ var anim_box_single_instance;
 var land_anim_a;
 
 var animations_conc = [];
+var tremble_anim = [];
 
-var ascent, descent, land, orbit;
+var ascent, descent, land, land_grass, orbit;
 var box_1;
 var box_3;
 var controls;
@@ -55,7 +56,7 @@ function main() {
     /* ************************* PLANES ***********************************/
 
     {
-        utils.create_Box_Plane(20, [0, 0, 0], [0, 0, 0], 40, scene, false);
+        utils.create_Box_Plane([0, 0, 0], [0, 0, 0], 40, scene, false);
     }
 
     /* ************************* BOXES ***********************************/
@@ -72,6 +73,8 @@ function main() {
 
 
         land = utils.createFlatLand(4,4, "Namecc", [30, 0, 30], scene);
+
+        land_grass = utils.createFlatLand(4,4, "Grass", [-30, 0, 30], scene);
 
         orbit = utils.createFlatLand(3,5, "Grass", [-30,30,-30], scene);
 
@@ -100,12 +103,12 @@ function main() {
 
     /* ************************* BOUNDS ***********************************/
     {
-        utils.create_Box_Plane(20, [0, -distance_bound / 2, 0], [0, 0, 0], distance_bound, scene, true);
-        utils.create_Box_Plane(20, [0, distance_bound / 2, 0], [0, 0, 0], distance_bound, scene, true);
-        utils.create_Box_Plane(20, [-distance_bound / 2, 0, 0], [0, 0, 90], distance_bound, scene, true);
-        utils.create_Box_Plane(20, [distance_bound / 2, 0, 0], [0, 0, 90], distance_bound, scene, true);
-        utils.create_Box_Plane(20, [0, 0, distance_bound / 2], [90, 0, 0], distance_bound, scene, true);
-        utils.create_Box_Plane(20, [0, 0, -distance_bound / 2], [90, 0, 0], distance_bound, scene, true);
+        utils.create_Box_Plane([0, -distance_bound / 2, 0], [0, 0, 0], distance_bound, scene, true);
+        utils.create_Box_Plane([0, distance_bound / 2, 0], [0, 0, 0], distance_bound, scene, true);
+        utils.create_Box_Plane([-distance_bound / 2, 0, 0], [0, 0, 90], distance_bound, scene, true);
+        utils.create_Box_Plane([distance_bound / 2, 0, 0], [0, 0, 90], distance_bound, scene, true);
+        utils.create_Box_Plane([0, 0, distance_bound / 2], [90, 0, 0], distance_bound, scene, true);
+        utils.create_Box_Plane([0, 0, -distance_bound / 2], [90, 0, 0], distance_bound, scene, true);
     }
 
     /* ************************* ANIMATIONS ******************************/
@@ -126,18 +129,25 @@ function main() {
     anim_box_repeat_instance = utils.animateBackAndForwardInstance(box_3, scene, 'x', -100, 0, 5000);
     anim_box_repeat_instance.start();
 
-    // using groups
+    // using groups single animation
 
     land_anim_a = utils.animateBackAndForwardInstanceGroup(land, scene, 'x', 70, 30, 5000);
     land_anim_a.forEach(anim => { anim.start()});
 
-    animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'z', 30,5000,-30,[3,5]));//not squared platform i've to specify the shape
+    // using groups multiple animation
+
+    animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'z', 30,5000,-30,[3,5]));//not squared platform i've to specify the shape, if not, can be avoided
     animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'x', 30,5000,-30,[3,5]));
     animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'z',-30,5000, 30,[3,5]));
     animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'x',-30,5000, 30,[3,5]));
 
     animations_conc = utils.concatenateAnimationsGroup(animations_conc);
     animations_conc.forEach(elem => elem.start());
+
+    // tumble animation group
+
+    utils.animateFallenPlatformGroup(land_grass, scene)
+    
 
 
      /* ************************* RESETS ******************************/
