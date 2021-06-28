@@ -76,6 +76,16 @@ function diff_time(recent_time, old_time) {
     return (recent_time - old_time);
 }
 
+function degtorad(degrees) {
+    var pi = Math.PI;
+    return degrees * (pi / 180);
+  }
+  
+  function radtodeg(rad){
+    var pi = Math.PI;
+    return rad*180/pi;
+  }
+
 
 /* ************************************* external functions ************************************* */
 

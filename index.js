@@ -2,35 +2,25 @@
 // from https://threejsfundamentals.org/threejs/threejs-load-gltf.html
 
 
-
+import TWEEN from './libs/tween.esm.js';
 import * as THREE from './libs/threejs/build/three.module.js';
 import { OrbitControls } from './libs/threejs/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from './libs/threejs/examples/jsm/loaders/GLTFLoader.js';
 import { OutlineEffect } from './libs/threejs/examples/jsm/effects/OutlineEffect.js';
-import TWEEN from './libs/tween.esm.js';
-
-
-
-// physijs lib initialization
-// Physijs.scripts.worker = './libs/physijs_worker.js';
-// Physijs.scripts.ammo = './libs/ammo.js';
+import * as Animation from './animations.js'
 
 var hemisphere_light;
 var directional_light;
 var ambient_light;
 
-var scene, camera, renderer, controls, effect, eye;
+var velocity_ws = 0.0;
+var velocity_ad = 0.0;
+var speed = 0.0;
+var speed_2 = 0.0;
+var keys;
 
-var angle_of_camera_rotation=0,turn_angle = 0;
+var scene, camera, renderer, controls, effect;
 
-var phi                     = 16.6328125;
-var _theta                  = -75.58349609375;
-
-var x                       = 0.0;
-var y                       = 0.0;
-var z                       = 0.0;
-var radius                  = 13;
-var dragging                = false;
 var mouse_x                 = 0;
 
 var centerCanvasOnX         = 0;
@@ -40,28 +30,20 @@ var canvas_width            = 0;
 var canvas_y                = 0;
 var canvas_height           = 0;
 
-var cameraCenterNode;
-var cameraPositionNode;
 
-// Navigate
+
 var mouse_x;
-var mouse_y;
-var mouse_alfa;
-var mouse_beta;
 var mouse_pressing = false;
+
+
 
 var terrain;
 
-var curr_time = 0;
-var last_time = 0;
-var key_pressed = new Array(5);
-for (var i = 0; i < 5; i++) {
-	key_pressed[i] = false;
-}
-
-var isCharacterAnimationRun = false;
-var isCharacterAnimationJump = false;
 const canvas = document.querySelector('#c');
+
+
+
+
 
 var zombie = {
   joints:{
@@ -101,283 +83,108 @@ window.onload = loadModel;
 
 
 var camera_x_pos = 0;
-var camera_y_pos = 50;
-var camera_z_pos = 50;
-
-var at = (camera_x_pos, camera_y_pos, camera_z_pos);
-var up = (0.0, 1.0, 0.0);
-
+var camera_y_pos = 68;
+var camera_z_pos = 180;
 
 function init(){
 
-  const fov = 150;
-  const aspect = 1;
-  const near = 0.1;
-  const far = 2000000;
+    const fov = 80;
+    const aspect = 1;
+    const near = 1;
+    const far = 10000;
 
-  
-  canvas.getBoundingClientRect();
-
-  canvas_x       = canvas.offsetLeft;
-  canvas_width   = canvas.width;
-  canvas_y       = canvas.offsetTop;
-  canvas_height  = canvas.height;
-
-  mouse_x        = canvas_width;
-
-  var canvas_rect = canvas.getBoundingClientRect();
-
-  centerCanvasOnX = canvas_rect.x + (canvas.width/2) + 2;
-  centerCanvasOnY = canvas_rect.y + (canvas.height/2) + 2;
-
-
-  camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  // camera.position.set(0, 180,45);
-  camera.position.z = zombie.mesh.position.z + camera_z_pos;
-	camera.position.y = zombie.mesh.position.y + camera_y_pos;
-  camera.position.x = zombie.mesh.position.x;
-
-
-
-
-  eye = (0,0,0);
-
-  zombie.mesh.add(camera);
-
-  camera.lookAt(zombie.mesh.position);
-	// camera.lookAt(eye, at, up);
-
-  // camera.position.set(0,2.5,2.5); // Set position like this
-  // camera.lookAt(new THREE.Vector3(0,0,0)); // Set look at coordinate like this
-  // camera.lookAt(eye, at, up);
-  // camera.updateProjectionMatrix();
-
-  // camera.lookAt(0, 1, 1);
-  // camera.updateProjectionMatrix();
-
-
-  renderer = new THREE.WebGLRenderer({canvas});
-	renderer.shadowMap.enabled = true;
-	renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
-	renderer.setPixelRatio(devicePixelRatio);
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	renderer.gammaFactor = 2.2;
-	renderer.outputEncoding = THREE.sRGBEncoding;
-
-  initScene();
-  initZombie();
-
-  //controls.target = zombie.mesh.position;
-
-  window.addEventListener('resize', () => {
-		renderer.setSize(window.innerWidth, window.innerHeight);
-		camera.aspect = window.innerWidth/window.innerHeight;
-	
-		// camera.updateProjectionMatrix();
-	});
-
-  // // document.addEventListener('keypress', KeysListener);
-  // document.onkeydown = function(e){
-	// 	if (e.key=="w"||e.key=="W") {
-	// 		// moveForward(zombie,1); 
-  //     key_pressed[0] = true;
-	// 	}
-  //   if (e.key=="a"||e.key=="A") {
-	// 		// moveSx(zombie,1);
-  //     key_pressed[1] = true;
-	// 	}
-  //   if (e.key=="s"||e.key=="S") {
-	// 		// moveBackward(zombie,1);
-  //     key_pressed[2] = true;
-	// 	}
-  //   if (e.key=="d"||e.key=="D") {
-	// 		// moveDx(zombie,1);
-  //     key_pressed[3] = true;
-	// 	}
-  //   if(e.key == " "){
-  //     // moveJump(zombie.mesh.position,zombie.mesh.position.y,zombie.mesh.position.y+20,"y",160);
-  //     key_pressed[4] = true;
-  //   }
-	// };
-
-  // document.onkeyup = function(e){
-
-	// 	if (e.key=="w"||e.key=="W") {
-	// 		// moveForward(zombie,1); 
-  //     key_pressed[0] = false;
-	// 	}
-  //   if (e.key=="a"||e.key=="A") {
-	// 		// moveSx(zombie,1);
-  //     key_pressed[1] = false;
-	// 	}
-  //   if (e.key=="s"||e.key=="S") {
-	// 		// moveBackward(zombie,1);
-  //     key_pressed[2] = false;
-	// 	}
-  //   if (e.key=="d"||e.key=="D") {
-	// 		// moveDx(zombie,1);
-  //     key_pressed[3] = false;
-	// 	}
-  //   if(e.key == " "){
-  //     // moveJump(zombie.mesh.position,zombie.mesh.position.y,zombie.mesh.position.y+20,"y",160);
-  //     key_pressed[4] = false;
-  //   }
-	// };
-
-
-  
-keys = {
-  a: false,
-  s: false,
-  d: false,
-  w: false
-};
-document.body.addEventListener( 'keydown', function(e) {
-  
-  var key = e.code.replace('Key', '').toLowerCase();
-  if ( keys[ key ] !== undefined )
-    keys[ key ] = true;
-  
-});
-document.body.addEventListener( 'keyup', function(e) {
-  
-  var key = e.code.replace('Key', '').toLowerCase();
-  if ( keys[ key ] !== undefined )
-    keys[ key ] = false;
-  
-});
-
-
-	// canvas.onmousedown = function(e){
-	// 	mouse_x = e.offsetX;
-	// 	mouse_y = e.offsetY;
-	// 	mouse_pressing = true;
-	// }
-
-	// canvas.onmouseup = function(e){
-	// 	mouse_pressing = false;
-	// }
-
-	// canvas.onmousemove = function(e){
-	// 	//console.log(Date.now()-last_time); last_time = Date.now();
-	// 	if (!mouse_pressing) {return;}
-
-	// };
-
-
-  // canvas.addEventListener( 'mousemove', onMouseMove, false );
-  // canvas.addEventListener( 'mouseup', onMouseUp, false );
-  // canvas.addEventListener('mousedown',onMouseDown,false);
-
-  effect = new OutlineEffect( renderer, {defaultThickness: 0.0025, defaultColor: [ 0, 0, 0 ], defaultAlpha: 0.5, defaultKeepAlive: true // keeps outline material in cache even if material is removed from scene
-  }); 
-  
-
-
-
-
-    // // now make nodes for camera
-    // cameraCenterNode = new THREE.Object3D();
-    // cameraPositionNode = new THREE.Object3D();
-    // scene.add(cameraCenterNode);
-    // cameraCenterNode.add(cameraPositionNode);
-    // cameraPositionNode.position.x = camera_x_pos;
-    // cameraPositionNode.position.y = camera_y_pos;
-    // cameraPositionNode.position.y = camera_z_pos;
-
-  initZombiePosition();
-  // movePartIntoThePlane(zombie.mesh.position,zombie.mesh.position.z,200,"z",2000).start();
-  // moveForward(zombie,10);
-
-
-  // timer = setInterval(() => {
-  //   c1 += 1;
-  //   // directional_light.position.set(c1, c1/2, 2);
-  //   moveForward(zombie,c1);
     
-  // }, 20);
+    canvas.getBoundingClientRect();
+
+    canvas_x       = canvas.offsetLeft;
+    canvas_width   = canvas.width;
+    canvas_y       = canvas.offsetTop;
+    canvas_height  = canvas.height;
+
+    mouse_x        = canvas_width;
+
+    var canvas_rect = canvas.getBoundingClientRect();
+
+    centerCanvasOnX = canvas_rect.x + (canvas.width/2) + 2;
+    centerCanvasOnY = canvas_rect.y + (canvas.height/2) + 2;
 
 
+    camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    camera.position.z = zombie.mesh.position.z + camera_z_pos;
+    camera.position.y = zombie.mesh.position.y + camera_y_pos;
+    camera.position.x = zombie.mesh.position.x;
+
+    zombie.mesh.add(camera);
+    camera.lookAt(zombie.mesh.position);
+
+    renderer = new THREE.WebGLRenderer({canvas});
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(devicePixelRatio);
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.gammaFactor = 2.2;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
+    initScene();
+    initZombie();
+
+    window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth/window.innerHeight;
+    });
 
 
-  var timer_key = setInterval(function(){
-    var val = 0;
-    //i try to catch the angle of the rotation
-    // if(camera.rotation.z < 0){
-    //     val = 180+radtodeg(camera.rotation.z);
-    //     val += 180;
-    //     angle_of_camera_rotation = degtorad(val) + radtodeg(90);
-    // }else{
-    //     angle_of_camera_rotation = camera.rotation.z + degtorad(val) + radtodeg(90);
-    // }
+      
+    keys = {
+        a: false,
+        s: false,
+        d: false,
+        w: false,
+        space:false
+    };
+
+    document.body.addEventListener('keydown', function(e) {
+        var key = e.code.replace('Key', '').toLowerCase();
+        if(keys[key] !== undefined)
+            keys[key] = true;
+    });
+
+
+    document.body.addEventListener('keyup', function(e) {
+        var key = e.code.replace('Key', '').toLowerCase();
+        if (keys[key] !== undefined )
+            keys[key] = false;
+    });
+
+    canvas.onmousedown = function(e){
+        mouse_x = e.pageX;
+        mouse_pressing = true;
+    }
     
-    angle_of_camera_rotation = radtodeg(camera.rotation.z) + 90;
-
-    if(angle_of_camera_rotation < 0){
-        angle_of_camera_rotation = 360 + angle_of_camera_rotation;
-
-
-        if((angle_of_camera_rotation > 180) && (angle_of_camera_rotation < 360)){
-            turn_angle = true;  
-        }else{
-            turn_angle = false;
+    canvas.addEventListener('mousemove', e => {
+      
+        if(mouse_pressing){
+            if(e.pageX > mouse_x){
+                console.log("Moved Right");
+                zombie.mesh.rotateY(0.05);
+            }else{
+                console.log("Moved Left")
+                zombie.mesh.rotateY(-0.05);
+            }
+            mouse_x = e.pageX;
         }
+    });
 
-        angle_of_camera_rotation = degtorad(angle_of_camera_rotation);
-
-    }else{
-
-        if((angle_of_camera_rotation > 180) && (angle_of_camera_rotation < 360)){
-          turn_angle = true;  
-        }else{
-          turn_angle = false;
-        }
-
-        angle_of_camera_rotation = degtorad(angle_of_camera_rotation);
+    canvas.onmouseup = function(e){
+        mouse_pressing = false;
     }
 
+    effect = new OutlineEffect( renderer, {defaultThickness: 0.0025, defaultColor: [ 0, 0, 0 ], defaultAlpha: 0.5, defaultKeepAlive: true // keeps outline material in cache even if material is removed from scene
+    }); 
     
-    //console.log(radtodeg(angle_of_camera_rotation));
 
-    setCurrentTime();
-    if (key_pressed[0]) {
-      moveForward(zombie,1); 
-    } 
-    if (key_pressed[1]) {
-      moveSx(zombie,1);
-    } 
-    if (key_pressed[2]) {
-      moveBackward(zombie,1);
-    } 
-    if (key_pressed[3]) {
-      moveDx(zombie,1);
-    } 
-    if (key_pressed[4]) {
-      moveJump(zombie.mesh.position,zombie.mesh.position.y,zombie.mesh.position.y+50,"y",100);
-    }
-
-    if(key_pressed[0] || key_pressed[1] || key_pressed[2] || key_pressed[3] || key_pressed[4]){
-      if(diff_time(curr_time,last_time) > 100)
-        getTime();
-    }
-
-
-    //zombie.mesh.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z); 
-    controls.update();
-
-  
-  
-  },10);
-
-
-
-
-
-
-
-
-  
-  render();
+    initZombiePosition();
+    render();
 }
 
 function initZombiePosition(){
@@ -387,373 +194,12 @@ function initZombiePosition(){
     zombie.joints.arms.left.rotation.set(zombie.joints.arms.left.rotation.x   +degtorad(-80),zombie.joints.arms.left.rotation.y  ,zombie.joints.arms.left.rotation.z     );
 }
 
-
-function moveLegs(who,time,steps){
-
-    var leg_r_forward                   = movePart(who.joints.legs.right.rotation     ,who.joints.legs.right.rotation.x     ,degtorad(-155),  "x",    time);
-    var leg_l_forward                   = movePart(who.joints.legs.left.rotation      ,who.joints.legs.left.rotation.x      ,degtorad(0),     "x",    time);
-    var ankle_r_forward                 = movePart(who.joints.legs.r_ankle.rotation   ,who.joints.legs.r_ankle.rotation.x   ,degtorad(-155),  "x",    time);
-    var ankle_l_forward                 = movePart(who.joints.legs.l_ankle.rotation   ,who.joints.legs.l_ankle.rotation.x   ,degtorad(0),     "x",    time);
-
-    var leg_r_forward_return            = movePart(who.joints.legs.right.rotation     ,degtorad(-155)                       ,who.joints.legs.right.rotation.x  ,"x"  ,time);
-    var leg_l_forward_return            = movePart(who.joints.legs.left.rotation      ,degtorad(0)                          ,who.joints.legs.left.rotation.x   ,"x"  ,time);
-    var ankle_r_forward_return          = movePart(who.joints.legs.r_ankle.rotation   ,degtorad(-155)                       ,who.joints.legs.r_ankle.rotation.x,"x"  ,time);
-    var ankle_l_forward_return          = movePart(who.joints.legs.l_ankle.rotation   ,degtorad(0)                          ,who.joints.legs.l_ankle.rotation.x,"x"  ,time);
-
-
-    var reverse_leg_r_forward           = movePart(who.joints.legs.right.rotation     ,who.joints.legs.right.rotation.x     ,degtorad(0),     "x",    time);
-    var reverse_leg_l_forward           = movePart(who.joints.legs.left.rotation      ,who.joints.legs.left.rotation.x      ,degtorad(-155),  "x",    time);
-    var reverse_ankle_r_forward         = movePart(who.joints.legs.r_ankle.rotation   ,who.joints.legs.r_ankle.rotation.x   ,degtorad(0),     "x",    time);
-    var reverse_ankle_l_forward         = movePart(who.joints.legs.l_ankle.rotation   ,who.joints.legs.l_ankle.rotation.x   ,degtorad(-155),  "x",    time);
-
-    var reverse_leg_r_forward_return    = movePart(who.joints.legs.right.rotation     ,degtorad(0)                          ,who.joints.legs.right.rotation.x  ,"x"  ,time);
-    var reverse_leg_l_forward_return    = movePart(who.joints.legs.left.rotation      ,degtorad(-155)                       ,who.joints.legs.left.rotation.x   ,"x"  ,time);
-    var reverse_ankle_r_forward_return  = movePart(who.joints.legs.r_ankle.rotation   ,degtorad(0)                          ,who.joints.legs.r_ankle.rotation.x,"x"  ,time);
-    var reverse_ankle_l_forward_return  = movePart(who.joints.legs.l_ankle.rotation   ,degtorad(-155)                       ,who.joints.legs.l_ankle.rotation.x,"x"  ,time);
-
-    var curr_steps = 1;
-
-    leg_r_forward.start();
-    leg_l_forward.start();
-    ankle_r_forward.start();
-    ankle_l_forward.start();
-
-    leg_r_forward.onComplete(function(){
-        leg_r_forward_return.start().onComplete(function(){
-          reverse_leg_r_forward.start().onComplete(function(){
-            reverse_leg_r_forward_return.start().onComplete(function(){
-              if(curr_steps != steps){
-                leg_r_forward.start();
-              }
-            });
-          });
-        });
-    });
-    leg_l_forward.onComplete(function(){
-        leg_l_forward_return.start().onComplete(function(){
-          reverse_leg_l_forward.start().onComplete(function(){
-            reverse_leg_l_forward_return.start().onComplete(function(){
-              if(curr_steps != steps){
-                leg_l_forward.start();
-              }
-            });
-          });
-        });
-    });
-    ankle_r_forward.onComplete(function(){
-        ankle_r_forward_return.start().onComplete(function(){
-          reverse_ankle_r_forward.start().onComplete(function(){
-            reverse_ankle_r_forward_return.start().onComplete(function(){
-              if(curr_steps != steps){
-                ankle_r_forward.start();
-              }
-            });
-          });
-        });
-    });
-    ankle_l_forward.onComplete(function(){
-        ankle_l_forward_return.start().onComplete(function(){
-          reverse_ankle_l_forward.start().onComplete(function(){
-            reverse_ankle_l_forward_return.start().onComplete(function(){
-              if(curr_steps != steps){
-                ankle_l_forward.start();
-              }else{
-                isCharacterAnimationRun = false;
-              }
-              curr_steps++;
-            });
-          });
-        });
-    });
-}
-
-function moveArms(who,time,steps){
-
-    var leg_r_forward                   = movePart(who.joints.arms.right.rotation     ,who.joints.arms.right.rotation.z     ,degtorad(-35),                     "z",    time);
-    var leg_l_forward                   = movePart(who.joints.arms.left.rotation      ,who.joints.arms.left.rotation.z      ,degtorad(-80),                     "z",    time);
-
-    var leg_r_forward_return            = movePart(who.joints.arms.right.rotation     ,degtorad(-35)                        ,who.joints.arms.right.rotation.z  ,"z"  ,  time);
-    var leg_l_forward_return            = movePart(who.joints.arms.left.rotation      ,degtorad(-80)                        ,who.joints.arms.left.rotation.z   ,"z"  ,  time);
-
-    var reverse_leg_r_forward           = movePart(who.joints.arms.right.rotation     ,who.joints.arms.right.rotation.z     ,degtorad(65),                      "z",    time);
-    var reverse_leg_l_forward           = movePart(who.joints.arms.left.rotation      ,who.joints.arms.left.rotation.z      ,degtorad(65),                      "z",    time);
-
-    var reverse_leg_r_forward_return    = movePart(who.joints.arms.right.rotation     ,degtorad(65)                         ,who.joints.arms.right.rotation.z  ,"z"  ,  time);
-    var reverse_leg_l_forward_return    = movePart(who.joints.arms.left.rotation      ,degtorad(65)                         ,who.joints.arms.left.rotation.z   ,"z"  ,  time);
-
-
-    var curr_steps = 1;
-
-    leg_r_forward.start();
-    leg_l_forward.start();
-
-
-
-    leg_r_forward.onComplete(function(){
-        leg_r_forward_return.start().onComplete(function(){
-          reverse_leg_r_forward.start().onComplete(function(){
-            reverse_leg_r_forward_return.start().onComplete(function(){
-              if(curr_steps != steps){
-                leg_r_forward.start();
-              }
-            });
-          });
-        });
-    });
-    leg_l_forward.onComplete(function(){
-        leg_l_forward_return.start().onComplete(function(){
-          reverse_leg_l_forward.start().onComplete(function(){
-            reverse_leg_l_forward_return.start().onComplete(function(){
-              if(curr_steps != steps){
-                leg_l_forward.start();
-              }
-              curr_steps++;
-            });
-          });
-        });
-    });
-}
-
-function moveSx(who,steps){
-  var time  = 85;
-
-  if(isCharacterAnimationRun == false){
-      isCharacterAnimationRun = true;
-      moveLegs(who,time,steps);
-      moveArms(who,time,steps);
-      
-      
-  }
-  if(diff_time(curr_time,last_time) > 20){
-
-    movePartIntoThePlane(who.mesh.position,who.mesh.position.x,who.mesh.position.x+20,"x",85).start();
-  }
-
-  
-}
-
-
-
-function moveUp(who,steps){
-  var time  = 45;
-
-  if(isCharacterAnimationRun == false){
-      isCharacterAnimationRun = true;
-      moveLegs(who,time,steps);
-      moveArms(who,time,steps);
-      movePartIntoThePlane(who.mesh.position,who.mesh.position.y,who.mesh.position.y+20,"y",time*4).start();
-      
-  }
-}
-
-function moveDown(who,steps){
-  var time  = 45;
-
-  if(isCharacterAnimationRun == false){
-      isCharacterAnimationRun = true;
-      moveLegs(who,time,steps);
-      moveArms(who,time,steps);
-      movePartIntoThePlane(who.mesh.position,who.mesh.position.y,who.mesh.position.y+20,"y",time*4).start();
-      
-  }
-}
-
-function moveDx(who,steps){
-    var time  = 85;
-
-    if(isCharacterAnimationRun == false){
-        isCharacterAnimationRun = true;
-        moveLegs(who,time,steps);
-        moveArms(who,time,steps);
-        
-        
-    }
-    
-    
-    if(diff_time(curr_time,last_time) > 20){
-
-      movePartIntoThePlane(who.mesh.position,who.mesh.position.x,who.mesh.position.x-20,"x",85).start();
-    }
-}
-
-function moveForward(who,steps){
-  	
-    var time  = 85;
-
-    
-
-    if(isCharacterAnimationRun == false){
-        isCharacterAnimationRun = true;
-        moveLegs(who,time,steps);
-        moveArms(who,time,steps);
-        
-    }
-
-    if(diff_time(curr_time,last_time) > 20){
-      if(turn_angle == false){
-          movePartIntoThePlane(who.mesh.position,who.mesh.position.z,who.mesh.position.z+20,"z",85).start();
-      }else{
-          movePartIntoThePlane(who.mesh.position,who.mesh.position.z,who.mesh.position.z-20,"z",85).start();
-      }
-      
-    }
-
-    
-    
-}
-
-function moveBackward(who,steps){
-  	
-    var time  = 85;
-
-    if(isCharacterAnimationRun == false){
-      isCharacterAnimationRun = true;
-      moveLegs(who,time,steps);
-      moveArms(who,time,steps);
-      
-    }
-
-    if(diff_time(curr_time,last_time) > 20){
-
-        movePartIntoThePlane(who.mesh.position,who.mesh.position.z,who.mesh.position.z-20,"z",85).start();
-        
-    }
-
-}
-
-function movePart(what,initial_value,value,evaluate_on,time){
-
-    initial_value = {pos:initial_value}
-
-    var animation = new TWEEN.Tween(initial_value)
-    .to({pos:value},time)
-    .easing(TWEEN.Easing.Linear.None)
-    .onUpdate( function(){     
-
-        if(evaluate_on == "x"){
-            what.set(initial_value.pos,what.y, what.z);
-        }else if(evaluate_on == "y"){
-            what.set(what.x,initial_value.pos, what.z);
-        }else if(evaluate_on == "z"){
-            what.set(what.x,what.y, initial_value.pos);
-        }
-    }); 
-
-    return animation;
-}
-
-function moveJump(what,initial_value,value,evaluate_on,time){
-
-  
-  var _initial_value = {pos:initial_value}
-  var _value = {pos:value}
-
-  var animation_1 = new TWEEN.Tween(initial_value)
-  .to({pos:value},time)
-  .easing(TWEEN.Easing.Linear.None)
-  .onUpdate( function(){     
-      if(evaluate_on == "x"){
-          what.x = _initial_value.pos;
-          camera.position.x = _initial_value.pos
-          // cameraCenterNode.rotation.x = _initial_value.pos
-      }else if(evaluate_on == "y"){
-          what.y = _initial_value.pos;
-          camera.position.y = _initial_value.pos + 50;
-          // cameraCenterNode.rotation.y = _initial_value.pos + 50
-      }else if(evaluate_on == "z"){
-          what.z = _initial_value.pos;
-          camera.position.z = _initial_value.pos + 80;
-          // cameraCenterNode.rotation.z = _initial_value.pos + 80
-      }
-  }); 
-
-  var animation_2 = new TWEEN.Tween(_value)
-  .to({pos:initial_value},time)
-  .easing(TWEEN.Easing.Linear.None)
-  .onUpdate( function(){     
-
-      if(evaluate_on == "x"){
-          what.x = _value.pos;
-          camera.position.x = _value.pos;
-          // cameraCenterNode.rotation.x = _value.pos
-      }else if(evaluate_on == "y"){
-          what.y = _value.pos;
-          camera.position.y = _value.pos + 50;
-          // cameraCenterNode.rotation.y = _value.pos + 50;
-      }else if(evaluate_on == "z"){
-          what.z = _value.pos;
-          // camera.position.z = _value.pos + 80;
-      }
-  }); 
-
-  if(isCharacterAnimationJump == false){
-    isCharacterAnimationJump = true;
-    animation_1.start().onComplete(function(){
-      animation_2.start().onComplete(function(){
-        isCharacterAnimationJump = false;
-      });
-    });
-  }
-}
-
-function movePartIntoThePlane(what,initial_value,value,evaluate_on,time){
-
-  initial_value = {pos:initial_value}
-
-  var animation = new TWEEN.Tween(initial_value)
-  .to({pos:value},time)
-  .easing(TWEEN.Easing.Linear.None)
-  .onUpdate( function(){     
-    
-      if(evaluate_on == "x"){
-
-            what.x = initial_value.pos + Math.sin(angle_of_camera_rotation);
-            what.z = what.z + Math.cos(angle_of_camera_rotation);
-            // camera.position.set(what.x, 50, what.z + camera_z_pos);
-
-            
-
-
-          console.log("----------------------------------")
-      }else if(evaluate_on == "y"){
-          what.y = initial_value.pos;
-      }else if(evaluate_on == "z"){
-
-            what.z = initial_value.pos + Math.sin(angle_of_camera_rotation);
-            
-            CameraUpdate();
-            
-            zombie.mesh.add(camera);
-
-            //what.x = what.x - Math.cos(angle_of_camera_rotation);
-            // var diff = what.z-camera.position.z;
-            // camera.position.z = what.z + 50;
-
-            //camera.up =  (what.x, what.y, what.z);
-//            camera.position.x = what.x;
-
-
-            //camera.rotation.set(what.rotationX,what.rotationY,what.rotationZ);
-            // camera.position.set(what.x, 50, what.z + camera_z_pos);
-
-
-      }
-  }); 
-
-  return animation;
-}
-
 function initScene(){
 
 
     controls = new OrbitControls(camera, canvas);
 
     controls.maxPolarAngle = Math.PI;
-
-
-    // controls = new OrbitControls(camera, canvas);
-    // // controls.target.set(0, 5, 0);
-    //controls.update();
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color('cyan');
@@ -811,12 +257,10 @@ function initScene(){
 function initZombie(){
 
     zombie.mesh.position.set(0, 0, 0);
-    // zombie.mesh.rotation.set(180, 180, 180);
-    // console.log(zombie.mesh.rotation)
     var root = zombie.gltf;
     root.scale.set(.08, .08, .08);
 
-    console.log("******* STO CAZZO *******\n", dumpObject(root).join('\n'));
+    console.log("******* ZOMBIE *******\n", dumpObject(root).join('\n'));
 
 
     var out_cube =  new THREE.Mesh(boxGeometry, boxCollisionMaterial);
@@ -910,77 +354,56 @@ function loadModel(){
       console.log("ERRORE DURANTE IL CARICAMENTO DEL MODELLO!!!!");
     });
 }
-var velocity = 0.0;
-var speed = 0.0;
-var keys;
+
+
+
+
+
 function render(){
+
+
     requestAnimationFrame(render);
 
     TWEEN.update();
-
-    
-
-    angle_of_camera_rotation = 0;
-    angle_of_camera_rotation = radtodeg(camera.rotation.z);
-
-
-    if(angle_of_camera_rotation < 0){
-      angle_of_camera_rotation = 360 + angle_of_camera_rotation;
-
-      angle_of_camera_rotation = degtorad(angle_of_camera_rotation);
-
-  }else{
-
-      angle_of_camera_rotation = degtorad(angle_of_camera_rotation);
-  }
-  //console.log(radtodeg(angle_of_camera_rotation));
-    
-  console.log(radtodeg(camera.rotation.z));
-
-    // zombie.mesh.rotation.y = camera.rotation.z;
     controls.update();
-    //zombie.mesh.rotation.y = camera.rotation.y;
-
+       
+    controls.enabled = false;
 
     speed = 0.0;
-  
-    if ( keys.w )
-      speed = 5;
-    else if ( keys.s )
-      speed = -5;
-  
-    velocity += ( speed - velocity ) * 0.3;
-    zombie.mesh.translateZ( velocity );
 
-    
-    if ( keys.a )
-    zombie.mesh.rotateY(0.05);
-    else if ( keys.d )
-    zombie.mesh.rotateY(-0.05);
+    if ( keys.w ){
+        speed = -5;
+        Animation.moveForward(zombie,1); 
+        velocity_ws += ( speed - velocity_ws ) * 0.3;
+        zombie.mesh.translateZ( velocity_ws );     
+    }
+    if ( keys.s ){
+        speed = 5;
+        Animation.moveBackward(zombie,1);
+        velocity_ws += ( speed - velocity_ws ) * 0.3;
+        zombie.mesh.translateZ( velocity_ws );
+    }
+
+    if ( keys.a ){
+        speed_2 = -5;
+        velocity_ad += ( speed_2 - velocity_ad ) * 0.3;
+        zombie.mesh.translateX( velocity_ad );
+        Animation.moveSx(zombie,1);
+    }
+    if ( keys.d ){
+        speed_2 = 5;
+        velocity_ad += ( speed_2 - velocity_ad ) * 0.3;
+        zombie.mesh.translateX( velocity_ad );
+        Animation.moveDx(zombie,1);
+    }
+
+    if(keys.space){
+        Animation.moveJump(zombie,zombie.position.y,zombie.position.y + 50,"y",100);
+    }
 
 
-/*
-    if ( keys.w )
-    zombie.mesh.position.z += (15);
-    else if ( keys.s )
-    zombie.mesh.position.z -= (15);
-*/
-    
-
-      
     camera.lookAt( zombie.mesh.position );
-
-
-    // console.log("camera.position.x: " + camera.position.x);
-    // console.log("camera.position.y: " + camera.position.y);
-    // console.log("camera.position.z: " + camera.position.z);
-    // console.log("\n"+Date.now());
-
-    // point camera at center
-    // camera.lookAt(cameraCenterNode.position);
-
     renderer.render(scene, camera);
-
     effect.render(scene, camera);
 }
 
@@ -1005,73 +428,4 @@ function degtorad(degrees) {
 function radtodeg(rad){
   var pi = Math.PI;
   return rad*180/pi;
-}
-
-var c1 = -180;
-var timer;
-
-
-function onMouseUp(event){
-
-    dragging = false;
-    mouse_x = canvas_width;
-}
-
-function onMouseDown(event){
-    if(event.which == 0){
-      dragging = false;
-      mouse_x = canvas_width;
-    }else if(event.which == 1){
-      dragging = true;
-    }
-
-    mouse_x = event.clientX;
-}
-
-function onMouseMove(event) {
-
-  if (dragging) {
-
-      var temp_x = mouse_x - event.clientX;
-
-      var mouseY = ((event.clientY - centerCanvasOnY)*180/canvas_width);
-
-      if(mouseY >= 90){
-          mouseY = 90;
-      }
-
-      if(mouseY < -90){
-          mouseY = -90;
-      }
-
-      console.log(x);
-
-      //terrain.rotation.set(degtorad(0), (temp_x/(canvas_width/4)), degtorad(0));
-      camera.rotation.set(degtorad(0), (temp_x/(canvas_width/4)), degtorad(0));
-      camera.position.set((temp_x/(canvas_width/4)), camera.position.y, camera.position.z);
-      zombie.mesh.rotation.set(degtorad(0), (temp_x/(canvas_width/4)), degtorad(0));
-
-  }
-}
-
-function CameraUpdate(){
-  camera.position.z = zombie.mesh.position.z + camera_z_pos;
-  camera.position.y = zombie.mesh.position.y + camera_y_pos;
-  camera.position.x = zombie.mesh.position.x;
-}
-
-function getTime(){
-    last_time = Date.now();
-}
-
-function setCurrentTime(){
-    curr_time = Date.now();
-}
-
-function diff_time (recent_time, old_time){
-    return (recent_time - old_time);
-}
-
-function mouseup(event) {
-  dragging = false;
 }
