@@ -2,7 +2,7 @@
 
 // import { ObjectLoader } from "./libs/threejs/build/three.module";
 import TWEEN from './libs/tween.esm.js';
-
+// import * as THREE from './libs/threejs/build/three.module.js';
 // progressives objects
 var prog_cubes = 0;
 var prog_planes = 0;
@@ -58,7 +58,7 @@ function load_texture_cube(tex_top_name, tex_side_name, tex_bottom_name) {
     return materials;
 }
 
-function degrees_to_radians(degrees) {
+export function degrees_to_radians(degrees) {
     var pi = Math.PI;
     return degrees * (pi / 180);
 }
@@ -150,7 +150,7 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
 
 
 
-export function create_Box(type, pos, is_dynamic, scene) {
+export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null) {
     var path1 = './textures/blocks/' + String(cubes_type[type][0]) + ".png";  // top
     var path2 = './textures/blocks/' + String(cubes_type[type][1]) + ".png";  // side
     var path3 = './textures/blocks/' + String(cubes_type[type][2]) + ".png";  // base
@@ -199,6 +199,22 @@ export function create_Box(type, pos, is_dynamic, scene) {
 
     box.position.set(pos[0], pos[1], pos[2]);
 
+    if (rot){
+        if(dim){
+            box.translateX(dim[0]/2);
+            box.translateY(dim[1]/2);
+            box.translateZ(dim[2]/2);
+        }
+        
+        box.rotation.set(degrees_to_radians(rot[0]), degrees_to_radians(rot[1]), degrees_to_radians(rot[2]));
+
+        if(dim){
+            // box.translateX(-dim[0]/2);
+            // box.translateY(-dim[1]/2);
+            // box.translateZ(-dim[2]/2);
+        }
+    }
+
     box.name = "box_" + String(prog_cubes);
     prog_cubes++;
     box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
@@ -213,7 +229,7 @@ export function create_Box(type, pos, is_dynamic, scene) {
     return box;
 }
 
-export function create_Sphere(dim, color, type, scene) {
+export function create_Sphere(dim, color, type, scene, pos = null) {
     var path = "./textures/blocks/" + String(type) + ".png";
 
     var tex = new THREE.TextureLoader().load(path);
@@ -233,8 +249,12 @@ export function create_Sphere(dim, color, type, scene) {
     const sphereHeightDivisions = 32;
     var sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
     // var sphereMat = new THREE.MeshBasicMaterial({ color: color })
-    var sphere = new Physijs.SphereMesh(sphereGeo, sphereMat);
-    sphere.position.set(-sphereRadius - 1 - 25, sphereRadius + 20, 0);
+    var sphere = new Physijs.SphereMesh(sphereGeo, sphereMat,1000);
+    if(pos){
+        sphere.position.set(pos[0], pos[1], pos[2]);
+    }else{
+        sphere.position.set(-sphereRadius - 1 - 25, sphereRadius + 20, 0);
+    }
     sphere.name = "sphere_" + String(prog_spheres);
     prog_spheres++;
     sphere.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
@@ -246,6 +266,7 @@ export function create_Sphere(dim, color, type, scene) {
     });
     objects_group.push(sphere);
     scene.add(sphere);
+    return sphere;
 }
 
 

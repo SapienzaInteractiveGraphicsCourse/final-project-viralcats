@@ -26,6 +26,8 @@ var box_3;
 var controls;
 var scene;
 
+var sphere;
+
 function main() {
     const canvas = document.querySelector('#c');
     var renderer = new THREE.WebGLRenderer({ canvas });
@@ -111,6 +113,26 @@ function main() {
         utils.create_Box_Plane([0, 0, -distance_bound / 2], [90, 0, 0], distance_bound, scene, true);
     }
 
+    /* ************************* ZOMBIE ***********************************/
+    {
+        // var head = utils.create_Box("Namecc", [0, 10, 5], 0, scene);
+        // head.scale.set(1, 1, 1);
+        // var body = utils.create_Box("Namecc", [0, 10-3-1.5, 5], 0, scene);
+        // body.scale.set(1.70, 2, 1);
+        // var left_arm = utils.create_Box("Namecc", [-2-1.15, 10-3+.7, 5], 0, scene, [0,0,90],[0,0,-30]);
+        // left_arm.scale.set(.5, 2, .5);
+        // var right_arm = utils.create_Box("Namecc", [2+1.15, 10-3+.7, 5], 0, scene, [0,0,-90]);
+        // right_arm.scale.set(.5, 2, .5);
+        sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,3,0]);
+
+        sphere.setLinearVelocity(new THREE.Vector3(5,0,0));
+
+        continuare da qui e fare movimenti con i tasti
+        
+
+        
+    }
+
     /* ************************* ANIMATIONS ******************************/
 
     utils.animateTeleport(scene);
@@ -118,7 +140,6 @@ function main() {
     // using names
     anim_box_repeat = utils.animateBackAndForwardName("box_5", scene, 'y', 100, 20, 5000);
     anim_box_repeat.start();
-
     anim_box_single = utils.animatePlatformByName("box_1", scene, 'z', 100, 5000);
     anim_box_single.start();
 

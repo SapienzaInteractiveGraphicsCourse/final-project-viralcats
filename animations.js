@@ -1,5 +1,4 @@
 import TWEEN from './libs/tween.esm.js';
-import * as THREE from './libs/threejs/build/three.module.js';
 
 var isCharacterAnimationRun = false;
 var isCharacterAnimationJump = false;
