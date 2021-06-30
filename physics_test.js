@@ -28,6 +28,8 @@ var scene;
 
 var sphere;
 
+var keys;
+
 function main() {
     const canvas = document.querySelector('#c');
     var renderer = new THREE.WebGLRenderer({ canvas });
@@ -53,6 +55,28 @@ function main() {
     scene.setGravity(new THREE.Vector3(0, - 9.8, 0)); // set gravity
     scene.addEventListener('update', function () {
         scene.simulate(); // simulate on every scene update
+    });
+
+    keys = {
+        a: false,
+        s: false,
+        d: false,
+        w: false,
+        space:false
+    };
+
+    document.body.addEventListener('keydown', function(e) {
+        var key = e.code.replace('Key', '').toLowerCase();
+        if(keys[key] !== undefined)
+            keys[key] = true;
+    });
+
+
+    document.body.addEventListener('keyup', function(e) {
+        var key = e.code.replace('Key', '').toLowerCase();
+        if (keys[key] !== undefined )
+            keys[key] = false;
+        sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
     });
 
     /* ************************* PLANES ***********************************/
@@ -125,9 +149,9 @@ function main() {
         // right_arm.scale.set(.5, 2, .5);
         sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,3,0]);
 
-        sphere.setLinearVelocity(new THREE.Vector3(5,0,0));
+        
 
-        continuare da qui e fare movimenti con i tasti
+        
         
 
         
@@ -185,6 +209,33 @@ function main() {
 
         TWEEN.update();
         scene.simulate();
+
+        var VELOCITY = 2;
+        var x = 0;
+        var y = 0;
+        var z = 0;
+        // console.log(sphere.getLinearVelocity());
+        if ( keys.w ){
+            z = sphere.getLinearVelocity().z-VELOCITY;
+        }
+        if ( keys.s ){
+            z = sphere.getLinearVelocity().z+VELOCITY;
+        }
+    
+        if ( keys.a ){
+            x = sphere.getLinearVelocity().x-VELOCITY;
+        }
+        if ( keys.d ){
+            x = sphere.getLinearVelocity().x+VELOCITY;
+        }
+
+        if(keys.w | keys.s | keys.a | keys.d){
+            sphere.setLinearVelocity(new THREE.Vector3(x,y,z));
+        }
+
+        METTERE CAMERA CHE SEGUE LA PALLA
+        FARE CHE FUNZIONANO I PULTANTI CONTEMPORANEAMENTE
+
         renderer.render(scene, camera);
         requestAnimationFrame(render);
     }
