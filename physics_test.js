@@ -154,7 +154,7 @@ function main() {
         // right_arm.scale.set(.5, 2, .5);
 
         sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,3,0], true);
-
+        // sphere = utils.create_Box("Terracotta", [0,3,0], 1, scene);
 
         controls = new OrbitControls(camera, canvas);
         controls.update();
@@ -232,7 +232,7 @@ function main() {
      /* ************************* RESETS ******************************/
 
     //  utils.resetAll(scene,5000); // problem: try to change the time of activation of this functions, is it's less than 5s all ok, otherwise the cubes become static without sense
-
+    var camera_pivot;
     function render() {
 
         
@@ -256,21 +256,36 @@ function main() {
         var x = 0;
         var y = 0;
         var z = 0;
+        var t = utils.degrees_to_radians(0);
+  
+
         // console.log(sphere.getLinearVelocity());
+        console.log(utils.radians_to_degrees(sphere.rotation.y))
+
         if ( keys.w ){
             z = sphere.getLinearVelocity().z-VELOCITY;
         }
         if ( keys.s ){
             z = sphere.getLinearVelocity().z+VELOCITY;
         }
-    
         if ( keys.a ){
             // x = sphere.getLinearVelocity().x-VELOCITY;
-            sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,VELOCITY,sphere.getAngularVelocity().z));
+// camera_pivot = new THREE.Object3D()
+// var Y_AXIS = new THREE.Vector3( 0, 1, 0 );
+
+// scene.add( camera_pivot );
+// camera_pivot.add( camera );
+// // camera.position.set( 500, 0, 0 );
+// camera.lookAt( camera_pivot.position );
+// camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
+
+            sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
+            t = (sphere.rotation.y);
         }
         if ( keys.d ){
             // x = sphere.getLinearVelocity().x+VELOCITY;
             sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,-VELOCITY,sphere.getAngularVelocity().z));
+            t =  (sphere.rotation.y);
         }
         if ( keys.space ){
             y = sphere.getLinearVelocity().y+JUMP_VELOCITY;
@@ -306,21 +321,42 @@ function main() {
 
 
         if(keys.w | keys.s | keys.space){
+
+            // sphere.__dirtyPosition = true;
+            // sphere.__dirtyRotation = true;
+            
+          
+
             // sphere.__dirtyPosition = true;
             // sphere.__dirtyRotation = true;
             // sphere.setLinearVelocity(new THREE.Vector3(x,y,z));
-            sphere.setLinearVelocity(new THREE.Vector3(sphere.getLinearVelocity().x, sphere.getLinearVelocity().y , z));
-            // sphere.translateZ(0.5)
+            // console.log(quaternion);
+
+
+//             camera_pivot = new THREE.Object3D()
+// var Y_AXIS = new THREE.Vector3( 0, 1, 0 );
+
+// scene.add( camera_pivot );
+// camera_pivot.add(sphere);
+// camera_pivot.add( camera );
+// // camera.position.set( 500, 0, 0 );
+// camera.lookAt( camera_pivot.position );
+// camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
+            sphere.setLinearVelocity(new THREE.Vector3(0, 0 , z));
+            //   sphere.translateZ(z);
             // sphere.position.y = (sphere.position.y + y);
             // sphere.position.x = (sphere.position.x + x);
 
 
         }
 
+        // console.log(utils.radians_to_degrees(sphere.rotation.y));
+
         camera.position.z = sphere.position.z + camera_z_pos;
         camera.position.y = sphere.position.y + camera_y_pos;
         camera.position.x = sphere.position.x;
 
+        
         // METTERE CAMERA CHE SEGUE LA PALLA
         // FARE CHE FUNZIONANO I PULTANTI CONTEMPORANEAMENTE
 

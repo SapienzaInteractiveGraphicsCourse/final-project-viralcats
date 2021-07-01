@@ -68,6 +68,11 @@ export function degrees_to_radians(degrees) {
     return degrees * (pi / 180);
 }
 
+export function radians_to_degrees(radians){
+    var pi = Math.PI;
+    return radians*180/pi;
+}
+
 
 function getTime() {
     last_time = Date.now();
