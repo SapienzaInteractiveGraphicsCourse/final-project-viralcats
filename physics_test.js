@@ -30,11 +30,15 @@ var sphere;
 
 var keys;
 
+var camera_x_pos = 0;
+var camera_y_pos = 68;
+var camera_z_pos = 180;
+
 function main() {
     const canvas = document.querySelector('#c');
     var renderer = new THREE.WebGLRenderer({ canvas });
 
-    const fov = 45;
+    const fov = 20;
     const aspect = 2;  // the canvas default
     const near = 0.1;
     const far = 10000;
@@ -42,13 +46,11 @@ function main() {
     scene = new Physijs.Scene(); // create Physijs scene
 
     var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 10, 100);
-    camera.lookAt(scene.position);
+    //camera.position.set(0, 10, 100);
 
-    controls = new OrbitControls(camera, canvas);
-    controls.update();
+    
 
-    scene.add(camera);
+
 
     scene.background = new THREE.Color('black');
 
@@ -149,6 +151,14 @@ function main() {
         // right_arm.scale.set(.5, 2, .5);
         sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,3,0]);
 
+        controls = new OrbitControls(camera, canvas);
+        controls.update();
+
+        camera.position.z = sphere.position.z + camera_z_pos;
+        camera.position.y = sphere.position.y + camera_y_pos;
+        camera.position.x = sphere.position.x;
+        camera.lookAt(sphere.position);
+        scene.add(camera);
         
 
         
@@ -201,16 +211,19 @@ function main() {
 
     function render() {
 
+        
         if (utils.resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
         }
 
-        TWEEN.update();
-        scene.simulate();
+
 
         var VELOCITY = 2;
+        var MAX_VELOCITY = 50;
+        var JUMP_VELOCITY = 10;
+        var MAX_JUMP_VELOCITY = 50;
         var x = 0;
         var y = 0;
         var z = 0;
@@ -228,14 +241,48 @@ function main() {
         if ( keys.d ){
             x = sphere.getLinearVelocity().x+VELOCITY;
         }
+        if ( keys.space ){
+            y = sphere.getLinearVelocity().y+JUMP_VELOCITY;
+        }
 
-        if(keys.w | keys.s | keys.a | keys.d){
+        if(x > MAX_VELOCITY){
+            x = MAX_VELOCITY;
+        }        
+        if(y > MAX_VELOCITY){
+            y = MAX_VELOCITY;
+        }        
+        if(z > MAX_VELOCITY){
+            z = MAX_VELOCITY;
+        }
+
+        if(x < -MAX_VELOCITY){
+            x = -MAX_VELOCITY;
+        }        
+        if(y < -MAX_VELOCITY){
+            y = -MAX_VELOCITY;
+        }        
+        if(z < -MAX_VELOCITY){
+            z = -MAX_VELOCITY;
+        }
+
+        if(y > MAX_JUMP_VELOCITY){
+            y = MAX_JUMP_VELOCITY;
+        }
+
+        if(y < -MAX_JUMP_VELOCITY){
+            y = -MAX_JUMP_VELOCITY;
+        }  
+
+
+        if(keys.w | keys.s | keys.a | keys.d | keys.space){
             sphere.setLinearVelocity(new THREE.Vector3(x,y,z));
         }
 
-        METTERE CAMERA CHE SEGUE LA PALLA
-        FARE CHE FUNZIONANO I PULTANTI CONTEMPORANEAMENTE
-
+        // METTERE CAMERA CHE SEGUE LA PALLA
+        // FARE CHE FUNZIONANO I PULTANTI CONTEMPORANEAMENTE
+        TWEEN.update();
+        scene.simulate();
+        camera.lookAt( sphere.position );
         renderer.render(scene, camera);
         requestAnimationFrame(render);
     }
