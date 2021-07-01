@@ -34,6 +34,9 @@ var camera_x_pos = 0;
 var camera_y_pos = 68;
 var camera_z_pos = 180;
 
+var mouse_x;
+var mouse_pressing = false;
+
 function main() {
     const canvas = document.querySelector('#c');
     var renderer = new THREE.WebGLRenderer({ canvas });
@@ -78,7 +81,7 @@ function main() {
         var key = e.code.replace('Key', '').toLowerCase();
         if (keys[key] !== undefined )
             keys[key] = false;
-        sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
+        // sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
     });
 
     /* ************************* PLANES ***********************************/
@@ -150,6 +153,7 @@ function main() {
         // var right_arm = utils.create_Box("Namecc", [2+1.15, 10-3+.7, 5], 0, scene, [0,0,-90]);
         // right_arm.scale.set(.5, 2, .5);
         sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,3,0]);
+        
 
         controls = new OrbitControls(camera, canvas);
         controls.update();
@@ -159,9 +163,28 @@ function main() {
         camera.position.x = sphere.position.x;
         camera.lookAt(sphere.position);
         scene.add(camera);
-        
+        // sphere.add(camera);
 
+        canvas.onmousedown = function(e){
+            mouse_x = e.pageX;
+            mouse_pressing = true;
+        }
         
+        canvas.addEventListener('mousemove', e => {
+            // sphere.__dirtyPosition = true;
+            // sphere.__dirtyRotation = true;
+            if(mouse_pressing){
+                if(e.pageX > mouse_x){
+                    console.log("Moved Right");
+                    //sphere.rotation.y = (sphere.rotation.y + 0.05);
+                }else{
+                    console.log("Moved Left")
+                    //sphere.rotation.y = (sphere.rotation.y - 0.05);
+                }
+                mouse_x = e.pageX;
+            }
+        });
+
         
 
         
@@ -220,6 +243,11 @@ function main() {
 
 
 
+        TWEEN.update();
+        scene.simulate();
+        // controls.enabled = false;
+        
+
         var VELOCITY = 2;
         var MAX_VELOCITY = 50;
         var JUMP_VELOCITY = 10;
@@ -236,10 +264,12 @@ function main() {
         }
     
         if ( keys.a ){
-            x = sphere.getLinearVelocity().x-VELOCITY;
+            // x = sphere.getLinearVelocity().x-VELOCITY;
+            sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,VELOCITY,sphere.getAngularVelocity().z));
         }
         if ( keys.d ){
-            x = sphere.getLinearVelocity().x+VELOCITY;
+            // x = sphere.getLinearVelocity().x+VELOCITY;
+            sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,-VELOCITY,sphere.getAngularVelocity().z));
         }
         if ( keys.space ){
             y = sphere.getLinearVelocity().y+JUMP_VELOCITY;
@@ -274,14 +304,25 @@ function main() {
         }  
 
 
-        if(keys.w | keys.s | keys.a | keys.d | keys.space){
-            sphere.setLinearVelocity(new THREE.Vector3(x,y,z));
+        if(keys.w | keys.s | keys.space){
+            // sphere.__dirtyPosition = true;
+            // sphere.__dirtyRotation = true;
+            // sphere.setLinearVelocity(new THREE.Vector3(x,y,z));
+            sphere.setLinearVelocity(new THREE.Vector3(sphere.getLinearVelocity().x, sphere.getLinearVelocity().y , z));
+            // sphere.translateZ(0.5)
+            // sphere.position.y = (sphere.position.y + y);
+            // sphere.position.x = (sphere.position.x + x);
+
+
         }
+
+        camera.position.z = sphere.position.z + camera_z_pos;
+        camera.position.y = sphere.position.y + camera_y_pos;
+        camera.position.x = sphere.position.x;
 
         // METTERE CAMERA CHE SEGUE LA PALLA
         // FARE CHE FUNZIONANO I PULTANTI CONTEMPORANEAMENTE
-        TWEEN.update();
-        scene.simulate();
+        controls.update();
         camera.lookAt( sphere.position );
         renderer.render(scene, camera);
         requestAnimationFrame(render);
