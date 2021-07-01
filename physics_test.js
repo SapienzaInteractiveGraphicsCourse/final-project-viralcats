@@ -78,7 +78,7 @@ function main() {
         var key = e.code.replace('Key', '').toLowerCase();
         if (keys[key] !== undefined )
             keys[key] = false;
-        sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
+        // sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
     });
 
     /* ************************* PLANES ***********************************/
@@ -149,7 +149,7 @@ function main() {
         // left_arm.scale.set(.5, 2, .5);
         // var right_arm = utils.create_Box("Namecc", [2+1.15, 10-3+.7, 5], 0, scene, [0,0,-90]);
         // right_arm.scale.set(.5, 2, .5);
-        sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,3,0]);
+        sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,3,0], true);
 
         controls = new OrbitControls(camera, canvas);
         controls.update();
@@ -280,6 +280,7 @@ function main() {
 
         // METTERE CAMERA CHE SEGUE LA PALLA
         // FARE CHE FUNZIONANO I PULTANTI CONTEMPORANEAMENTE
+        console.log(sphere.getLinearVelocity())
         TWEEN.update();
         scene.simulate();
         camera.lookAt( sphere.position );

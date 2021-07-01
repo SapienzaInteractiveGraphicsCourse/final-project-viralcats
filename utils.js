@@ -3,6 +3,7 @@
 // import { ObjectLoader } from "./libs/threejs/build/three.module";
 import TWEEN from './libs/tween.esm.js';
 // import * as THREE from './libs/threejs/build/three.module.js';
+
 // progressives objects
 var prog_cubes = 0;
 var prog_planes = 0;
@@ -21,6 +22,10 @@ var objects_group = [];
 const static_vector = new THREE.Vector3(0, 0, 0);
 const dynamic_vector = new THREE.Vector3(1, 1, 1);
 const distance_bound = 1000;
+
+//physics constants
+const friction_box = 1.0; // high friction
+const restitution_box = 0.0; // low restitution (bouncing factor)
 
 
 // dictionary that shows wich textures must be used, in order: top texture, side texture, bottom texture
@@ -116,9 +121,15 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
 
     var mat_box = new THREE.MeshFaceMaterial(materials);
 
+    var mat_box_phy = Physijs.createMaterial(
+        mat_box,
+        friction_box,  // friction
+        restitution_box // restitution / bounciness
+    );
+
     var plane_box = new Physijs.BoxMesh(
         new THREE.CubeGeometry(dim, 0, dim),
-        mat_box,
+        mat_box_phy,
         // new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true,opacity: 0.3}), // wireframe: true, 
         0);  // if make static here cannot be chaged during the time
 
@@ -131,16 +142,27 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
     // plane_box.rotation.set(, degrees_to_radians(rot[1]) , degrees_to_radians(rot[2]));
 
     plane_box.setCcdMotionThreshold(1);
-    plane_box.name = "plane_box" + String(prog_planes);
+    if (is_bound){
+        plane_box.name = "bound_" + String(prog_planes);
+    }
+    else{
+        plane_box.name = "plane_box" + String(prog_planes);
+    }
     prog_planes++;
     if (is_bound) {
         plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-            scene.remove(other_object)
+            if (other_object.name != "mainSphere"){
+                // pos = other_object.initial_pos;
+                // console.log(pos);
+                // other_object.__dirtyPosition = true;
+                // other_object.__dirtyRotation = true;
+                // other_object.position.x = pos[0];
+            // }
+            // else{
+                scene.remove(other_object)
+                console.log("the object: " + String(other_object.name) + " has been removed, map limit exceeded.\nHitten the bound: " + String(plane_box.name));
+            }
             scene.simulate()
-            console.log("the object: " + String(other_object.name) + " has been removed, map limit exceeded.\nHitten the bound: " + String(plane_box.name));
-            // console.log("Che botta!");
-            // box.setAngularVelocity(new THREE.Vector3(20, 0, 0));
-            // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
         });
         bounds_group.push(plane_box);
     }
@@ -164,12 +186,16 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null)
 
     // console.log(is_dynamic);
 
-
+    var mat_box_phy = Physijs.createMaterial(
+        mat_box,
+        friction_box,  // friction
+        restitution_box // restitution / bounciness
+    );
 
     if (is_dynamic) {
         box = new Physijs.BoxMesh(
             geometry_cube,
-            mat_box,
+            mat_box_phy,
             1
         );
 
@@ -188,7 +214,7 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null)
     else {  //static and cannot be changed
         box = new Physijs.BoxMesh(
             geometry_cube,
-            mat_box,
+            mat_box_phy,
             0
         );
 
@@ -229,7 +255,7 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null)
     return box;
 }
 
-export function create_Sphere(dim, color, type, scene, pos = null) {
+export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     var path = "./textures/blocks/" + String(type) + ".png";
 
     var tex = new THREE.TextureLoader().load(path);
@@ -244,25 +270,39 @@ export function create_Sphere(dim, color, type, scene, pos = null) {
         // opacity: 0.8
     });
 
+    var sphereMat_phy = Physijs.createMaterial(
+        sphereMat,
+        friction_box,  // friction
+        restitution_box // restitution / bounciness
+    );
+
     const sphereRadius = dim;
     const sphereWidthDivisions = 32;
     const sphereHeightDivisions = 32;
     var sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
     // var sphereMat = new THREE.MeshBasicMaterial({ color: color })
-    var sphere = new Physijs.SphereMesh(sphereGeo, sphereMat,1000);
+    var sphere = new Physijs.SphereMesh(sphereGeo, sphereMat_phy,1000);
     if(pos){
         sphere.position.set(pos[0], pos[1], pos[2]);
+        sphere.initial_pos = pos
     }else{
         sphere.position.set(-sphereRadius - 1 - 25, sphereRadius + 20, 0);
     }
-    sphere.name = "sphere_" + String(prog_spheres);
+    if(is_main) sphere.name = "mainSphere";
+    else  sphere.name = "sphere_" + String(prog_spheres);
     prog_spheres++;
     sphere.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-        // console.log("Colpita la sfera");
-        // remove object after being hit
-        // if (scene.getObjectByName('plane')){
-        //     scene.remove(plane);
-        // }
+        if(is_main){
+            if(other_object.name.includes("bound_")){
+                console.log("Urca la palla ha colpito il bound")
+                sphere.__dirtyPosition = true;
+                sphere.__dirtyRotation = true;
+                sphere.position.set(pos[0],pos[1],pos[2])
+                // sphere.__dirtyPosition = false;
+                // sphere.__dirtyRotation = false;
+            }
+        }
+
     });
     objects_group.push(sphere);
     scene.add(sphere);
@@ -329,6 +369,11 @@ export function create_teleport(pos, scene) {
     scene.add(teleport);
     return teleport
 }
+
+
+// export function create_pg(pos,scene,){
+//     head = 
+// }
 
 export function create_pointLIght(pos, color, scene) {
     const light = new THREE.PointLight(color, 1, 0);
