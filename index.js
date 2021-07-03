@@ -91,6 +91,9 @@ var camera_z_pos = 180;
 function init(){
 
 
+
+
+
     renderer = new THREE.WebGLRenderer({canvas});
     renderer.setClearColor( 0x00FFFF ); 
     renderer.shadowMap.enabled = true;
@@ -121,6 +124,7 @@ function init(){
     
     initScene();
     initZombie();
+
 
     render();
     return;

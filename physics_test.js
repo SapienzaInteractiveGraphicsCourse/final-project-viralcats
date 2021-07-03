@@ -37,8 +37,34 @@ var camera_z_pos = 180;
 var mouse_x;
 var mouse_pressing = false;
 
+const canvas = document.querySelector('#c');
+
+//AGGIUNGERE SUONI
+
+function initializate_page(){
+    canvas.setAttribute("hidden", true);
+    document.querySelector('#life_counter').setAttribute("hidden",true);
+        
+    document.getElementById("body_").removeAttribute("d-flex");
+    document.getElementById("body_").removeAttribute("h-100");
+    document.getElementById("body_").removeAttribute("text-center");
+    document.getElementById("body_").removeAttribute("text-white");
+    document.getElementById("body_").removeAttribute("bg-dark");
+
+    document.getElementById("game_start").onclick = function(event) {
+        canvas.setAttribute("hidden", true);
+        // document.getElementById('intro_page').classList.add("invisible");
+        document.getElementById('intro_page').remove();
+        document.getElementById('life_counter').removeAttribute("hidden");
+        canvas.removeAttribute("hidden");
+        main();
+    };
+    
+}
+
+
 function main() {
-    const canvas = document.querySelector('#c');
+    
     var renderer = new THREE.WebGLRenderer({ canvas });
 
     const fov = 20;
@@ -53,6 +79,8 @@ function main() {
 
     
 
+
+    
 
 
     scene.background = new THREE.Color('black');
@@ -347,7 +375,6 @@ function main() {
             // sphere.position.y = (sphere.position.y + y);
             // sphere.position.x = (sphere.position.x + x);
 
-
         }
 
         // console.log(utils.radians_to_degrees(sphere.rotation.y));
@@ -369,8 +396,10 @@ function main() {
         renderer.render(scene, camera);
         requestAnimationFrame(render);
     }
+
+
     render();
 }
 
 
-main();
+initializate_page();
