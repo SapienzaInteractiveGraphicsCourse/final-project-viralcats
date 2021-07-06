@@ -5,7 +5,10 @@ Physijs.scripts.ammo = '/libs/ammo.js';
 import * as utils from './utils.js';
 import { OrbitControls } from './libs/threejs/examples/jsm/controls/OrbitControls.js';
 import TWEEN from './libs/tween.esm.js';
+import * as THREE_AUDIO from './libs/threejs/build/three.module.js';
+import { GLTFLoader } from './libs/threejs/examples/jsm/loaders/GLTFLoader.js';
 
+//import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js";
 
 // defintion of the object for the level
 
@@ -39,7 +42,86 @@ var mouse_pressing = false;
 
 const canvas = document.querySelector('#c');
 
+// Loading assets
+var areModelsLoaded = false;
+var areSoundsLoaded = false;
 //AGGIUNGERE SUONI
+
+const sounds = {
+	background  :  { url: './asserts/sounds/background.wav' },
+	ambient     :  { url: './asserts/sounds/ambient.flac' },
+	adventure   :  { url: './asserts/sounds/adventure.wav' }
+}
+
+loadModel();
+loadSounds();
+function loadSounds() {
+
+	const soundsLoaderManager = new THREE_AUDIO.LoadingManager();
+	soundsLoaderManager.onLoad = () => {
+
+		areSoundsLoaded = true;
+
+		// hide the loading bar
+		document.querySelector('#sounds_loading').hidden = true;
+
+		if(areModelsLoaded & areSoundsLoaded) {
+			init();
+		}
+	};
+
+	const modelsProgressBar = document.querySelector('#sounds_progressbar');
+	soundsLoaderManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+		console.log("Loading sounds... ", itemsLoaded / itemsTotal * 100, '%');
+		modelsProgressBar.style.width = `${itemsLoaded / itemsTotal * 100 | 0}%`;
+	};
+	{
+		const audioLoader = new THREE_AUDIO.AudioLoader(soundsLoaderManager);
+		for (const sound of Object.values(sounds)) {
+			audioLoader.load( sound.url, function( buffer ) {
+				
+				sound.sound = buffer;
+
+				console.log("Loaded ", buffer);
+			});
+		}
+	} 
+}
+
+/*******            START TEST          ******************/
+
+var zombie = {
+    joints:{
+      arms:{
+        left:{},
+        right:{}
+      },
+      legs:{
+        left:{},
+        right:{},
+        l_ankle:{},
+        r_ankle:{}
+      }
+    },
+    head:{},
+    chest:{},
+    body:{},
+    mesh: new THREE.Object3D(),
+    gltf:new THREE.Object3D(),
+    //FEATURES
+    isJump: false,
+    jumpTime: 100,
+    jumpHeight: 10,
+    position:{
+      x:0,
+      y:0,
+      z:0
+    }
+  };
+
+
+
+/*******            END TEST            *****************/
 
 function initializate_page(){
     canvas.setAttribute("hidden", true);
@@ -61,8 +143,30 @@ function initializate_page(){
     };
     
 }
+function loadModel(){
+    const gltfLoader = new GLTFLoader();
+    // const gltfLoader = new THREE_AUDIO.ObjectLoader();
+    gltfLoader.load('./scene.gltf', (gltf) => {
+    
+    gltf.scene.traverse( function ( child ) {
+
+      if ( child.isMesh ) {
+        if( child.castShadow !== undefined ) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      }
+
+      } );
 
 
+      zombie.gltf = gltf.scene.getObjectByName('RootNode');
+      //init();
+    },0,() => {
+      console.log("ERRORE DURANTE IL CARICAMENTO DEL MODELLO!!!!");
+    });
+}
+var root;
 function main() {
     
     var renderer = new THREE.WebGLRenderer({ canvas });
@@ -77,7 +181,6 @@ function main() {
     var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     //camera.position.set(0, 10, 100);
 
-    
 
 
     
@@ -186,12 +289,50 @@ function main() {
 
         controls = new OrbitControls(camera, canvas);
         controls.update();
-
+/*
         camera.position.z = sphere.position.z + camera_z_pos;
         camera.position.y = sphere.position.y + camera_y_pos;
         camera.position.x = sphere.position.x;
         camera.lookAt(sphere.position);
+
         scene.add(camera);
+*/
+
+
+/***************************************************************************************************************************** */
+camera.position.z = zombie.mesh.position.z + camera_z_pos;
+camera.position.y = zombie.mesh.position.y + camera_y_pos;
+camera.position.x = zombie.mesh.position.x;
+
+
+camera.lookAt(zombie.mesh.position);
+
+// camera.position.set(0, 10, 100);
+// camera.lookAt(scene.position);
+
+
+scene.add(camera);
+
+console.log(zombie.gltf.type.toString());
+
+zombie.mesh.position.set(0, 0, 0);
+root = new THREE.Object3D(zombie.gltf);
+root.scale.set(.08, .08, .08);
+
+
+
+zombie.mesh.add(camera);
+
+zombie.mesh.add((root));
+
+scene.add(zombie.mesh);
+
+
+
+
+
+/***************************************************************************************************************************** */
+
         // sphere.add(camera);
 
         canvas.onmousedown = function(e){
@@ -272,6 +413,7 @@ function main() {
 
 
 
+        
         TWEEN.update();
         scene.simulate();
         // controls.enabled = false;
@@ -379,9 +521,9 @@ function main() {
 
         // console.log(utils.radians_to_degrees(sphere.rotation.y));
 
-        camera.position.z = sphere.position.z + camera_z_pos;
-        camera.position.y = sphere.position.y + camera_y_pos;
-        camera.position.x = sphere.position.x;
+        // camera.position.z = sphere.position.z + camera_z_pos;
+        // camera.position.y = sphere.position.y + camera_y_pos;
+        // camera.position.x = sphere.position.x;
 
         
         // METTERE CAMERA CHE SEGUE LA PALLA
@@ -392,7 +534,11 @@ function main() {
         // TWEEN.update();
         // scene.simulate();
 
-        camera.lookAt( sphere.position );
+        camera.lookAt( zombie.mesh.position );
+        renderer.render(scene, camera);
+        // effect.render(scene, camera);
+
+        // camera.lookAt( sphere.position );
         renderer.render(scene, camera);
         requestAnimationFrame(render);
     }

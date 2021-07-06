@@ -4,7 +4,7 @@
 
 
 // import * as THREE from './libs/threejs/build/three.module.js';
-
+import * as THREE from './libs/three.min.js';
 import { GLTFLoader } from './libs/threejs/examples/jsm/loaders/GLTFLoader.js';
 import { OutlineEffect } from './libs/threejs/examples/jsm/effects/OutlineEffect.js';
 import * as Animation from './animations.js'
@@ -61,7 +61,7 @@ var zombie = {
   head:{},
   chest:{},
   body:{},
-  mesh: new THREE.Object3D(),
+  mesh: {},
   gltf:{},
   //FEATURES
   isJump: false,
