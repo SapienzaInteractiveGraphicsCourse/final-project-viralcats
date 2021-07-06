@@ -53,8 +53,7 @@ const sounds = {
 	adventure   :  { url: './asserts/sounds/adventure.wav' }
 }
 
-loadModel();
-loadSounds();
+
 function loadSounds() {
 
 	const soundsLoaderManager = new THREE_AUDIO.LoadingManager();
@@ -89,6 +88,8 @@ function loadSounds() {
 }
 
 /*******            START TEST          ******************/
+
+var root = new THREE.Object3D();
 
 var zombie = {
     joints:{
@@ -158,15 +159,76 @@ function loadModel(){
       }
 
       } );
+vedere questo perche senza THREE.Object3D non funziona ma con THREE.Object3D non me lo fa vedere  
+      root = new THREE.Object3D(gltf.scene.getObjectByName('RootNode'));
+      root.name = 'RootNode';
+
+      // Add gltf model to scene
+      //scene.add(root);
 
 
-      zombie.gltf = gltf.scene.getObjectByName('RootNode');
+      zombie.gltf = root;//gltf.scene.getObjectByName('RootNode');
       //init();
     },0,() => {
       console.log("ERRORE DURANTE IL CARICAMENTO DEL MODELLO!!!!");
     });
 }
-var root;
+
+
+function initZombieMovebleParts(){
+
+    //Bone037_036 caviglia sinistra
+    //Bone036_030 caviglia destra
+    //Bone002_02  busto dalla vita in su
+    //Bone029_024 gamba destra
+    //Bone030_027 gamba sinistra
+    //Bone001_03 busto dalle tette in su
+    //Bone003_04 busto un po piu in su di quello prima
+    //Bone005_05 braccio sinistro
+    //Bone028_014 braccio destro
+    //Bone004_023 testa
+    //Bone032_06 spalla sinistra
+    //Bone031_015 spalla destra
+    //Bone010_09 gomito sinistro
+    //Bone013_018 gomito destro
+    //Bone015_025 gamba destra
+    //Bone006_028 gamba sinistra
+    //Bone016_026 ginocchio destro
+    //Bone007_029 ginocchio sinistro
+
+    zombie.mesh.traverse( part => {
+      if (part.isBone && part.name === 'Bone032_06') { 
+        zombie.joints.arms.left = part;
+      }
+      if (part.isBone && part.name === 'Bone031_015') { 
+        zombie.joints.arms.right = part;
+      }
+      if (part.isBone && part.name === 'Bone030_027') { 
+        zombie.joints.legs.left = part;
+      }
+      if (part.isBone && part.name === 'Bone029_024') { 
+        zombie.joints.legs.right = part;
+      }
+      if (part.isBone && part.name === 'Bone004_023') { 
+        zombie.head = part;
+      }
+      if (part.isBone && part.name === 'Bone002_02') { 
+        zombie.chest = part;
+      }
+      if (part.isBone && part.name === 'Bone033_00') { 
+        zombie.body = part;
+      }
+      if (part.isBone && part.name === 'Bone037_036') { 
+        zombie.joints.legs.l_ankle = part;
+      }
+      if (part.isBone && part.name === 'Bone036_030') { 
+        zombie.joints.legs.r_ankle = part;
+      }
+    });
+}
+
+loadModel();
+loadSounds();
 function main() {
     
     var renderer = new THREE.WebGLRenderer({ canvas });
@@ -304,7 +366,7 @@ camera.position.z = zombie.mesh.position.z + camera_z_pos;
 camera.position.y = zombie.mesh.position.y + camera_y_pos;
 camera.position.x = zombie.mesh.position.x;
 
-
+zombie.mesh.add(camera);
 camera.lookAt(zombie.mesh.position);
 
 // camera.position.set(0, 10, 100);
@@ -316,19 +378,21 @@ scene.add(camera);
 console.log(zombie.gltf.type.toString());
 
 zombie.mesh.position.set(0, 0, 0);
-root = new THREE.Object3D(zombie.gltf);
+
+
+root = zombie.gltf;
 root.scale.set(.08, .08, .08);
 
 
 
 zombie.mesh.add(camera);
 
-zombie.mesh.add((root));
+zombie.mesh.add(root);
 
 scene.add(zombie.mesh);
 
 
-
+initZombieMovebleParts();
 
 
 /***************************************************************************************************************************** */

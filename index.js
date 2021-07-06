@@ -2,18 +2,12 @@
 // from https://threejsfundamentals.org/threejs/threejs-load-gltf.html
 
 
-
-// import * as THREE from './libs/threejs/build/three.module.js';
-import * as THREE from './libs/three.min.js';
+import TWEEN from './libs/tween.esm.js';
+import * as THREE from './libs/threejs/build/three.module.js';
+import { OrbitControls } from './libs/threejs/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from './libs/threejs/examples/jsm/loaders/GLTFLoader.js';
 import { OutlineEffect } from './libs/threejs/examples/jsm/effects/OutlineEffect.js';
 import * as Animation from './animations.js'
-
-Physijs.scripts.worker = '/libs/physijs_worker.js';
-Physijs.scripts.ammo = '/libs/ammo.js';
-import * as utils from './utils.js';
-import { OrbitControls } from './libs/threejs/examples/jsm/controls/OrbitControls.js';
-import TWEEN from './libs/tween.esm.js';
 
 var hemisphere_light;
 var directional_light;
@@ -45,6 +39,12 @@ var mouse_pressing = false;
 
 var terrain;
 
+const canvas = document.querySelector('#c');
+
+
+
+
+
 var zombie = {
   joints:{
     arms:{
@@ -61,7 +61,7 @@ var zombie = {
   head:{},
   chest:{},
   body:{},
-  mesh: {},
+  mesh: new THREE.Object3D(),
   gltf:{},
   //FEATURES
   isJump: false,
@@ -75,14 +75,12 @@ var zombie = {
 };
 
 var collisionBox;
-// const boxGeometry = new THREE.BoxGeometry( 1, 1, 1 );
-// const boxCollisionMaterial = new THREE.MeshStandardMaterial( {color: 0xffffff, transparent: true, opacity: .7});
-
+const boxGeometry = new THREE.BoxGeometry( 1, 1, 1 );
+const boxCollisionMaterial = new THREE.MeshStandardMaterial( {color: 0xffffff, transparent: true, opacity: .7});
 
 
 window.onload = loadModel;
 
-const canvas = document.querySelector('#c');
 
 var camera_x_pos = 0;
 var camera_y_pos = 68;
@@ -90,18 +88,10 @@ var camera_z_pos = 180;
 
 function init(){
 
-
-
-
-
-    renderer = new THREE.WebGLRenderer({canvas});
-    renderer.setClearColor( 0x00FFFF ); 
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.setPixelRatio(devicePixelRatio);
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    renderer.gammaFactor = 2.2;
-    renderer.outputEncoding = THREE.sRGBEncoding;
+    const fov = 80;
+    const aspect = 1;
+    const near = 1;
+    const far = 10000;
 
     
     canvas.getBoundingClientRect();
@@ -119,19 +109,24 @@ function init(){
     centerCanvasOnY = canvas_rect.y + (canvas.height/2) + 2;
 
 
+    camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    camera.position.z = zombie.mesh.position.z + camera_z_pos;
+    camera.position.y = zombie.mesh.position.y + camera_y_pos;
+    camera.position.x = zombie.mesh.position.x;
 
+    zombie.mesh.add(camera);
+    camera.lookAt(zombie.mesh.position);
 
-    
+    renderer = new THREE.WebGLRenderer({canvas});
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(devicePixelRatio);
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.gammaFactor = 2.2;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
     initScene();
     initZombie();
-
-
-    render();
-    return;
-    //initZombie();
-
-
-
 
     window.addEventListener('resize', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -188,7 +183,7 @@ function init(){
     }); 
     
 
-    // initZombiePosition();
+    initZombiePosition();
     render();
 }
 
@@ -201,54 +196,24 @@ function initZombiePosition(){
 
 function initScene(){
 
-    const fov = 80;
-    const aspect = 1;
-    const near = 1;
-    const far = 10000;
-
-    // scene = new THREE.Scene();
-    scene = new Physijs.Scene(); // create Physijs scene
-    //scene.background = new THREE.Color('cyan');
-
-    camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.z = zombie.mesh.position.z + camera_z_pos;
-    camera.position.y = zombie.mesh.position.y + camera_y_pos;
-    camera.position.x = zombie.mesh.position.x;
-
-    zombie.mesh.add(camera);
-    camera.lookAt(zombie.mesh.position);
-
-    // camera.position.set(0, 10, 100);
-    // camera.lookAt(scene.position);
 
     controls = new OrbitControls(camera, canvas);
-    controls.update();
 
-    scene.add(camera);
+    controls.maxPolarAngle = Math.PI;
 
-    //gravità
-
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color('cyan');
 
     // TERRAIN
-    // let geometry = new THREE.CubeGeometry( 1, 1, 1 );
-    // let material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
-    // terrain = new Physijs.BoxMesh( geometry, material ,0);
-    // terrain.scale.set(100, 1, 350);
-    // terrain.position.y = -.5;
-    // terrain.receiveShadow = true;
-    // scene.add(terrain);
-
-    utils.create_Box_Plane([0, 0, 0], [0, 0, 0], 40, scene, false);
+    let geometry = new THREE.BoxGeometry( 1, 1, 1 );
+    let material = new THREE.MeshStandardMaterial( {color: 0x00ff00} );
+    terrain = new THREE.Mesh( geometry, material );
+    terrain.scale.set(100, 1, 350);
+    terrain.position.y = -.5;
+    terrain.receiveShadow = true;
+    scene.add(terrain);
 
 
-    
-    //zombie.mesh.add(camera);
-    //camera.lookAt(zombie.mesh.position);
-
-
-
-
-return;
 
     ambient_light = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambient_light);
@@ -292,29 +257,26 @@ return;
 function initZombie(){
 
     zombie.mesh.position.set(0, 0, 0);
-    var root = zombie.gltf;
+    var root = (zombie.gltf);
     root.scale.set(.08, .08, .08);
 
     console.log("******* ZOMBIE *******\n", dumpObject(root).join('\n'));
 
-    const boxGeometry = new THREE.BoxGeometry( 1, 1, 1 );
-    const boxCollisionMaterial = new THREE.MeshFaceMaterial( {color: 0xffffff, transparent: true, opacity: .7});
 
-    var out_cube =  new Physijs.BoxMesh( boxGeometry, boxCollisionMaterial ,0);
+    var out_cube =  new THREE.Mesh(boxGeometry, boxCollisionMaterial);
     out_cube.name = "collisionBox"
     out_cube.scale.set(20, 80, 20);
     out_cube.position.set(0, 40, -2);
-    out_cube.visible = true;
+    out_cube.visible = false;
     
     collisionBox = out_cube;
   
     zombie.mesh.add(root);
-    // zombie.mesh.add(collisionBox);
+    zombie.mesh.add(collisionBox);
 
     scene.add(zombie.mesh);
 
     initZombieMovebleParts();
-    
 
 }
 
@@ -386,7 +348,16 @@ function loadModel(){
       } );
 
 
-      zombie.gltf = gltf.scene.getObjectByName('RootNode');
+      // zombie.gltf = gltf.scene.getObjectByName('RootNode');
+
+      var root = (gltf.scene.getObjectByName('RootNode'));
+      root.name = 'RootNode';
+
+      // Add gltf model to scene
+      //scene.add(root);
+
+
+      zombie.gltf = root;//gltf.scene.getObjectByName('RootNode');
       init();
     },0,() => {
       console.log("ERRORE DURANTE IL CARICAMENTO DEL MODELLO!!!!");
@@ -399,10 +370,10 @@ function loadModel(){
 
 function render(){
 
-/*
+
+    requestAnimationFrame(render);
 
     TWEEN.update();
-    scene.simulate();
     controls.update();
        
     controls.enabled = false;
@@ -443,20 +414,6 @@ function render(){
     camera.lookAt( zombie.mesh.position );
     renderer.render(scene, camera);
     effect.render(scene, camera);
-    
-    requestAnimationFrame(render);
-    */
-
-    if (utils.resizeRendererToDisplaySize(renderer)) {
-      const canvas = renderer.domElement;
-      camera.aspect = canvas.clientWidth / canvas.clientHeight;
-      camera.updateProjectionMatrix();
-  }
-
-  TWEEN.update();
-  scene.simulate();
-  renderer.render(scene, camera);
-  requestAnimationFrame(render);
 }
 
 
