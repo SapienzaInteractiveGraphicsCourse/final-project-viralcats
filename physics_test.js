@@ -141,15 +141,111 @@ function main() {
 
     /* ************************* ZOMBIE ***********************************/
     {
-        // var head = utils.create_Box("Namecc", [0, 10, 5], 0, scene);
-        // head.scale.set(1, 1, 1);
-        // var body = utils.create_Box("Namecc", [0, 10-3-1.5, 5], 0, scene);
-        // body.scale.set(1.70, 2, 1);
-        // var left_arm = utils.create_Box("Namecc", [-2-1.15, 10-3+.7, 5], 0, scene, [0,0,90],[0,0,-30]);
-        // left_arm.scale.set(.5, 2, .5);
-        // var right_arm = utils.create_Box("Namecc", [2+1.15, 10-3+.7, 5], 0, scene, [0,0,-90]);
-        // right_arm.scale.set(.5, 2, .5);
-        sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,3,0], true);
+        //hierarchical model
+        //second version
+
+
+        //the root: head
+        var head = utils.create_Box("Namecc", [0, 14, 5], 1, scene, null,null,true);
+        head.scale.set(1, 1, 1);
+
+        var hb1_displacement = -6;
+        var hb2_displacement = -4.5;
+        
+        var hit_box_1 = utils.create_hitbox([1.0,5,0.9],[head.position.x, head.position.y-hb1_displacement, head.position.z], 0, scene,0.3,true);
+        var hit_box_2 = utils.create_hitbox([2,2,1], [head.position.x, head.position.y-hb2_displacement, head.position.z], 0, scene,0.3,true);
+
+        
+
+        var body = utils.create_Box("Namecc", [0, -4.5, 0], 0, scene);
+        body.scale.set(1.0, 2, 1.0);
+
+        var left_arm = utils.create_Box("Namecc", [2.25, 0, 0], 0, scene);
+        left_arm.scale.set(0.5, 1.0, 1.0);
+
+        var right_arm = utils.create_Box("Namecc", [-2.25, 0, 0], 0, scene);
+        right_arm.scale.set(0.5, 1.0, 1.0);
+
+        var left_leg = utils.create_Box("Namecc", [0.75,-3, 0], 0, scene);
+        left_leg.scale.set(0.5, 1.0, 1.0);
+
+        var right_leg = utils.create_Box("Namecc", [-0.75,-3, 0], 0, scene);
+        right_leg.scale.set(0.5, 1.0, 1.0);
+
+
+        head.add(body)
+        body.add(left_arm)
+        body.add(right_arm)
+        body.add(left_leg)
+        body.add(right_leg)
+
+        // test HM moving head
+
+        head.__dirtyPosition = true;
+        head.__dirtyRotation = true;
+        hit_box_1.__dirtyPosition = true;
+        hit_box_1.__dirtyRotation = true;
+        hit_box_2.__dirtyPosition = true;
+        hit_box_2.__dirtyRotation = true;
+
+        // body.__dirtyPosition = false;
+        // body.__dirtyRotation = false;
+        // left_arm.__dirtyPosition = false;
+        // left_arm.__dirtyRotation = false;
+        // right_arm.__dirtyPosition = false;
+        // right_arm.__dirtyRotation = false;
+        // left_leg.__dirtyPosition = false;
+        // left_leg.__dirtyRotation = false;
+        // right_leg.__dirtyPosition = false;
+        // right_leg.__dirtyRotation = false;
+        
+        head.position.set(0, -4.5, 10)
+
+        scene.simulate(); //update the new position for physijs
+
+        head.__dirtyPosition = false;
+        head.__dirtyRotation = false;
+        hit_box_1.__dirtyPosition = false;
+        hit_box_1.__dirtyRotation = false;
+        hit_box_2.__dirtyPosition = false;
+        hit_box_2.__dirtyRotation = false;
+
+        scene.simulate();
+        
+
+        /*
+        // first version 
+        //the root: head
+        var hitbox= utils.create_Box()
+
+        var head = utils.create_Box("Namecc", [0, 13, 5], 0, scene);
+        head.scale.set(1, 1, 1);
+
+        var body = utils.create_Box("Namecc", [0, -4.5, 0], 0, scene);
+        body.scale.set(1.0, 2, 1.0);
+
+        var left_arm = utils.create_Box("Namecc", [2.25, 0, 0], 0, scene);
+        left_arm.scale.set(0.5, 1.0, 1.0);
+
+        var right_arm = utils.create_Box("Namecc", [-2.25, 0, 0], 0, scene);
+        right_arm.scale.set(0.5, 1.0, 1.0);
+
+        var left_leg = utils.create_Box("Namecc", [0.75,-3, 0], 0, scene);
+        left_leg.scale.set(0.5, 1.0, 1.0);
+
+        var right_leg = utils.create_Box("Namecc", [-0.75,-3, 0], 0, scene);
+        right_leg.scale.set(0.5, 1.0, 1.0);
+
+        head.add(body)
+        body.add(left_arm)
+        body.add(right_arm)
+        body.add(left_leg)
+        body.add(right_leg)
+        */
+
+
+        /* ************************* MAiN SPHERE ***********************************/
+        sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,5,0], true);
 
         controls = new OrbitControls(camera, canvas);
         controls.update();
@@ -159,12 +255,7 @@ function main() {
         camera.position.x = sphere.position.x;
         camera.lookAt(sphere.position);
         scene.add(camera);
-        
-
-        
-        
-
-        
+    
     }
 
     /* ************************* ANIMATIONS ******************************/
@@ -203,9 +294,7 @@ function main() {
 
     utils.animateFallenPlatformGroup(land_grass, scene)
     
-
-
-     /* ************************* RESETS ******************************/
+    /* ************************* RESETS ******************************/
 
     //  utils.resetAll(scene,5000); // problem: try to change the time of activation of this functions, is it's less than 5s all ok, otherwise the cubes become static without sense
 
@@ -218,6 +307,8 @@ function main() {
             camera.updateProjectionMatrix();
         }
 
+        hit_box_1.position.set(head.position.x, head.position.y +hb1_displacement , head.position.z) 
+        hit_box_2.position.set(head.position.x, head.position.y +hb2_displacement , head.position.z)
 
 
         var VELOCITY = 2;
@@ -234,7 +325,6 @@ function main() {
         if ( keys.s ){
             z = sphere.getLinearVelocity().z+VELOCITY;
         }
-    
         if ( keys.a ){
             x = sphere.getLinearVelocity().x-VELOCITY;
         }
@@ -280,7 +370,7 @@ function main() {
 
         // METTERE CAMERA CHE SEGUE LA PALLA
         // FARE CHE FUNZIONANO I PULTANTI CONTEMPORANEAMENTE
-        console.log(sphere.getLinearVelocity())
+        // console.log(sphere.getLinearVelocity())
         TWEEN.update();
         scene.simulate();
         camera.lookAt( sphere.position );

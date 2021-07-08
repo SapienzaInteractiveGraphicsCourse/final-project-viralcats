@@ -8,6 +8,7 @@ import TWEEN from './libs/tween.esm.js';
 var prog_cubes = 0;
 var prog_planes = 0;
 var prog_spheres = 0;
+var prog_hit_box = 0;
 
 // time
 var curr_time = 0;
@@ -17,6 +18,7 @@ var last_time = 0;
 var bounds_group = [];
 var cubes_group = [];
 var objects_group = [];
+var hit_boxes_group = [];
 
 // dynamics and static vectors
 const static_vector = new THREE.Vector3(0, 0, 0);
@@ -151,6 +153,11 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
     prog_planes++;
     if (is_bound) {
         plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+            if (other_object.name == "main_pg"){
+                console.log("hit boxes removed")
+                remove_hit_boxes(scene);
+
+            }
             if (other_object.name != "mainSphere"){
                 // pos = other_object.initial_pos;
                 // console.log(pos);
@@ -170,9 +177,67 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
     scene.add(plane_box);
 }
 
+export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_visible) {
+    var box;
+
+    var materials = [
+        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}),
+        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}),
+        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}),
+        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}),
+        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}),
+        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}) 
+    ];
+
+    var mat_box = new THREE.MeshFaceMaterial(materials);
+    var geometry_cube = new THREE.CubeGeometry(dim_cube * dim_multiplier[0], dim_cube* dim_multiplier[1], dim_cube* dim_multiplier[2])
+
+    var mat_box_phy = Physijs.createMaterial(
+        mat_box,
+        friction_box,  // friction
+        restitution_box // restitution / bounciness
+    );
+
+    if (is_dynamic) {
+        box = new Physijs.BoxMesh(
+            geometry_cube,
+            mat_box_phy,
+            1
+        );
+    }
+    else {  //static and cannot be changed
+        box = new Physijs.BoxMesh(
+            geometry_cube,
+            mat_box_phy,
+            0
+        );
+    }
+    box.__dirtyPosition = true;
+    box.__dirtyRotation = true;
+
+    box.position.set(pos[0], pos[1], pos[2]);
+
+    box.name = "Hitbox_" + String(prog_hit_box);
+    prog_hit_box++;
+    box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        if(other_object.name == "mainSphere"){
+            console.log("la main palla ha colpito l'hitbox")
+        }
+        // console.log("Che botta!");
+        // box.setAngularVelocity(new THREE.Vector3(20, 0, 0));
+        // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+    });
+
+    box.setCcdMotionThreshold(0.1);
+    hit_boxes_group.push(box);
+
+    scene.add(box);
+    return box;
+
+}
 
 
-export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null) {
+export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null, is_pg= false) {
     var path1 = './textures/blocks/' + String(cubes_type[type][0]) + ".png";  // top
     var path2 = './textures/blocks/' + String(cubes_type[type][1]) + ".png";  // side
     var path3 = './textures/blocks/' + String(cubes_type[type][2]) + ".png";  // base
@@ -222,14 +287,13 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null)
     box.__dirtyPosition = true;
     box.__dirtyRotation = true;
 
-
     box.position.set(pos[0], pos[1], pos[2]);
 
     if (rot){
         if(dim){
-            box.translateX(dim[0]/2);
-            box.translateY(dim[1]/2);
-            box.translateZ(dim[2]/2);
+            // box.translateX(dim[0]/2);
+            // box.translateY(dim[1]/2);
+            // box.translateZ(dim[2]/2);
         }
         
         box.rotation.set(degrees_to_radians(rot[0]), degrees_to_radians(rot[1]), degrees_to_radians(rot[2]));
@@ -241,9 +305,14 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null)
         }
     }
 
-    box.name = "box_" + String(prog_cubes);
+    if (is_pg) box.name = "main_pg";
+    else box.name = "box_" + String(prog_cubes);
+
     prog_cubes++;
     box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        if(other_object.name == "mainSphere"){
+            console.log("la main palla ha colpito un box")
+        }
         // console.log("Che botta!");
         // box.setAngularVelocity(new THREE.Vector3(20, 0, 0));
         // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
@@ -354,7 +423,7 @@ export function create_teleport(pos, scene) {
     var myBoxMaterial = Physijs.createMaterial(
         material_tel,
         0,  // friction
-        0 // restitution / bounciness
+        0 // restitution/bounciness
     );
     var teleport = new Physijs.CylinderMesh(telGeo, myBoxMaterial);
 
@@ -816,10 +885,12 @@ export function reset_data() {
     prog_cubes = 0;
     prog_planes = 0;
     prog_spheres = 0;
+    prog_hit_box = 0;
 
     bounds_group = [];
     cubes_group = [];
     objects_group = [];
+    hit_boxes_group = [];
 
     last_time = 0;
     curr_time = 0;
@@ -840,11 +911,17 @@ export function remove_OtherObjects(scene) {
     scene.simulate()
 }
 
+export function remove_hit_boxes(scene) {
+    hit_boxes_group.forEach(Element => scene.remove(Element));
+    scene.simulate()
+}
+
 export function resetAll(scene, time) {
     setTimeout(function () {
         remove_OtherObjects(scene);
         remove_allBounds(scene);
         remove_allBoxes(scene);
+        remove_hit_boxes(scene);
         reset_data();
     },
         time
