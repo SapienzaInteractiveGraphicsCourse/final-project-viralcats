@@ -5,7 +5,10 @@ Physijs.scripts.ammo = '/libs/ammo.js';
 import * as utils from './utils.js';
 import { OrbitControls } from './libs/threejs/examples/jsm/controls/OrbitControls.js';
 import TWEEN from './libs/tween.esm.js';
+import * as THREE_AUDIO from './libs/threejs/build/three.module.js';
+import { GLTFLoader } from './libs/threejs/examples/jsm/loaders/GLTFLoader.js';
 
+//import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js";
 
 // defintion of the object for the level
 
@@ -34,8 +37,200 @@ var camera_x_pos = 0;
 var camera_y_pos = 68;
 var camera_z_pos = 180;
 
+var mouse_x;
+var mouse_pressing = false;
+
+const canvas = document.querySelector('#c');
+
+// Loading assets
+var areModelsLoaded = false;
+var areSoundsLoaded = false;
+//AGGIUNGERE SUONI
+
+const sounds = {
+	background  :  { url: './asserts/sounds/background.wav' },
+	ambient     :  { url: './asserts/sounds/ambient.flac' },
+	adventure   :  { url: './asserts/sounds/adventure.wav' }
+}
+
+
+function loadSounds() {
+
+	const soundsLoaderManager = new THREE_AUDIO.LoadingManager();
+	soundsLoaderManager.onLoad = () => {
+
+		areSoundsLoaded = true;
+
+		// hide the loading bar
+		document.querySelector('#sounds_loading').hidden = true;
+
+		if(areModelsLoaded & areSoundsLoaded) {
+			init();
+		}
+	};
+
+	const modelsProgressBar = document.querySelector('#sounds_progressbar');
+	soundsLoaderManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+		console.log("Loading sounds... ", itemsLoaded / itemsTotal * 100, '%');
+		modelsProgressBar.style.width = `${itemsLoaded / itemsTotal * 100 | 0}%`;
+	};
+	{
+		const audioLoader = new THREE_AUDIO.AudioLoader(soundsLoaderManager);
+		for (const sound of Object.values(sounds)) {
+			audioLoader.load( sound.url, function( buffer ) {
+				
+				sound.sound = buffer;
+
+				console.log("Loaded ", buffer);
+			});
+		}
+	} 
+}
+
+/*******            START TEST          ******************/
+
+var root = new THREE.Object3D();
+
+var zombie = {
+    joints:{
+      arms:{
+        left:{},
+        right:{}
+      },
+      legs:{
+        left:{},
+        right:{},
+        l_ankle:{},
+        r_ankle:{}
+      }
+    },
+    head:{},
+    chest:{},
+    body:{},
+    mesh: new THREE.Object3D(),
+    gltf:new THREE.Object3D(),
+    //FEATURES
+    isJump: false,
+    jumpTime: 100,
+    jumpHeight: 10,
+    position:{
+      x:0,
+      y:0,
+      z:0
+    }
+  };
+
+
+
+/*******            END TEST            *****************/
+
+function initializate_page(){
+    canvas.setAttribute("hidden", true);
+    document.querySelector('#life_counter').setAttribute("hidden",true);
+        
+    document.getElementById("body_").removeAttribute("d-flex");
+    document.getElementById("body_").removeAttribute("h-100");
+    document.getElementById("body_").removeAttribute("text-center");
+    document.getElementById("body_").removeAttribute("text-white");
+    document.getElementById("body_").removeAttribute("bg-dark");
+
+    document.getElementById("game_start").onclick = function(event) {
+        canvas.setAttribute("hidden", true);
+        // document.getElementById('intro_page').classList.add("invisible");
+        document.getElementById('intro_page').remove();
+        document.getElementById('life_counter').removeAttribute("hidden");
+        canvas.removeAttribute("hidden");
+        main();
+    };
+    
+}
+function loadModel(){
+    const gltfLoader = new GLTFLoader();
+    // const gltfLoader = new THREE_AUDIO.ObjectLoader();
+    gltfLoader.load('./scene.gltf', (gltf) => {
+    
+    gltf.scene.traverse( function ( child ) {
+
+      if ( child.isMesh ) {
+        if( child.castShadow !== undefined ) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      }
+
+      } );
+// vedere questo perche senza THREE.Object3D non funziona ma con THREE.Object3D non me lo fa vedere  
+      root = new THREE.Object3D(gltf.scene.getObjectByName('RootNode'));
+      root.name = 'RootNode';
+
+      // Add gltf model to scene
+      //scene.add(root);
+
+
+      zombie.gltf = root;//gltf.scene.getObjectByName('RootNode');
+      //init();
+    },0,() => {
+      console.log("ERRORE DURANTE IL CARICAMENTO DEL MODELLO!!!!");
+    });
+}
+
+
+function initZombieMovebleParts(){
+
+    //Bone037_036 caviglia sinistra
+    //Bone036_030 caviglia destra
+    //Bone002_02  busto dalla vita in su
+    //Bone029_024 gamba destra
+    //Bone030_027 gamba sinistra
+    //Bone001_03 busto dalle tette in su
+    //Bone003_04 busto un po piu in su di quello prima
+    //Bone005_05 braccio sinistro
+    //Bone028_014 braccio destro
+    //Bone004_023 testa
+    //Bone032_06 spalla sinistra
+    //Bone031_015 spalla destra
+    //Bone010_09 gomito sinistro
+    //Bone013_018 gomito destro
+    //Bone015_025 gamba destra
+    //Bone006_028 gamba sinistra
+    //Bone016_026 ginocchio destro
+    //Bone007_029 ginocchio sinistro
+
+    zombie.mesh.traverse( part => {
+      if (part.isBone && part.name === 'Bone032_06') { 
+        zombie.joints.arms.left = part;
+      }
+      if (part.isBone && part.name === 'Bone031_015') { 
+        zombie.joints.arms.right = part;
+      }
+      if (part.isBone && part.name === 'Bone030_027') { 
+        zombie.joints.legs.left = part;
+      }
+      if (part.isBone && part.name === 'Bone029_024') { 
+        zombie.joints.legs.right = part;
+      }
+      if (part.isBone && part.name === 'Bone004_023') { 
+        zombie.head = part;
+      }
+      if (part.isBone && part.name === 'Bone002_02') { 
+        zombie.chest = part;
+      }
+      if (part.isBone && part.name === 'Bone033_00') { 
+        zombie.body = part;
+      }
+      if (part.isBone && part.name === 'Bone037_036') { 
+        zombie.joints.legs.l_ankle = part;
+      }
+      if (part.isBone && part.name === 'Bone036_030') { 
+        zombie.joints.legs.r_ankle = part;
+      }
+    });
+}
+
+loadModel();
+loadSounds();
 function main() {
-    const canvas = document.querySelector('#c');
+    
     var renderer = new THREE.WebGLRenderer({ canvas });
 
     const fov = 20;
@@ -48,8 +243,9 @@ function main() {
     var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     //camera.position.set(0, 10, 100);
 
-    
 
+
+    
 
 
     scene.background = new THREE.Color('black');
@@ -247,15 +443,81 @@ function main() {
         /* ************************* MAiN SPHERE ***********************************/
         sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,5,0], true);
 
+        // sphere = utils.create_Box("Terracotta", [0,3,0], 1, scene);
+
+
         controls = new OrbitControls(camera, canvas);
         controls.update();
-
+/*
         camera.position.z = sphere.position.z + camera_z_pos;
         camera.position.y = sphere.position.y + camera_y_pos;
         camera.position.x = sphere.position.x;
         camera.lookAt(sphere.position);
+
         scene.add(camera);
-    
+
+*/
+
+
+/***************************************************************************************************************************** */
+camera.position.z = zombie.mesh.position.z + camera_z_pos;
+camera.position.y = zombie.mesh.position.y + camera_y_pos;
+camera.position.x = zombie.mesh.position.x;
+
+zombie.mesh.add(camera);
+camera.lookAt(zombie.mesh.position);
+
+// camera.position.set(0, 10, 100);
+// camera.lookAt(scene.position);
+
+
+scene.add(camera);
+
+console.log(zombie.gltf.type.toString());
+
+zombie.mesh.position.set(0, 0, 0);
+
+
+root = zombie.gltf;
+root.scale.set(.08, .08, .08);
+
+
+
+zombie.mesh.add(camera);
+
+zombie.mesh.add(root);
+
+scene.add(zombie.mesh);
+
+
+initZombieMovebleParts();
+
+
+/***************************************************************************************************************************** */
+
+        // sphere.add(camera);
+
+        canvas.onmousedown = function(e){
+            mouse_x = e.pageX;
+            mouse_pressing = true;
+        }
+        
+        canvas.addEventListener('mousemove', e => {
+            // sphere.__dirtyPosition = true;
+            // sphere.__dirtyRotation = true;
+            if(mouse_pressing){
+                if(e.pageX > mouse_x){
+                    console.log("Moved Right");
+                    //sphere.rotation.y = (sphere.rotation.y + 0.05);
+                }else{
+                    console.log("Moved Left")
+                    //sphere.rotation.y = (sphere.rotation.y - 0.05);
+                }
+                mouse_x = e.pageX;
+            }
+        });
+
+        
     }
 
     /* ************************* ANIMATIONS ******************************/
@@ -297,7 +559,7 @@ function main() {
     /* ************************* RESETS ******************************/
 
     //  utils.resetAll(scene,5000); // problem: try to change the time of activation of this functions, is it's less than 5s all ok, otherwise the cubes become static without sense
-
+    var camera_pivot;
     function render() {
 
         
@@ -311,6 +573,12 @@ function main() {
         hit_box_2.position.set(head.position.x, head.position.y +hb2_displacement , head.position.z)
 
 
+        
+        TWEEN.update();
+        scene.simulate();
+        // controls.enabled = false;
+        
+
         var VELOCITY = 2;
         var MAX_VELOCITY = 50;
         var JUMP_VELOCITY = 10;
@@ -318,7 +586,12 @@ function main() {
         var x = 0;
         var y = 0;
         var z = 0;
+        var t = utils.degrees_to_radians(0);
+  
+
         // console.log(sphere.getLinearVelocity());
+        console.log(utils.radians_to_degrees(sphere.rotation.y))
+
         if ( keys.w ){
             z = sphere.getLinearVelocity().z-VELOCITY;
         }
@@ -326,10 +599,24 @@ function main() {
             z = sphere.getLinearVelocity().z+VELOCITY;
         }
         if ( keys.a ){
-            x = sphere.getLinearVelocity().x-VELOCITY;
+            // x = sphere.getLinearVelocity().x-VELOCITY;
+            
+// camera_pivot = new THREE.Object3D()
+// var Y_AXIS = new THREE.Vector3( 0, 1, 0 );
+
+// scene.add( camera_pivot );
+// camera_pivot.add( camera );
+// // camera.position.set( 500, 0, 0 );
+// camera.lookAt( camera_pivot.position );
+// camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
+
+            sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
+            t = (sphere.rotation.y);
         }
         if ( keys.d ){
-            x = sphere.getLinearVelocity().x+VELOCITY;
+            // x = sphere.getLinearVelocity().x+VELOCITY;
+            sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,-VELOCITY,sphere.getAngularVelocity().z));
+            t =  (sphere.rotation.y);
         }
         if ( keys.space ){
             y = sphere.getLinearVelocity().y+JUMP_VELOCITY;
@@ -364,21 +651,68 @@ function main() {
         }  
 
 
-        if(keys.w | keys.s | keys.a | keys.d | keys.space){
-            sphere.setLinearVelocity(new THREE.Vector3(x,y,z));
+        if(keys.w | keys.s | keys.space){
+
+            // sphere.__dirtyPosition = true;
+            // sphere.__dirtyRotation = true;
+            
+          
+
+            // sphere.__dirtyPosition = true;
+            // sphere.__dirtyRotation = true;
+            // sphere.setLinearVelocity(new THREE.Vector3(x,y,z));
+            // console.log(quaternion);
+
+
+//             camera_pivot = new THREE.Object3D()
+// var Y_AXIS = new THREE.Vector3( 0, 1, 0 );
+
+// scene.add( camera_pivot );
+// camera_pivot.add(sphere);
+// camera_pivot.add( camera );
+// // camera.position.set( 500, 0, 0 );
+// camera.lookAt( camera_pivot.position );
+// camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
+            sphere.setLinearVelocity(new THREE.Vector3(0, 0 , z));
+            //   sphere.translateZ(z);
+            // sphere.position.y = (sphere.position.y + y);
+            // sphere.position.x = (sphere.position.x + x);
+
         }
 
+        // console.log(utils.radians_to_degrees(sphere.rotation.y));
+
+        // camera.position.z = sphere.position.z + camera_z_pos;
+        // camera.position.y = sphere.position.y + camera_y_pos;
+        // camera.position.x = sphere.position.x;
+
+        
         // METTERE CAMERA CHE SEGUE LA PALLA
         // FARE CHE FUNZIONANO I PULTANTI CONTEMPORANEAMENTE
+
         // console.log(sphere.getLinearVelocity())
         TWEEN.update();
         scene.simulate();
         camera.lookAt( sphere.position );
+
+        controls.update();
+        // // console.log(sphere.getLinearVelocity())
+        // // TWEEN.update();
+        // // scene.simulate();
+
+        // camera.lookAt( zombie.mesh.position );
+        // renderer.render(scene, camera);
+        // // effect.render(scene, camera);
+
+        // // camera.lookAt( sphere.position );
+
         renderer.render(scene, camera);
         requestAnimationFrame(render);
     }
+
+
     render();
 }
 
 
-main();
+initializate_page();
