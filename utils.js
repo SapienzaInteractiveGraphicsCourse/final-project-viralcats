@@ -30,6 +30,11 @@ const friction_box = 1.0; // high friction
 const restitution_box = 0.0; // low restitution (bouncing factor)
 
 
+//pg variable
+export var reset_pg = false;
+export var pg; 
+
+
 // dictionary that shows wich textures must be used, in order: top texture, side texture, bottom texture
 const cubes_type = {
     "Dirt": ["Dirt", "Dirt", "Dirt"],
@@ -158,12 +163,22 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
     prog_planes++;
     if (is_bound) {
         plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-            if (other_object.name == "main_pg"){
-                console.log("hit boxes removed")
-                remove_hit_boxes(scene);
+            if (other_object.name.includes("Hitbox_")){   //the hit_box of the pg
+                console.log("the hit box of the pg has hit the floor")  // choose the respawn/reposition or remove from the scene
+                // reset_pg = true;
+                scene.remove(other_object)
+                pg = create_pg(scene);
 
+            //     // remove_hit_boxes(scene);
+            //     scene.remove(other_object)
+            
+                // other_object.__dirtyPosition = true;
+                // other_object.__dirtyRotation = true;
+                // console.log(other_object.initial_pos)
+                // other_object.position.set(other_object.initial_pos[0],other_object.initial_pos[1],other_object.initial_pos[2])
             }
-            if (other_object.name != "mainSphere"){
+            
+            else if (other_object.name != "mainSphere"){
                 // pos = other_object.initial_pos;
                 // console.log(pos);
                 // other_object.__dirtyPosition = true;
@@ -242,7 +257,7 @@ export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_v
 }
 
 
-export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null, is_pg= false) {
+export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= false, mult_dim) {
     var path1 = './textures/blocks/' + String(cubes_type[type][0]) + ".png";  // top
     var path2 = './textures/blocks/' + String(cubes_type[type][1]) + ".png";  // side
     var path3 = './textures/blocks/' + String(cubes_type[type][2]) + ".png";  // base
@@ -251,10 +266,17 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null,
     var temp = load_texture_cube(path1, path2, path3);
 
     var mat_box = new THREE.MeshFaceMaterial(temp);
-    var geometry_cube = new THREE.CubeGeometry(dim_cube, dim_cube, dim_cube)
-    // geometry_cube.dynamic = is_dynamic;
+    var geometry_cube;
+    var dim_Box;
 
-    // console.log(is_dynamic);
+    if (typeof mult_dim == 'undefined' || mult_dim == null) {
+        geometry_cube = new THREE.CubeGeometry(dim_cube, dim_cube, dim_cube)
+        dim_Box = [dim_cube, dim_cube, dim_cube]
+    }
+    else{
+        geometry_cube = new THREE.CubeGeometry(dim_cube * mult_dim[0], dim_cube* mult_dim[1], dim_cube* mult_dim[2])
+        dim_Box = [dim_cube * mult_dim[0], dim_cube* mult_dim[1], dim_cube* mult_dim[2]]
+    }
 
     var mat_box_phy = Physijs.createMaterial(
         mat_box,
@@ -291,23 +313,14 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null,
     }
     box.__dirtyPosition = true;
     box.__dirtyRotation = true;
+    box.dimensions = dim_Box;
 
     box.position.set(pos[0], pos[1], pos[2]);
 
-    if (rot){
-        if(dim){
-            // box.translateX(dim[0]/2);
-            // box.translateY(dim[1]/2);
-            // box.translateZ(dim[2]/2);
-        }
-        
-        box.rotation.set(degrees_to_radians(rot[0]), degrees_to_radians(rot[1]), degrees_to_radians(rot[2]));
+    // ****************************** ROTATION SECTION  ******************************
 
-        if(dim){
-            // box.translateX(-dim[0]/2);
-            // box.translateY(-dim[1]/2);
-            // box.translateZ(-dim[2]/2);
-        }
+    if (rot){
+        box.rotation.set(degrees_to_radians(rot[0]), degrees_to_radians(rot[1]), degrees_to_radians(rot[2]));
     }
 
     if (is_pg) box.name = "main_pg";
@@ -327,6 +340,29 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, dim = null,
     cubes_group.push(box);
     scene.add(box);
     return box;
+}
+
+
+export function rotateArms(box, angle){
+
+    var anchorPoint = new THREE.Vector3(box.position.x, box.position.y + (box.dimensions[1]/2 - 1), box.position.z);
+    console.log(anchorPoint);
+
+    let moveDir = new THREE.Vector3(
+        anchorPoint.x - box.position.x,
+        anchorPoint.y - box.position.y,
+        anchorPoint.z - box.position.z
+    );
+
+    moveDir.normalize();
+    let moveDist = box.position.distanceTo(anchorPoint);
+    
+    box.translateOnAxis(moveDir, moveDist);
+
+    box.rotateX(degrees_to_radians(angle));
+
+    moveDir.multiplyScalar(-1);
+    box.translateOnAxis(moveDir, moveDist);
 }
 
 export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
@@ -376,7 +412,6 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
                 // sphere.__dirtyRotation = false;
             }
         }
-
     });
     objects_group.push(sphere);
     scene.add(sphere);
@@ -442,6 +477,44 @@ export function create_teleport(pos, scene) {
     objects_group.push(teleport);
     scene.add(teleport);
     return teleport
+}
+
+
+export function create_pg(scene){
+    //the root: head
+    var head = create_Box("Namecc", [0, 6, 0],1, scene, null,true,null);
+    head.scale.set(1, 1, 1);
+
+    // **************** the hitbox*********************
+    var hit_box = create_hitbox([1.5,5,1], [0, 9.5, -10], 1, scene,0.3,false);
+    hit_box.initial_pos = [0, 9.5, -10];
+
+
+    var body = create_Box("Namecc", [0, -4.5, 0], 0, scene,null,false,[1.0, 2, 1.0]);
+    // body.scale.set(1.0, 2, 1.0);
+
+    var left_arm = create_Box("Namecc", [2.25, 0, 0], 0, scene,null, false,[0.5, 2.0, 0.5]);  
+    // left_arm.scale.set(0.5, 2.0, 0.5);
+
+    var right_arm = create_Box("Namecc", [-2.25, 0, 0], 0, scene,null, false,[0.5, 2.0, 0.5]); 
+    // right_arm.scale.set(0.5, 2.0, 0.5);
+
+    var left_leg = create_Box("Namecc", [0.75,-6, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
+    // left_leg.scale.set(0.5, 2.0, 1.0);
+
+    var right_leg = create_Box("Namecc", [-0.75,-6, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
+    // right_leg.scale.set(0.5, 2.0, 1.0);
+
+    hit_box.add(head)
+    head.add(body)
+
+    body.add(left_arm)
+    body.add(right_arm)
+    body.add(left_leg)
+    body.add(right_leg)
+
+    pg = [hit_box,head,body,left_arm,right_arm,left_leg,right_leg]
+    // return pg;
 }
 
 

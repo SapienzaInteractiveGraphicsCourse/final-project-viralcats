@@ -28,7 +28,7 @@ var box_1;
 var box_3;
 var controls;
 var scene;
-
+var pg;
 var sphere;
 
 var keys;
@@ -243,11 +243,6 @@ function main() {
     var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     //camera.position.set(0, 10, 100);
 
-
-
-    
-
-
     scene.background = new THREE.Color('black');
 
     scene.setGravity(new THREE.Vector3(0, - 9.8, 0)); // set gravity
@@ -335,116 +330,54 @@ function main() {
         utils.create_Box_Plane([0, 0, -distance_bound / 2], [90, 0, 0], distance_bound, scene, true);
     }
 
-    /* ************************* ZOMBIE ***********************************/
+    /* ****************************** PG ***********************************/
     {
         //hierarchical model
-        //second version
 
+        utils.create_pg(scene)
 
-        //the root: head
-        var head = utils.create_Box("Namecc", [0, 14, 5], 1, scene, null,null,true);
-        head.scale.set(1, 1, 1);
+        pg = utils.pg
 
-        var hb1_displacement = -6;
-        var hb2_displacement = -4.5;
-        
-        var hit_box_1 = utils.create_hitbox([1.0,5,0.9],[head.position.x, head.position.y-hb1_displacement, head.position.z], 0, scene,0.3,true);
-        var hit_box_2 = utils.create_hitbox([2,2,1], [head.position.x, head.position.y-hb2_displacement, head.position.z], 0, scene,0.3,true);
+        // test HM moving and rotating
 
-        
+        /*
+        if you use the hitbox make sure to modify the flag before launch the simulation of phyisjs otherwise are only 
+        three js 3D object you can change rotation and position normally
+        */
 
-        var body = utils.create_Box("Namecc", [0, -4.5, 0], 0, scene);
-        body.scale.set(1.0, 2, 1.0);
+        setInterval(function(){
+             utils.rotateArms(pg[3],1)
+        },50);
 
-        var left_arm = utils.create_Box("Namecc", [2.25, 0, 0], 0, scene);
-        left_arm.scale.set(0.5, 1.0, 1.0);
+        setInterval(function(){
+            utils.rotateArms(pg[4],-1)
+       },50);
 
-        var right_arm = utils.create_Box("Namecc", [-2.25, 0, 0], 0, scene);
-        right_arm.scale.set(0.5, 1.0, 1.0);
+        //    utils.rotateArms(pg[5],-90)
+        //    utils.rotateArms(pg[6],90)
+    
+        //     setInterval(function(){
+        //             utils.rotateArms(pg[5],1)
+        //     },100);
+    
+        //     setInterval(function(){
+        //         utils.rotateArms(pg[6],-1)
+        //     },100);
 
-        var left_leg = utils.create_Box("Namecc", [0.75,-3, 0], 0, scene);
-        left_leg.scale.set(0.5, 1.0, 1.0);
+        // i want to use the physijs hitbox, i set the dirty motions flag to true
 
-        var right_leg = utils.create_Box("Namecc", [-0.75,-3, 0], 0, scene);
-        right_leg.scale.set(0.5, 1.0, 1.0);
+        pg[0].__dirtyPosition = true;
+        pg[0].__dirtyRotation = true;
 
-
-        head.add(body)
-        body.add(left_arm)
-        body.add(right_arm)
-        body.add(left_leg)
-        body.add(right_leg)
-
-        // test HM moving head
-
-        head.__dirtyPosition = true;
-        head.__dirtyRotation = true;
-        hit_box_1.__dirtyPosition = true;
-        hit_box_1.__dirtyRotation = true;
-        hit_box_2.__dirtyPosition = true;
-        hit_box_2.__dirtyRotation = true;
-
-        // body.__dirtyPosition = false;
-        // body.__dirtyRotation = false;
-        // left_arm.__dirtyPosition = false;
-        // left_arm.__dirtyRotation = false;
-        // right_arm.__dirtyPosition = false;
-        // right_arm.__dirtyRotation = false;
-        // left_leg.__dirtyPosition = false;
-        // left_leg.__dirtyRotation = false;
-        // right_leg.__dirtyPosition = false;
-        // right_leg.__dirtyRotation = false;
-        
-        head.position.set(0, -4.5, 10)
+        pg[0].position.set(15, 40, -70)
 
         scene.simulate(); //update the new position for physijs
 
-        head.__dirtyPosition = false;
-        head.__dirtyRotation = false;
-        hit_box_1.__dirtyPosition = false;
-        hit_box_1.__dirtyRotation = false;
-        hit_box_2.__dirtyPosition = false;
-        hit_box_2.__dirtyRotation = false;
-
-        scene.simulate();
+        pg[0].__dirtyPosition = false;
+        pg[0].__dirtyRotation = false;
         
-
-        /*
-        // first version 
-        //the root: head
-        var hitbox= utils.create_Box()
-
-        var head = utils.create_Box("Namecc", [0, 13, 5], 0, scene);
-        head.scale.set(1, 1, 1);
-
-        var body = utils.create_Box("Namecc", [0, -4.5, 0], 0, scene);
-        body.scale.set(1.0, 2, 1.0);
-
-        var left_arm = utils.create_Box("Namecc", [2.25, 0, 0], 0, scene);
-        left_arm.scale.set(0.5, 1.0, 1.0);
-
-        var right_arm = utils.create_Box("Namecc", [-2.25, 0, 0], 0, scene);
-        right_arm.scale.set(0.5, 1.0, 1.0);
-
-        var left_leg = utils.create_Box("Namecc", [0.75,-3, 0], 0, scene);
-        left_leg.scale.set(0.5, 1.0, 1.0);
-
-        var right_leg = utils.create_Box("Namecc", [-0.75,-3, 0], 0, scene);
-        right_leg.scale.set(0.5, 1.0, 1.0);
-
-        head.add(body)
-        body.add(left_arm)
-        body.add(right_arm)
-        body.add(left_leg)
-        body.add(right_leg)
-        */
-
-
         /* ************************* MAiN SPHERE ***********************************/
         sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,5,0], true);
-
-        // sphere = utils.create_Box("Terracotta", [0,3,0], 1, scene);
-
 
         controls = new OrbitControls(camera, canvas);
         controls.update();
@@ -473,7 +406,7 @@ camera.lookAt(zombie.mesh.position);
 
 scene.add(camera);
 
-console.log(zombie.gltf.type.toString());
+// console.log(zombie.gltf.type.toString());
 
 zombie.mesh.position.set(0, 0, 0);
 
@@ -507,10 +440,10 @@ initZombieMovebleParts();
             // sphere.__dirtyRotation = true;
             if(mouse_pressing){
                 if(e.pageX > mouse_x){
-                    console.log("Moved Right");
+                    // console.log("Moved Right");
                     //sphere.rotation.y = (sphere.rotation.y + 0.05);
                 }else{
-                    console.log("Moved Left")
+                    // console.log("Moved Left")
                     //sphere.rotation.y = (sphere.rotation.y - 0.05);
                 }
                 mouse_x = e.pageX;
@@ -562,6 +495,13 @@ initZombieMovebleParts();
     var camera_pivot;
     function render() {
 
+
+        // if (utils.reset_pg){
+        //     console.log(" **** resettando il pg ****");
+        //     pg = utils.create_pg(scene);
+        //     utils.reset_pg = false;
+        // }
+
         
         if (utils.resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
@@ -569,8 +509,8 @@ initZombieMovebleParts();
             camera.updateProjectionMatrix();
         }
 
-        hit_box_1.position.set(head.position.x, head.position.y +hb1_displacement , head.position.z) 
-        hit_box_2.position.set(head.position.x, head.position.y +hb2_displacement , head.position.z)
+        // head.position.set(head.position.x, head.position.y +head_displacement_update , head.position.z) 
+        // hit_box_2.position.set(head.position.x, head.position.y +hb2_displacement_update , head.position.z)
 
 
         
@@ -590,7 +530,7 @@ initZombieMovebleParts();
   
 
         // console.log(sphere.getLinearVelocity());
-        console.log(utils.radians_to_degrees(sphere.rotation.y))
+        // console.log(utils.radians_to_degrees(sphere.rotation.y))
 
         if ( keys.w ){
             z = sphere.getLinearVelocity().z-VELOCITY;
@@ -599,8 +539,8 @@ initZombieMovebleParts();
             z = sphere.getLinearVelocity().z+VELOCITY;
         }
         if ( keys.a ){
-            // x = sphere.getLinearVelocity().x-VELOCITY;
-            
+            x = sphere.getLinearVelocity().x-VELOCITY;
+
 // camera_pivot = new THREE.Object3D()
 // var Y_AXIS = new THREE.Vector3( 0, 1, 0 );
 
@@ -673,7 +613,9 @@ initZombieMovebleParts();
 // // camera.position.set( 500, 0, 0 );
 // camera.lookAt( camera_pivot.position );
 // camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
+
             sphere.setLinearVelocity(new THREE.Vector3(0, 0 , z));
+
             //   sphere.translateZ(z);
             // sphere.position.y = (sphere.position.y + y);
             // sphere.position.x = (sphere.position.x + x);
