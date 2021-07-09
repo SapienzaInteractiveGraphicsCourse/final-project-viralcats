@@ -35,7 +35,7 @@ var keys;
 
 var camera_x_pos = 0;
 var camera_y_pos = 68;
-var camera_z_pos = 180;
+var camera_z_pos = 300;
 
 var mouse_x;
 var mouse_pressing = false;
@@ -293,9 +293,9 @@ function main() {
 
         land = utils.createFlatLand(4,4, "Namecc", [30, 0, 30], scene);
 
-        land_grass = utils.createFlatLand(4,4, "Grass", [-30, 0, 30], scene);
+        land_grass  = utils.createFlatLand(4,4, "Grass", [-30, 0, 30], scene);
 
-        orbit = utils.createFlatLand(3,5, "Grass", [-30,30,-30], scene);
+        orbit  = utils.createFlatLand(5,3, "Grass", [-30,30,-30], scene);
 
         utils.createUphillLand(10, 10, 10, "Lava", [0, 0, -80], scene)
 
@@ -346,22 +346,22 @@ function main() {
         */
 
         setInterval(function(){
-             utils.rotateArms(pg[3],1)
+             utils.rotateArmsLegs(pg[3],1)
         },50);
 
         setInterval(function(){
-            utils.rotateArms(pg[4],-1)
+            utils.rotateArmsLegs(pg[4],-1)
        },50);
 
-        //    utils.rotateArms(pg[5],-90)
-        //    utils.rotateArms(pg[6],90)
+        //    utils.rotateArmsLegs(pg[5],-90)
+        //    utils.rotateArmsLegs(pg[6],90)
     
         //     setInterval(function(){
-        //             utils.rotateArms(pg[5],1)
+        //             utils.rotateArmsLegs(pg[5],1)
         //     },100);
     
         //     setInterval(function(){
-        //         utils.rotateArms(pg[6],-1)
+        //         utils.rotateArmsLegs(pg[6],-1)
         //     },100);
 
         // i want to use the physijs hitbox, i set the dirty motions flag to true
@@ -472,22 +472,21 @@ initZombieMovebleParts();
 
     // using groups single animation
 
-    land_anim_a = utils.animateBackAndForwardInstanceGroup(land, scene, 'x', 70, 30, 5000);
+    land_anim_a = utils.animateBackAndForwardInstanceGroup(land.group, scene, 'x', 70, 30, 5000, land.hitbox);
     land_anim_a.forEach(anim => { anim.start()});
 
     // using groups multiple animation
 
-    animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'z', 30,5000,-30,[3,5]));//not squared platform i've to specify the shape, if not, can be avoided
-    animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'x', 30,5000,-30,[3,5]));
-    animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'z',-30,5000, 30,[3,5]));
-    animations_conc.push(utils.animatePlatformByGroupInstance(orbit,scene,'x',-30,5000, 30,[3,5]));
+    animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'z', 30,5000,-30,[5,3], orbit.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
+    animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'x', 30,5000,-30,[5,3], orbit.hitbox));
+    animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'z',-30,5000, 30,[5,3], orbit.hitbox));
+    animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'x',-30,5000, 30,[5,3], orbit.hitbox));
 
     animations_conc = utils.concatenateAnimationsGroup(animations_conc);
     animations_conc.forEach(elem => elem.start());
 
     // tumble animation group
-
-    utils.animateFallenPlatformGroup(land_grass, scene)
+    utils.animateFallenPlatformGroup(land_grass.group, scene, undefined, land_grass.hitbox);
     
     /* ************************* RESETS ******************************/
 
@@ -538,10 +537,8 @@ initZombieMovebleParts();
         if ( keys.s ){
             z = sphere.getLinearVelocity().z+VELOCITY;
         }
-        if ( keys.a ){
-            x = sphere.getLinearVelocity().x-VELOCITY;
 
-// camera_pivot = new THREE.Object3D()
+        // camera_pivot = new THREE.Object3D()
 // var Y_AXIS = new THREE.Vector3( 0, 1, 0 );
 
 // scene.add( camera_pivot );
@@ -550,12 +547,16 @@ initZombieMovebleParts();
 // camera.lookAt( camera_pivot.position );
 // camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
 
-            sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
+            
+
+        if ( keys.a ){
+            x = sphere.getLinearVelocity().x-VELOCITY;
+            // sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
             t = (sphere.rotation.y);
         }
         if ( keys.d ){
-            // x = sphere.getLinearVelocity().x+VELOCITY;
-            sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,-VELOCITY,sphere.getAngularVelocity().z));
+            x = sphere.getLinearVelocity().x+VELOCITY;
+            // sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,-VELOCITY,sphere.getAngularVelocity().z));
             t =  (sphere.rotation.y);
         }
         if ( keys.space ){
@@ -591,7 +592,7 @@ initZombieMovebleParts();
         }  
 
 
-        if(keys.w | keys.s | keys.space){
+        if(keys.w | keys.s | keys.d | keys.a | keys.space){
 
             // sphere.__dirtyPosition = true;
             // sphere.__dirtyRotation = true;
@@ -614,7 +615,10 @@ initZombieMovebleParts();
 // camera.lookAt( camera_pivot.position );
 // camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
 
-            sphere.setLinearVelocity(new THREE.Vector3(0, 0 , z));
+            // var vel  =new THREE.Vector3(x, y ,z);
+            // console.log(vel);
+
+            sphere.setLinearVelocity(new THREE.Vector3(x, y ,z));
 
             //   sphere.translateZ(z);
             // sphere.position.y = (sphere.position.y + y);

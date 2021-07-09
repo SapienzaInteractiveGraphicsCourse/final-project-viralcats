@@ -31,8 +31,8 @@ const restitution_box = 0.0; // low restitution (bouncing factor)
 
 
 //pg variable
-export var reset_pg = false;
-export var pg; 
+export var pg;
+export var is_pg_sphere = false;
 
 
 // dictionary that shows wich textures must be used, in order: top texture, side texture, bottom texture
@@ -106,6 +106,9 @@ function degtorad(degrees) {
 
 /* ************************************* external functions ************************************* */
 
+
+/************************************************ OBJECTS CREATION  [start] ***************************************************/
+
 export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
 
     const textureLoader = new THREE.TextureLoader();
@@ -163,32 +166,18 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
     prog_planes++;
     if (is_bound) {
         plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-            if (other_object.name.includes("Hitbox_")){   //the hit_box of the pg
+
+            if (other_object.name == ("Hitbox_pg")){   //the hit_box of the pg
                 console.log("the hit box of the pg has hit the floor")  // choose the respawn/reposition or remove from the scene
-                // reset_pg = true;
                 scene.remove(other_object)
                 pg = create_pg(scene);
-
-            //     // remove_hit_boxes(scene);
-            //     scene.remove(other_object)
-            
-                // other_object.__dirtyPosition = true;
-                // other_object.__dirtyRotation = true;
-                // console.log(other_object.initial_pos)
-                // other_object.position.set(other_object.initial_pos[0],other_object.initial_pos[1],other_object.initial_pos[2])
             }
             
             else if (other_object.name != "mainSphere"){
-                // pos = other_object.initial_pos;
-                // console.log(pos);
-                // other_object.__dirtyPosition = true;
-                // other_object.__dirtyRotation = true;
-                // other_object.position.x = pos[0];
-            // }
-            // else{
                 scene.remove(other_object)
                 console.log("the object: " + String(other_object.name) + " has been removed, map limit exceeded.\nHitten the bound: " + String(plane_box.name));
             }
+
             scene.simulate()
         });
         bounds_group.push(plane_box);
@@ -197,7 +186,7 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
     scene.add(plane_box);
 }
 
-export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_visible) {
+export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_visible, effective_dim = null, is_pg) {
     var box;
 
     var materials = [
@@ -210,7 +199,12 @@ export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_v
     ];
 
     var mat_box = new THREE.MeshFaceMaterial(materials);
-    var geometry_cube = new THREE.CubeGeometry(dim_cube * dim_multiplier[0], dim_cube* dim_multiplier[1], dim_cube* dim_multiplier[2])
+    if (dim_multiplier == null){
+        var geometry_cube = new THREE.CubeGeometry(effective_dim[0],effective_dim[1],effective_dim[2]);
+    }
+    else{
+        var geometry_cube = new THREE.CubeGeometry(dim_cube * dim_multiplier[0], dim_cube* dim_multiplier[1], dim_cube* dim_multiplier[2]);
+    }
 
     var mat_box_phy = Physijs.createMaterial(
         mat_box,
@@ -236,16 +230,15 @@ export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_v
     box.__dirtyRotation = true;
 
     box.position.set(pos[0], pos[1], pos[2]);
-
+    if (is_pg) box.name = "Hitbox_pg";
+    else{
     box.name = "Hitbox_" + String(prog_hit_box);
     prog_hit_box++;
+    }
     box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
         if(other_object.name == "mainSphere"){
             console.log("la main palla ha colpito l'hitbox")
         }
-        // console.log("Che botta!");
-        // box.setAngularVelocity(new THREE.Vector3(20, 0, 0));
-        // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
     });
 
     box.setCcdMotionThreshold(0.1);
@@ -317,7 +310,6 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= fals
 
     box.position.set(pos[0], pos[1], pos[2]);
 
-    // ****************************** ROTATION SECTION  ******************************
 
     if (rot){
         box.rotation.set(degrees_to_radians(rot[0]), degrees_to_radians(rot[1]), degrees_to_radians(rot[2]));
@@ -343,10 +335,10 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= fals
 }
 
 
-export function rotateArms(box, angle){
+export function rotateArmsLegs(box, angle){
 
     var anchorPoint = new THREE.Vector3(box.position.x, box.position.y + (box.dimensions[1]/2 - 1), box.position.z);
-    console.log(anchorPoint);
+    // console.log(anchorPoint);
 
     let moveDir = new THREE.Vector3(
         anchorPoint.x - box.position.x,
@@ -408,8 +400,11 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
                 sphere.__dirtyPosition = true;
                 sphere.__dirtyRotation = true;
                 sphere.position.set(pos[0],pos[1],pos[2])
-                // sphere.__dirtyPosition = false;
-                // sphere.__dirtyRotation = false;
+
+                sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
+                sphere.setAngularVelocity(new THREE.Vector3(0,0,0));
+
+                scene.simulate()
             }
         }
     });
@@ -417,7 +412,6 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     scene.add(sphere);
     return sphere;
 }
-
 
 
 export function create_teleport(pos, scene) {
@@ -486,7 +480,7 @@ export function create_pg(scene){
     head.scale.set(1, 1, 1);
 
     // **************** the hitbox*********************
-    var hit_box = create_hitbox([1.5,5,1], [0, 9.5, -10], 1, scene,0.3,false);
+    var hit_box = create_hitbox([1.5,5,1], [0, 9.5, -10], 1, scene,0.3,true, undefined, true);
     hit_box.initial_pos = [0, 9.5, -10];
 
 
@@ -499,10 +493,10 @@ export function create_pg(scene){
     var right_arm = create_Box("Namecc", [-2.25, 0, 0], 0, scene,null, false,[0.5, 2.0, 0.5]); 
     // right_arm.scale.set(0.5, 2.0, 0.5);
 
-    var left_leg = create_Box("Namecc", [0.75,-6, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
+    var left_leg = create_Box("Namecc", [0.75,-5.5, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
     // left_leg.scale.set(0.5, 2.0, 1.0);
 
-    var right_leg = create_Box("Namecc", [-0.75,-6, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
+    var right_leg = create_Box("Namecc", [-0.75,-5.5, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
     // right_leg.scale.set(0.5, 2.0, 1.0);
 
     hit_box.add(head)
@@ -517,10 +511,9 @@ export function create_pg(scene){
     // return pg;
 }
 
+/**************************************************** OBJECTS CREATION  [end] ******************************************************/
 
-// export function create_pg(pos,scene,){
-//     head = 
-// }
+/******************************************************* LIGHTS [start] ***********************************************************/
 
 export function create_pointLIght(pos, color, scene) {
     const light = new THREE.PointLight(color, 1, 0);
@@ -528,21 +521,38 @@ export function create_pointLIght(pos, color, scene) {
     scene.add(light);
 }
 
+/******************************************************* LIGHTS [end] *************************************************************/
+
+/*************************************************** Lands scenario [start] ******************************************************/
+
 export function createFlatLand(n_width, n_depth, type, left_top_pos, scene) {
+    var hit_box_width = n_width * dim_cube;
+    var hit_box_depth = n_depth * dim_cube;
+    var hit_box_height = dim_cube;
+
+
+
+    var hit_box = create_hitbox(null, [left_top_pos[0] + hit_box_width/2 -dim_cube/2 , left_top_pos[1] , left_top_pos[2] + hit_box_depth/2 -dim_cube/2], 0, scene, 0.9 ,true, [hit_box_width,hit_box_height,hit_box_depth]);
+    hit_box.initial_pos = [left_top_pos[0] + hit_box_width/2, left_top_pos[1], left_top_pos[2] + hit_box_depth/2];
+
+
+    // var hit_box = create_hitbox(null, [left_top_pos[0], left_top_pos[1] , left_top_pos[2]], 0, scene, 0.9 ,true, [hit_box_width,hit_box_height,hit_box_depth]);
+    // hit_box.initial_pos = [left_top_pos[0], left_top_pos[1] , left_top_pos[2]];
+
     var flat_land_group = [];
     var box;
     for (var i = 0; i < n_width; i++) {
         for (var j = 0; j < n_depth; j++) {
             box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1], left_top_pos[2] + j * dim_cube], 0, scene);
-            // box.setAngularFactor(static_vector );
-            // box.setAngularVelocity(static_vector);
-            // box.setLinearFactor(static_vector);
-            // box.setLinearVelocity(static_vector);
+            // box = create_Box(type, [i * dim_cube, 0, j * dim_cube], 0, scene);
+            // hit_box.add(box);
             flat_land_group.push(box);
 
         }
     }
-    return flat_land_group;
+
+
+    return {'group':flat_land_group , 'hitbox': hit_box};
 }
 
 
@@ -593,6 +603,9 @@ export function createDescentGround(n_width, n_depth, actual_height, type, left_
     return descent_group;
 }
 
+/*************************************************** Lands scenario [start] ******************************************************/
+
+/****************************************************** animations  [start] *******************************************************/
 
 export function animateTeleport(scene) {
     var teleport = scene.getObjectByName("teleport");
@@ -685,12 +698,14 @@ export function animatePlatformByInstance(platform, scene, axis, new_position_a,
     return animation;
 }
 
-export function animatePlatformByGroupInstance(group, scene, axis, new_position_a, time, new_position_b, irregular_shape) {  //irregular_shape parameter only if is not a squared platform.
+export function animatePlatformByGroupInstance(group, scene, axis, new_position_a, time, new_position_b, irregular_shape, hit_box = null) {  //irregular_shape parameter only if is not a squared platform.
 
     var animations = [];
     var value_axis_from;
     var value_axis_to;
     var max_length;
+
+    // console.log(hit_box);
 
     if (typeof irregular_shape !== 'undefined') {
         max_length = irregular_shape[1];
@@ -748,9 +763,44 @@ export function animatePlatformByGroupInstance(group, scene, axis, new_position_
 
             animation.easing(TWEEN.Easing.Linear.None)
             animation.onUpdate(function () {
-                if (axis == "x") platform.position.x = initial_value.pos;
-                else if (axis == 'y') platform.position.y = initial_value.pos;
-                else if (axis == 'z') platform.position.z = initial_value.pos;
+            if(hit_box != undefined || hit_box != null){ 
+                hit_box.__dirtyPosition = true;
+                var dispx,dispz;
+                if (typeof irregular_shape != 'undefined') {
+                    dispx = (irregular_shape[0]/2 * dim_cube) - dim_cube/2;;
+                    dispz = (irregular_shape[1]/2 * dim_cube) - dim_cube/2;;
+                }
+                else{
+                    dispx = (max_length/2 * dim_cube) - dim_cube/2;;
+                    dispz = dispx;
+                }
+                if (axis == "x") {
+                    // var disp = initial_value.pos - platform.position.x;
+                    platform.position.x = initial_value.pos;
+                    hit_box.position.x = platform.position.x-dispx;
+                    // if(only_fist) hit_box.position.x = platform.position.x;
+                    // if(only_fist) hit_box.position.x = hit_box.position.x + disp;
+                }
+                else if (axis == 'y'){ platform.position.y = initial_value.pos;
+                    // if(only_fist) hit_box.position.y = platform.position.y;
+                    hit_box.position.y = platform.position.y -disp;
+                }
+                else if (axis == 'z'){ platform.position.z = initial_value.pos;
+                    // if(only_fist) hit_box.position.z = platform.position.z;
+                    hit_box.position.z = platform.position.z -dispz;
+                }
+                scene.simulate()
+            }
+            else{
+                if (axis == "x") {
+                    platform.position.x = initial_value.pos;
+                }
+                else if (axis == 'y'){ platform.position.y = initial_value.pos;
+                }
+                else if (axis == 'z'){ platform.position.z = initial_value.pos;
+                }
+            }
+
             }).onComplete(function () {
                 platform.__dirtyPosition = true;
                 platform.__dirtyRotation = true;
@@ -796,14 +846,20 @@ export function animateBackAndForwardInstance(instance, scene, axis, new_positio
 }
 
 
-export function animateBackAndForwardInstanceGroup(group, scene, axis, new_position_a, new_position_b, time) {
+export function animateBackAndForwardInstanceGroup(group, scene, axis, new_position_a, new_position_b, time,hit_box) {
     var animations_a;
     var animations_b;
     var i;
     var length;
 
-    animations_a = animatePlatformByGroupInstance(group, scene, axis, new_position_a, time);
-    animations_b = animatePlatformByGroupInstance(group, scene, axis, new_position_b, time, new_position_a);
+    if(hit_box != undefined || hit_box != null){
+        animations_a = animatePlatformByGroupInstance(group, scene, axis, new_position_a, time, undefined, undefined, hit_box);
+        animations_b = animatePlatformByGroupInstance(group, scene, axis, new_position_b, time, new_position_a, undefined, hit_box);
+    }
+    else{
+        animations_a = animatePlatformByGroupInstance(group, scene, axis, new_position_a, time, undefined, undefined);
+        animations_b = animatePlatformByGroupInstance(group, scene, axis, new_position_b, time, new_position_a, undefined);
+    }
     length = animations_a.length;
     // console.log(animations_a);
     for (i = 0; i < length; i++) {
@@ -839,7 +895,7 @@ export function concatenateAnimationsGroup(animations) {
 }
 
 
-export function animateFallenPlatformGroup(platform, scene, irregular_shape) {
+export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit_box) {
 
     // tremble anim
     var tremble_anims = [];
@@ -851,6 +907,7 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape) {
     // going down anim
     var goingDown_anims = [];
     var initial_value = { pos: platform[0].position.y}
+    var hb_notRemoved = true;
 
     platform.forEach(cube_plat => {
         var animation = new TWEEN.Tween(initial_value).to({ pos: - distance_bound}, 6000);
@@ -858,11 +915,14 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape) {
         animation.easing(TWEEN.Easing.Cubic.In)
         animation.onUpdate(function () {
         cube_plat.position.y = initial_value.pos
+        hit_box.position.y = cube_plat.position.y;
 
         }).onComplete(function () {
             scene.remove(cube_plat);
-            // cube_plat.__dirtyPosition = true;
-            // cube_plat.__dirtyRotation = true;
+            if (hb_notRemoved){
+            hb_notRemoved = false;
+            scene.remove(hit_box);
+            }
         });
         goingDown_anims.push(animation);
     })
@@ -914,8 +974,6 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape) {
             // cube_plat.setLinearVelocity(new THREE.Vector3(0,-5,0));
 
 
-
-
             // cube_plat.setAngularFactor({x:1,y:1,z:1});
             // cube_plat.setAngularVelocity({x:1,y:1,z:1});
 
@@ -936,13 +994,14 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape) {
             // fix this
             // one possible solution (not optimum) delete and recreate the object making it not static
         })
-    }, 3000)
+    }, 10000)
 
 }
 
+/****************************************************** animations  [start] *******************************************************/
 
+/****************************************************** Rendering  [start] ********************************************************/
 
-/* Rendering functions*/
 
 export function resizeRendererToDisplaySize(renderer) {
     const canvas = renderer.domElement;
@@ -955,9 +1014,9 @@ export function resizeRendererToDisplaySize(renderer) {
     return needResize;
 }
 
+/****************************************************** Rendering  [end] ********************************************************/
 
-
-/* ************************************* resetting the level functions ************************************* */
+/****************************************************** Resetting  [start] ******************************************************/
 
 export function reset_data() {
     prog_cubes = 0;
@@ -1006,3 +1065,4 @@ export function resetAll(scene, time) {
     )
 }
 
+/****************************************************** Resetting  [end] ******************************************************/
