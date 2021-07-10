@@ -33,6 +33,9 @@ var sphere;
 
 var keys;
 
+var listener;
+var curr_sounds = new Map([]);
+
 var camera_x_pos = 0;
 var camera_y_pos = 68;
 var camera_z_pos = 300;
@@ -87,54 +90,46 @@ function loadSounds() {
 	} 
 }
 
-/*******            START TEST          ******************/
+function playSound(sound){
 
-var root = new THREE.Object3D();
+    var sound_to_play = new THREE_AUDIO.Audio(listener);
+    sound_to_play.isPlaying = false;
+    sound_to_play.setBuffer( sound );
+	sound_to_play.setLoop( true );
+	sound_to_play.setVolume( 0.3 );
+	sound_to_play.play();
 
-var zombie = {
-    joints:{
-      arms:{
-        left:{},
-        right:{}
-      },
-      legs:{
-        left:{},
-        right:{},
-        l_ankle:{},
-        r_ankle:{}
-      }
-    },
-    head:{},
-    chest:{},
-    body:{},
-    mesh: new THREE.Object3D(),
-    gltf:new THREE.Object3D(),
-    //FEATURES
-    isJump: false,
-    jumpTime: 100,
-    jumpHeight: 10,
-    position:{
-      x:0,
-      y:0,
-      z:0
+    curr_sounds.set(sound,sound_to_play);
+}
+
+function stopSound(sound){
+
+    const iterator = curr_sounds[Symbol.iterator]();
+
+    if(curr_sounds.has(sound)){
+        for (const item of iterator){
+            if(item[0] == sound){
+                item[1].stop();
+                curr_sounds.delete(item[0]);
+            }
+        }
     }
-  };
+}
 
-
-
-/*******            END TEST            *****************/
 
 function initializate_page(){
     canvas.setAttribute("hidden", true);
     document.querySelector('#life_counter').setAttribute("hidden",true);
         
-    document.getElementById("body_").removeAttribute("d-flex");
-    document.getElementById("body_").removeAttribute("h-100");
-    document.getElementById("body_").removeAttribute("text-center");
-    document.getElementById("body_").removeAttribute("text-white");
-    document.getElementById("body_").removeAttribute("bg-dark");
-
+    document.getElementById("body").removeAttribute("d-flex");
+    document.getElementById("body").removeAttribute("h-100");
+    document.getElementById("body").removeAttribute("text-center");
+    document.getElementById("body").removeAttribute("text-white");
+    document.getElementById("body").removeAttribute("bg-dark");
+    
     document.getElementById("game_start").onclick = function(event) {
+        
+        document.getElementById("grid_container").style = ("");
         canvas.setAttribute("hidden", true);
         // document.getElementById('intro_page').classList.add("invisible");
         document.getElementById('intro_page').remove();
@@ -144,91 +139,13 @@ function initializate_page(){
     };
     
 }
-function loadModel(){
-    const gltfLoader = new GLTFLoader();
-    // const gltfLoader = new THREE_AUDIO.ObjectLoader();
-    gltfLoader.load('./scene.gltf', (gltf) => {
-    
-    gltf.scene.traverse( function ( child ) {
-
-      if ( child.isMesh ) {
-        if( child.castShadow !== undefined ) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      }
-
-      } );
-// vedere questo perche senza THREE.Object3D non funziona ma con THREE.Object3D non me lo fa vedere  
-      root = new THREE.Object3D(gltf.scene.getObjectByName('RootNode'));
-      root.name = 'RootNode';
-
-      // Add gltf model to scene
-      //scene.add(root);
 
 
-      zombie.gltf = root;//gltf.scene.getObjectByName('RootNode');
-      //init();
-    },0,() => {
-      console.log("ERRORE DURANTE IL CARICAMENTO DEL MODELLO!!!!");
-    });
-}
 
 
-function initZombieMovebleParts(){
-
-    //Bone037_036 caviglia sinistra
-    //Bone036_030 caviglia destra
-    //Bone002_02  busto dalla vita in su
-    //Bone029_024 gamba destra
-    //Bone030_027 gamba sinistra
-    //Bone001_03 busto dalle tette in su
-    //Bone003_04 busto un po piu in su di quello prima
-    //Bone005_05 braccio sinistro
-    //Bone028_014 braccio destro
-    //Bone004_023 testa
-    //Bone032_06 spalla sinistra
-    //Bone031_015 spalla destra
-    //Bone010_09 gomito sinistro
-    //Bone013_018 gomito destro
-    //Bone015_025 gamba destra
-    //Bone006_028 gamba sinistra
-    //Bone016_026 ginocchio destro
-    //Bone007_029 ginocchio sinistro
-
-    zombie.mesh.traverse( part => {
-      if (part.isBone && part.name === 'Bone032_06') { 
-        zombie.joints.arms.left = part;
-      }
-      if (part.isBone && part.name === 'Bone031_015') { 
-        zombie.joints.arms.right = part;
-      }
-      if (part.isBone && part.name === 'Bone030_027') { 
-        zombie.joints.legs.left = part;
-      }
-      if (part.isBone && part.name === 'Bone029_024') { 
-        zombie.joints.legs.right = part;
-      }
-      if (part.isBone && part.name === 'Bone004_023') { 
-        zombie.head = part;
-      }
-      if (part.isBone && part.name === 'Bone002_02') { 
-        zombie.chest = part;
-      }
-      if (part.isBone && part.name === 'Bone033_00') { 
-        zombie.body = part;
-      }
-      if (part.isBone && part.name === 'Bone037_036') { 
-        zombie.joints.legs.l_ankle = part;
-      }
-      if (part.isBone && part.name === 'Bone036_030') { 
-        zombie.joints.legs.r_ankle = part;
-      }
-    });
-}
-
-loadModel();
 loadSounds();
+
+
 function main() {
     
     var renderer = new THREE.WebGLRenderer({ canvas });
@@ -242,6 +159,17 @@ function main() {
 
     var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     //camera.position.set(0, 10, 100);
+
+
+	// create an AudioListener and add it to the camera
+	listener = new THREE_AUDIO.AudioListener();
+	//camera.add(listener);
+    
+
+    //playBackgroundSound();
+    //playSound(sounds.background.sound);
+    // playSound(sounds.ambient.sound);
+    // playSound(sounds.adventure.sound);
 
     scene.background = new THREE.Color('black');
 
@@ -381,53 +309,13 @@ function main() {
 
         controls = new OrbitControls(camera, canvas);
         controls.update();
-/*
+
         camera.position.z = sphere.position.z + camera_z_pos;
         camera.position.y = sphere.position.y + camera_y_pos;
         camera.position.x = sphere.position.x;
         camera.lookAt(sphere.position);
 
         scene.add(camera);
-
-*/
-
-
-/***************************************************************************************************************************** */
-camera.position.z = zombie.mesh.position.z + camera_z_pos;
-camera.position.y = zombie.mesh.position.y + camera_y_pos;
-camera.position.x = zombie.mesh.position.x;
-
-zombie.mesh.add(camera);
-camera.lookAt(zombie.mesh.position);
-
-// camera.position.set(0, 10, 100);
-// camera.lookAt(scene.position);
-
-
-scene.add(camera);
-
-// console.log(zombie.gltf.type.toString());
-
-zombie.mesh.position.set(0, 0, 0);
-
-
-root = zombie.gltf;
-root.scale.set(.08, .08, .08);
-
-
-
-zombie.mesh.add(camera);
-
-zombie.mesh.add(root);
-
-scene.add(zombie.mesh);
-
-
-initZombieMovebleParts();
-
-
-/***************************************************************************************************************************** */
-
         // sphere.add(camera);
 
         canvas.onmousedown = function(e){
@@ -492,6 +380,8 @@ initZombieMovebleParts();
 
     //  utils.resetAll(scene,5000); // problem: try to change the time of activation of this functions, is it's less than 5s all ok, otherwise the cubes become static without sense
     var camera_pivot;
+    
+    //stopSound(sounds.background.sound);
     function render() {
 
 

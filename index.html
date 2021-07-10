@@ -30,14 +30,43 @@ html, body {
   margin: 0;
   height: 100%;
 }
-#c {
+
+.header_obj { grid-area: header; }
+.main_obj   { grid-area: main; }
+
+
+.grid-container {
   width: 100%;
-  height: 100%;
-  display: block
+  /* height: 100%; */
+  display: grid;
+  grid-template-areas:
+    'header'
+    'main'
+    'main'
+    'main'
+    'main'
+    'main';
+  grid-gap: 10px;
+  /* background-color: #2196F3; */
+  padding: 10px;
 }
+
+/* .grid-container > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 30px;
+} */
+
+#c {
+  width: 99%;
+  height: 99%;
+  /* display: block; */
+}
+
 </style>
   
-<body id="body_"class="d-flex h-100 text-center text-white bg-dark">
+<body id="body"class="d-flex h-100 text-center text-white bg-dark">
 
 
     <!-- <div id="scores_box" absolute>
@@ -50,15 +79,28 @@ html, body {
     </div> -->
 
 
-    <div id="life_counter"class="toast show hidden top" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-body">
-        <img src="asserts/game/heart-16.png" class="rounded mr-2" alt="">
-        <strong class="mr-auto">Current Life: </strong>
-          <h2 id="curr_life">3</h2>
+    <div id="grid_container" class="grid-container" style="display: none;">
+      <div class="header_obj">
+        <div id="life_counter"class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-body">
+            <img src="asserts/game/heart-16.png" class="rounded mr-2" alt="">
+            <strong class="mr-auto">Current Life: </strong>
+              <h2 id="curr_life">3</h2>
+          </div>
+        </div>
+
       </div>
+      <div class="main_obj">
+
+        <canvas class="hidden"id="c" ></canvas>
+
+      </div> 
     </div>
 
-    <canvas class="hidden"id="c" ></canvas>
+
+
+
+
 
 
 
@@ -93,13 +135,6 @@ html, body {
 
     <div id="loadings">
 
-			<div id="models_loading">
-				<div>
-				  <div>Loading Models</div>
-				  <div class="progress"><div id="models_progressbar"></div></div>
-				</div>
-			</div>
-	
 			<div id="sounds_loading">
 				<div>
 				  <div>Loading Sounds</div>
