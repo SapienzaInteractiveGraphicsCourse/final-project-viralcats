@@ -1,6 +1,7 @@
 /* utils functions */
 
 // import { ObjectLoader } from "./libs/threejs/build/three.module";
+import { MathUtils } from './libs/threejs/build/three.module.js';
 import TWEEN from './libs/tween.esm.js';
 // import * as THREE from './libs/threejs/build/three.module.js';
 
@@ -47,6 +48,17 @@ const cubes_type = {
     "Terracotta": ["terracotta", "terracotta", "terracotta"]
 }
 
+const pg_textType = {
+    "Head":           [ "head_l"     ,"head_r"     ,  "head_u"     , "main_color", "head_f"         , "head_b"     ],
+    "Body":           [ "armsLegs_u" ,"armsLegs_u" ,  "armsLegs_u" , "armsLegs_d", "body_f"         , "body_b"     ],
+    "LeftArm"    :    [ "leftArm_l"  ,"main_color" ,  "armsLegs_u" , "armsLegs_d", "leftArm_f"      , "leftArm_b"  ],
+    "RightArm"   :    [ "main_color" ,"rightArm_r" ,  "armsLegs_u" , "armsLegs_d", "rightArm_f"     , "rightArm_b" ],
+    "LeftLeg"    :    [ "leftLeg_l"  ,"main_color" ,  "armsLegs_u" , "armsLegs_d", "leftLeg_f"      , "leftLeg_b"  ],
+    "RightLeg"   :    [ "main_color" ,"rightLeg_r" ,  "armsLegs_u" , "armsLegs_d", "rightLeg_f"     , "rightLeg_b" ],
+    "HeadControl":    [ "head_l"     ,"head_r"     ,  "head_u"     , "main_color", "headControl_f"  , "head_b"     ],
+}
+
+
 const dim_cube = 3;
 
 
@@ -65,6 +77,38 @@ function load_texture_cube(tex_top_name, tex_side_name, tex_bottom_name) {
         new THREE.MeshBasicMaterial({ map: texture_bottom, transparent: true }),   // lower face
         new THREE.MeshBasicMaterial({ map: texture_side, transparent: true }),     // front face
         new THREE.MeshBasicMaterial({ map: texture_side, transparent: true })      // opposite face
+    ];
+
+    return materials;
+}
+
+function load_texture_pg(bodyPart) {
+
+    var path1 = './textures/character/' + String(pg_textType[bodyPart][0]) + ".png";  // right
+    var path2 = './textures/character/' + String(pg_textType[bodyPart][1]) + ".png";  // left 
+    var path3 = './textures/character/' + String(pg_textType[bodyPart][2]) + ".png";  // upper 
+    var path4 = './textures/character/' + String(pg_textType[bodyPart][3]) + ".png";  // lower
+    var path5 = './textures/character/' + String(pg_textType[bodyPart][4]) + ".png";  // front
+    var path6 = './textures/character/' + String(pg_textType[bodyPart][5]) + ".png";  // back
+
+    var temp = load_texture_cube(path1, path2, path3);
+
+    const textureLoader = new THREE.TextureLoader();
+
+    var texture_right      =     textureLoader.load(path1);
+    var texture_left       =     textureLoader.load(path2);
+    var texture_up         =     textureLoader.load(path3);
+    var texture_down       =     textureLoader.load(path4);
+    var texture_front      =     textureLoader.load(path5);
+    var texture_back       =     textureLoader.load(path6);
+
+    var materials = [
+        new THREE.MeshBasicMaterial({ map: texture_right}),     // right face
+        new THREE.MeshBasicMaterial({ map: texture_left}),     // left face
+        new THREE.MeshBasicMaterial({ map: texture_up}),      //  upper face
+        new THREE.MeshBasicMaterial({ map: texture_down}),   // lower face
+        new THREE.MeshBasicMaterial({ map: texture_front}),     // front face
+        new THREE.MeshBasicMaterial({ map: texture_back})      // opposite face
     ];
 
     return materials;
@@ -170,7 +214,7 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
             if (other_object.name == ("Hitbox_pg")){   //the hit_box of the pg
                 console.log("the hit box of the pg has hit the floor")  // choose the respawn/reposition or remove from the scene
                 scene.remove(other_object)
-                pg = create_pg(scene);
+                create_pg(scene);
             }
             
             else if (other_object.name != "mainSphere"){
@@ -251,12 +295,18 @@ export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_v
 
 
 export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= false, mult_dim) {
-    var path1 = './textures/blocks/' + String(cubes_type[type][0]) + ".png";  // top
-    var path2 = './textures/blocks/' + String(cubes_type[type][1]) + ".png";  // side
-    var path3 = './textures/blocks/' + String(cubes_type[type][2]) + ".png";  // base
     var box;
+    var temp
+    if(cubes_type[type] != undefined ){
+        var path1 = './textures/blocks/' + String(cubes_type[type][0]) + ".png";  // top
+        var path2 = './textures/blocks/' + String(cubes_type[type][1]) + ".png";  // side
+        var path3 = './textures/blocks/' + String(cubes_type[type][2]) + ".png";  // base
 
-    var temp = load_texture_cube(path1, path2, path3);
+        temp = load_texture_cube(path1, path2, path3);
+    }
+    else{ // so it's a pg 
+        temp = load_texture_pg(type);
+    }
 
     var mat_box = new THREE.MeshFaceMaterial(temp);
     var geometry_cube;
@@ -358,7 +408,13 @@ export function rotateArmsLegs(box, angle){
 }
 
 export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
-    var path = "./textures/blocks/" + String(type) + ".png";
+    var path;
+    if(cubes_type[type] != undefined ){
+        path = "./textures/blocks/" + String(type.toLowerCase()) + ".png";
+    }
+    else{
+        path = "./textures/character/" + String(type) + ".png";
+    }
 
     var tex = new THREE.TextureLoader().load(path);
     tex.wrapS = THREE.RepeatWrapping;
@@ -474,29 +530,45 @@ export function create_teleport(pos, scene) {
 }
 
 
-export function create_pg(scene){
+export function create_pg(scene, loc = undefined){
     //the root: head
-    var head = create_Box("Namecc", [0, 6, 0],1, scene, null,true,null);
+    var head
+
+    if (!is_pg_sphere){
+        head = create_Box("Head", [0, 6, 0],1, scene, null,true,null,);
+    }
+    else{
+        head = create_Box("HeadControl", [0, 6, 0],1, scene, null,true,null,);
+    }
+
     head.scale.set(1, 1, 1);
 
     // **************** the hitbox*********************
-    var hit_box = create_hitbox([1.5,5,1], [0, 9.5, -10], 1, scene,0.3,true, undefined, true);
+    var hit_box;
+    if (loc == undefined){
+    hit_box = create_hitbox([1.5,5,1], [0, 9.5, -10], 1, scene,0.3,false, undefined, true);
+    }
+    else{
+        hit_box = create_hitbox([1.5,5,1], [loc[0], loc[1], loc[2]], 1, scene,0.3,false, undefined, true);
+        // hit_box.initial_pos =  [loc[0], loc[1], loc[2]]; // no assign cause it's not the actual fist one.
+    }
     hit_box.initial_pos = [0, 9.5, -10];
+    
 
 
-    var body = create_Box("Namecc", [0, -4.5, 0], 0, scene,null,false,[1.0, 2, 1.0]);
+    var body = create_Box("Body", [0, -4.5, 0], 0, scene,null,false,[1.0, 2, 1.0]);
     // body.scale.set(1.0, 2, 1.0);
 
-    var left_arm = create_Box("Namecc", [2.25, 0, 0], 0, scene,null, false,[0.5, 2.0, 0.5]);  
+    var left_arm = create_Box("LeftArm", [2.25, 0, 0], 0, scene,null, false,[0.5, 2.0, 0.5]);  
     // left_arm.scale.set(0.5, 2.0, 0.5);
 
-    var right_arm = create_Box("Namecc", [-2.25, 0, 0], 0, scene,null, false,[0.5, 2.0, 0.5]); 
+    var right_arm = create_Box("RightArm", [-2.25, 0, 0], 0, scene,null, false,[0.5, 2.0, 0.5]); 
     // right_arm.scale.set(0.5, 2.0, 0.5);
 
-    var left_leg = create_Box("Namecc", [0.75,-5.5, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
+    var left_leg = create_Box("LeftLeg", [0.75,-5.5, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
     // left_leg.scale.set(0.5, 2.0, 1.0);
 
-    var right_leg = create_Box("Namecc", [-0.75,-5.5, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
+    var right_leg = create_Box("RightLeg", [-0.75,-5.5, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
     // right_leg.scale.set(0.5, 2.0, 1.0);
 
     hit_box.add(head)
@@ -507,7 +579,7 @@ export function create_pg(scene){
     body.add(left_leg)
     body.add(right_leg)
 
-    pg = [hit_box,head,body,left_arm,right_arm,left_leg,right_leg]
+    pg = [hit_box,head,body,left_arm,right_arm,left_leg,right_leg];
     // return pg;
 }
 
@@ -999,6 +1071,47 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
 }
 
 /****************************************************** animations  [start] *******************************************************/
+
+/****************************************************** gameplay  [start] *******************************************************/
+export function change_main(scene){
+    var loc;
+
+    if(is_pg_sphere){  // now the controllable character will be the man
+        is_pg_sphere = false;
+    }
+    else{  // now the controllable character will be the sphere
+        is_pg_sphere = true;
+    }
+
+    loc = [pg[0].position.x , pg[0].position.y , pg[0].position.z];
+    
+    scene.remove(pg[0]);
+    create_pg(scene, loc);
+
+    scene.simulate();
+
+    // setTimeout(function(){
+    //     create_pg(scene, loc);
+    // }, 10);
+    
+    
+    // pg[0].position.set(loc.x, loc.y, loc.z);
+
+    // scene.simulate(); //update the new position for physijs
+
+    // pg[0].__dirtyPosition = false;
+    // pg[0].__dirtyRotation = false;
+
+
+
+
+
+    // other important changes: camera, motion, etc.
+
+}
+
+
+/****************************************************** gameplay  [start] *******************************************************/
 
 /****************************************************** Rendering  [start] ********************************************************/
 

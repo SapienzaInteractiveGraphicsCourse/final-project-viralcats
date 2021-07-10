@@ -32,13 +32,14 @@ var pg;
 var sphere;
 
 var keys;
+var pressable_q = true;
 
 var listener;
 var curr_sounds = new Map([]);
 
 var camera_x_pos = 0;
 var camera_y_pos = 68;
-var camera_z_pos = 300;
+var camera_z_pos = 130;
 
 var mouse_x;
 var mouse_pressing = false;
@@ -183,6 +184,7 @@ function main() {
         s: false,
         d: false,
         w: false,
+        q: false,
         space:false
     };
 
@@ -236,7 +238,7 @@ function main() {
     /* ************************* SPHERES ***********************************/
 
     {
-        utils.create_Sphere(3, 0xFFFF00, "rock", scene);
+        utils.create_Sphere(3, 0xFFFF00, "Rock", scene);
     }
 
     {
@@ -305,7 +307,7 @@ function main() {
         pg[0].__dirtyRotation = false;
         
         /* ************************* MAiN SPHERE ***********************************/
-        sphere = utils.create_Sphere(3, 0xFF0000, "rock", scene, [0,5,0], true);
+        sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, [0,5,0], true);
 
         controls = new OrbitControls(camera, canvas);
         controls.update();
@@ -420,6 +422,16 @@ function main() {
 
         // console.log(sphere.getLinearVelocity());
         // console.log(utils.radians_to_degrees(sphere.rotation.y))
+
+        if ( keys.q && pressable_q==true){
+            console.log("pressed q");
+            utils.change_main(scene);
+            pressable_q = false;
+            setTimeout(function(){
+                pressable_q = true;
+            }, 2000);
+            
+        }
 
         if ( keys.w ){
             z = sphere.getLinearVelocity().z-VELOCITY;
