@@ -39,7 +39,7 @@ var curr_sounds = new Map([]);
 
 var camera_x_pos = 0;
 var camera_y_pos = 68;
-var camera_z_pos = 130;
+var camera_z_pos = 250;
 
 var mouse_x;
 var mouse_pressing = false;
@@ -232,6 +232,8 @@ function main() {
         ascent = utils.createAscentGround(5, 5, 10, "Amethyst", [-39, 0, -5], scene)
 
         descent = utils.createDescentGround(5, 5, 10, "Rock", [-39, 0, -5], scene)
+
+        var brick_wall = utils.createPhysicWall("Rock",scene,13,13,[17,0,-20],false);
 
     }
 

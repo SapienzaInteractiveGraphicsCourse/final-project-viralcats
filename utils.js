@@ -36,6 +36,11 @@ export var pg;
 export var is_pg_sphere = false;
 
 
+//stats game
+export var life = 3;
+var life_tag = document.getElementById("curr_life");
+
+
 // dictionary that shows wich textures must be used, in order: top texture, side texture, bottom texture
 const cubes_type = {
     "Dirt": ["Dirt", "Dirt", "Dirt"],
@@ -212,9 +217,16 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
         plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
 
             if (other_object.name == ("Hitbox_pg")){   //the hit_box of the pg
-                console.log("the hit box of the pg has hit the floor")  // choose the respawn/reposition or remove from the scene
-                scene.remove(other_object)
-                create_pg(scene);
+                life = life -1;
+                console.log("lives left: " + String(life));
+                life_tag.innerHTML = life;
+                if(life==0) resetAll(scene,20);
+                else{
+                    console.log("the hit box of the pg has hit the floor")  // choose the respawn/reposition or remove from the scene
+                    scene.remove(other_object)
+                    create_pg(scene);
+                }
+          
             }
             
             else if (other_object.name != "mainSphere"){
@@ -453,14 +465,20 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
         if(is_main){
             if(other_object.name.includes("bound_")){
                 console.log("Urca la palla ha colpito il bound")
-                sphere.__dirtyPosition = true;
-                sphere.__dirtyRotation = true;
-                sphere.position.set(pos[0],pos[1],pos[2])
+                life = life -1;
+                console.log("lives left: " + String(life));
+                life_tag.innerHTML = life;
+                if(life==0) resetAll(scene,20);
+                else{
+                    sphere.__dirtyPosition = true;
+                    sphere.__dirtyRotation = true;
+                    sphere.position.set(pos[0],pos[1],pos[2])
 
-                sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
-                sphere.setAngularVelocity(new THREE.Vector3(0,0,0));
+                    sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
+                    sphere.setAngularVelocity(new THREE.Vector3(0,0,0));
 
-                scene.simulate()
+                    scene.simulate()
+                }
             }
         }
     });
@@ -673,6 +691,25 @@ export function createDescentGround(n_width, n_depth, actual_height, type, left_
         }
     }
     return descent_group;
+}
+
+
+export function createPhysicWall(type, scene, row, columns, left_down_pos, on_x){
+    var wall_group = [];
+    var box;
+
+    for(var i =0; i<row; i++){
+        for(var j=0; j<columns; j++){
+            if(on_x)
+                box = create_Box(type, [(left_down_pos[0] + dim_cube/2) + j * dim_cube, (left_down_pos[1]+ dim_cube/2) + i * dim_cube, (left_down_pos[2]+ dim_cube/2)], 1.0, scene);
+            else  //create along z axis 
+                box = create_Box(type, [(left_down_pos[0] + dim_cube/2), (left_down_pos[1]+ dim_cube/2) + i * dim_cube, (left_down_pos[2]+ dim_cube/2) + j * dim_cube], 1.0, scene);
+            wall_group.push(box);
+
+        }
+    }
+    return wall_group;
+
 }
 
 /*************************************************** Lands scenario [start] ******************************************************/
@@ -1144,7 +1181,13 @@ export function reset_data() {
 
     last_time = 0;
     curr_time = 0;
+
+    pg = null;
+    is_pg_sphere = false;
+
+    life = 3;
 }
+
 
 export function remove_allBoxes(scene) {
     cubes_group.forEach(Element => scene.remove(Element));
