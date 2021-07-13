@@ -33,13 +33,17 @@ const restitution_box = 0.0; // low restitution (bouncing factor)
 
 //pg variable
 export var pg;
-export var is_pg_sphere = false;
+export var is_pg_sphere = true;
 
 
 //stats game
 export var life = 3;
 var life_tag = document.getElementById("curr_life");
 
+
+export var camera_x_pos = 0;
+export var camera_y_pos = 68;
+export var camera_z_pos = 250;
 
 // dictionary that shows wich textures must be used, in order: top texture, side texture, bottom texture
 const cubes_type = {
@@ -1110,7 +1114,7 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
 /****************************************************** animations  [start] *******************************************************/
 
 /****************************************************** gameplay  [start] *******************************************************/
-export function change_main(scene){
+export function change_main(scene,camera){
     var loc;
 
     if(is_pg_sphere){  // now the controllable character will be the man
@@ -1125,7 +1129,14 @@ export function change_main(scene){
     scene.remove(pg[0]);
     create_pg(scene, loc);
 
+    // camera.position.z = pg[0].position.z + camera_z_pos;
+    // camera.position.y = pg[0].position.y + camera_y_pos;
+    // camera.position.x = pg[0].position.x;
+
+    // camera.lookAt( pg[0].position );
     scene.simulate();
+
+
 
     // setTimeout(function(){
     //     create_pg(scene, loc);
@@ -1139,12 +1150,8 @@ export function change_main(scene){
     // pg[0].__dirtyPosition = false;
     // pg[0].__dirtyRotation = false;
 
-
-
-
-
     // other important changes: camera, motion, etc.
-
+    return is_pg_sphere == true ? undefined : pg[0];
 }
 
 
