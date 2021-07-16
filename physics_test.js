@@ -389,6 +389,7 @@ loadSounds();
 
 function main() {
     
+
     var renderer = new THREE.WebGLRenderer({ canvas });
 
     const fov = 20;
@@ -414,7 +415,7 @@ function main() {
 
     scene.background = new THREE.Color('black');
 
-    scene.setGravity(new THREE.Vector3(0, - 9.8, 0)); // set gravity
+    scene.setGravity(new THREE.Vector3(0, - 9.8*3, 0)); // set gravity
     scene.addEventListener('update', function () {
         scene.simulate(); // simulate on every scene update
     });
@@ -437,8 +438,9 @@ function main() {
 
     document.body.addEventListener('keyup', function(e) {
         var key = e.code.replace('Key', '').toLowerCase();
-        if (keys[key] !== undefined )
+        if (keys[key] !== undefined ){
             keys[key] = false;
+        }
         // sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
     });
 
@@ -626,6 +628,26 @@ function main() {
     var camera_pivot;
     var what_look_at = undefined;
     //stopSound(sounds.background.sound);
+    var x = 0;
+    var y = 0;
+    var z = 0;
+    setInterval(function(){
+        if(keys.w | keys.s | keys.d | keys.a | keys.space){
+            if(what_look_at != undefined){
+        
+            }else{
+                if(keys.w){
+                    console.log("sphere.setLinearVelocity")
+                    sphere.setLinearVelocity(new THREE.Vector3(x, y ,z));
+                }
+            }
+        }
+    
+    
+    },500);
+
+
+
     function render() {
 
 
@@ -652,13 +674,11 @@ function main() {
         // controls.enabled = false;
         
 
-        var VELOCITY = 1;
+        var VELOCITY = 2;
         var MAX_VELOCITY = 50;
         var JUMP_VELOCITY = 10;
         var MAX_JUMP_VELOCITY = 50;
-        var x = 0;
-        var y = 0;
-        var z = 0;
+
         var t = utils.degrees_to_radians(0);
   
 
@@ -681,11 +701,9 @@ function main() {
             if(what_look_at != undefined){
                 what_look_at.__dirtyPosition = true;
                 what_look_at.__dirtyRotation = true;
-                what_look_at.position.z = what_look_at.position.z -VELOCITY;
+                what_look_at.translateZ(VELOCITY);
                 camera.lookAt( what_look_at.position );
                 scene.simulate();
-                what_look_at.__dirtyPosition = false;
-                what_look_at.__dirtyRotation = false;
             }
             else
                 z = sphere.getLinearVelocity().z-VELOCITY;
@@ -694,7 +712,7 @@ function main() {
             if(what_look_at != undefined){  
                 what_look_at.__dirtyPosition = true;
                 what_look_at.__dirtyRotation = true;
-                what_look_at.position.z = what_look_at.position.z + VELOCITY;
+                what_look_at.position.z = what_look_at.position.z - VELOCITY;
                 camera.lookAt( what_look_at.position );
                 scene.simulate();
             }else
@@ -810,9 +828,8 @@ function main() {
                 // scene.simulate();
                 // what_look_at.__dirtyPosition = false;
                 // what_look_at.__dirtyRotation = false;
-            }else
-                sphere.setLinearVelocity(new THREE.Vector3(x, y ,z));
-
+            }//else
+                // sphere.setLinearVelocity(new THREE.Vector3(x, y ,z));   
             //   sphere.translateZ(z);
             // sphere.position.y = (sphere.position.y + y);
             // sphere.position.x = (sphere.position.x + x);
@@ -885,6 +902,5 @@ function main() {
 
     render();
 }
-
 
 initializate_page();
