@@ -10,6 +10,7 @@ var prog_cubes = 0;
 var prog_planes = 0;
 var prog_spheres = 0;
 var prog_hit_box = 0;
+var prog_buttons = 0 ;
 
 // time
 var curr_time = 0;
@@ -20,6 +21,7 @@ var bounds_group = [];
 var cubes_group = [];
 var objects_group = [];
 var hit_boxes_group = [];
+var buttons_group = [];
 
 // dynamics and static vectors
 const static_vector = new THREE.Vector3(0, 0, 0);
@@ -38,6 +40,7 @@ export var is_pg_sphere = false;
 
 //stats game
 export var life = 3;
+export var level_ended = false;
 var life_tag = document.getElementById("curr_life");
 
 
@@ -533,18 +536,71 @@ export function create_teleport(pos, scene) {
         0,  // friction
         0 // restitution/bounciness
     );
-    var teleport = new Physijs.CylinderMesh(telGeo, myBoxMaterial);
+    // var teleport = new Physijs.CylinderMesh(telGeo, myBoxMaterial);
+    var teleport = new THREE.Mesh(telGeo, material_tel);
+    
 
     teleport.name = "teleport";
-    teleport.__dirtyPosition = true;
-    teleport.__dirtyRotation = true;
+    // teleport.__dirtyPosition = true;
+    // teleport.__dirtyRotation = true;
     teleport.position.set(pos[0], pos[1], pos[2]);
-    teleport.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-        // console.log("level ended!")
-    });
+    // teleport.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+    //     // console.log("level ended!")
+    // });
+
+
     objects_group.push(teleport);
     scene.add(teleport);
     return teleport
+}
+
+export function create_button(scene, pos){
+    var button;
+    var radius = 3;
+    var subdivs = 64;
+    var buttonGeo = new THREE.CylinderGeometry(radius, radius, radius/2, subdivs, 1, false)
+
+    var material_button  = new THREE.MeshPhongMaterial({
+        color: 0xff0000,
+
+        specular: 0xff0000,
+        emissive: 0xff0000,
+        shininess: 50
+    });
+
+    var buttonMaterial = Physijs.createMaterial(
+        material_button,
+        0,  // friction
+        0 // restitution/bounciness
+    );
+
+    button = new Physijs.CylinderMesh(buttonGeo,buttonMaterial,0)// static
+    prog_buttons++;
+    button.name = "button_"+String(prog_buttons);
+    button.__dirtyPosition = true;
+    button.__dirtyRotation = true;
+    button.position.set(pos[0], pos[1], pos[2]);
+    button.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        console.log(" button hitten, should happen something !")
+        var new_prop_mat = new THREE.MeshPhongMaterial({
+            color: 0x00ff00,
+    
+            specular: 0x00ff00,
+            emissive: 0x00ff00,
+            shininess: 50
+        });
+
+        var new_mat = Physijs.createMaterial(
+            new_prop_mat,
+            0,
+            0
+        );
+        button.material = new_mat
+    });
+    buttons_group.push(button);
+
+
+    scene.add(button)
 }
 
 
@@ -719,10 +775,11 @@ export function createPhysicWall(type, scene, row, columns, left_down_pos, on_x)
 export function animateTeleport(scene) {
     var teleport = scene.getObjectByName("teleport");
     if (teleport) {
-        teleport.setAngularVelocity(
-            new THREE.Vector3(0., 6.0, 0.)
-        );
-        // teleport.rotation.x += degrees_to_radians(1);  //  attention to the friction of the plane where is situated
+        // console.log("animate teleport")
+        // teleport.setAngularVelocity(
+        //     new THREE.Vector3(0., 6.0, 0.)
+        // );
+        teleport.rotation.y += degrees_to_radians(1);  //  attention to the friction of the plane where is situated
         scene.simulate();
     }
 }
@@ -1110,22 +1167,43 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
 /****************************************************** animations  [start] *******************************************************/
 
 /****************************************************** gameplay  [start] *******************************************************/
-export function change_main(scene){
+export function change_main(scene, camera){
     var loc;
 
     if(is_pg_sphere){  // now the controllable character will be the man
-        is_pg_sphere = false;
+        console.log("dfffd")
+        
+        var temp = load_texture_pg("Head");
+        var mat_box = new THREE.MeshFaceMaterial(temp); 
+        var mat_box_phy = Physijs.createMaterial(
+            mat_box,
+            friction_box,// friction
+            restitution_box // restitution / bounciness
+         );
+         pg[1].material = mat_box_phy
+
+         is_pg_sphere = false;
     }
     else{  // now the controllable character will be the sphere
-        is_pg_sphere = true;
+        
+        var temp = load_texture_pg("HeadControl");
+        var mat_box = new THREE.MeshFaceMaterial(temp); 
+        var mat_box_phy = Physijs.createMaterial(
+            mat_box,
+            friction_box,// friction
+            restitution_box // restitution / bounciness
+         );
+         pg[1].material = mat_box_phy
+
+         is_pg_sphere = true;
     }
 
-    loc = [pg[0].position.x , pg[0].position.y , pg[0].position.z];
+    // loc = [pg[0].position.x , pg[0].position.y , pg[0].position.z];
     
-    scene.remove(pg[0]);
-    create_pg(scene, loc);
+    // scene.remove(pg[0]);
+    // create_pg(scene, loc);
 
-    scene.simulate();
+    // scene.simulate();
 
     // setTimeout(function(){
     //     create_pg(scene, loc);
@@ -1140,15 +1218,30 @@ export function change_main(scene){
     // pg[0].__dirtyRotation = false;
 
 
-
-
-
     // other important changes: camera, motion, etc.
 
 }
 
+export function check_in_teleport(scene, pos_main_pg){
+    var teleport = scene.getObjectByName("teleport");
+    if (teleport) {
+        // console.log("check in teleport log: -> "+String(pos_main_pg[0]) + " " +String(pos_main_pg[1]) + " " +String(pos_main_pg[2]) )
+        var radius_size_check = 5;
+        var height_size_check = 10; 
+        var conditionx =  (teleport.position.x - radius_size_check   < pos_main_pg[0])   &&  (pos_main_pg[0]<  teleport.position.x + radius_size_check);
+        var conditiony =  (teleport.position.y - height_size_check   < pos_main_pg[1])   &&  (pos_main_pg[1]<  teleport.position.y + height_size_check);
+        var conditionz =  (teleport.position.z - radius_size_check   < pos_main_pg[2])   &&  (pos_main_pg[2]<  teleport.position.z + radius_size_check);
+        if(conditionx && conditiony && conditionz){
+            console.log("Livello finito");
+            level_ended = true;
+            resetAll(scene,100);
+        }
+    }
 
-/****************************************************** gameplay  [start] *******************************************************/
+}
+
+
+/****************************************************** gameplay  [end] *******************************************************/
 
 /****************************************************** Rendering  [start] ********************************************************/
 
@@ -1173,11 +1266,13 @@ export function reset_data() {
     prog_planes = 0;
     prog_spheres = 0;
     prog_hit_box = 0;
+    prog_buttons = 0;
 
     bounds_group = [];
     cubes_group = [];
     objects_group = [];
     hit_boxes_group = [];
+    buttons_group = [];
 
     last_time = 0;
     curr_time = 0;
@@ -1191,22 +1286,22 @@ export function reset_data() {
 
 export function remove_allBoxes(scene) {
     cubes_group.forEach(Element => scene.remove(Element));
-    scene.simulate()
 }
 
 export function remove_allBounds(scene) {
     bounds_group.forEach(Element => scene.remove(Element));
-    scene.simulate()
 }
 
 export function remove_OtherObjects(scene) {
     objects_group.forEach(Element => scene.remove(Element));
-    scene.simulate()
 }
 
 export function remove_hit_boxes(scene) {
     hit_boxes_group.forEach(Element => scene.remove(Element));
-    scene.simulate()
+}
+
+export function remove_buttons(scene) {
+    buttons_group.forEach(Element => scene.remove(Element));
 }
 
 export function resetAll(scene, time) {
@@ -1215,7 +1310,9 @@ export function resetAll(scene, time) {
         remove_allBounds(scene);
         remove_allBoxes(scene);
         remove_hit_boxes(scene);
+        remove_buttons(scene);
         reset_data();
+        scene.simulate()
     },
         time
     )

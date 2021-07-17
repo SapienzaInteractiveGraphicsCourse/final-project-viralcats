@@ -39,7 +39,7 @@ var curr_sounds = new Map([]);
 
 var camera_x_pos = 0;
 var camera_y_pos = 68;
-var camera_z_pos = 250;
+var camera_z_pos = 100;
 
 var mouse_x;
 var mouse_pressing = false;
@@ -247,6 +247,10 @@ function main() {
         utils.create_teleport([0, 20, 10], scene); // emissive light of the teleport
     }
 
+    {
+        utils.create_button(scene ,[-10, 0.75, -10]); // emissive light of the teleport
+    }
+
     /* ************************* LIGHT ***********************************/
     {
         // utils.create_pointLIght([10,10,10],0xffffff,scene);
@@ -309,7 +313,7 @@ function main() {
         pg[0].__dirtyRotation = false;
         
         /* ************************* MAiN SPHERE ***********************************/
-        sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, [0,5,0], true);
+        sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, [0,3.5,0], true);
 
         controls = new OrbitControls(camera, canvas);
         controls.update();
@@ -346,8 +350,6 @@ function main() {
     }
 
     /* ************************* ANIMATIONS ******************************/
-
-    utils.animateTeleport(scene);
 
     // using names
     anim_box_repeat = utils.animateBackAndForwardName("box_5", scene, 'y', 100, 20, 5000);
@@ -387,6 +389,10 @@ function main() {
     
     //stopSound(sounds.background.sound);
     function render() {
+
+        // some animations need to be called in the render
+        utils.animateTeleport(scene);
+        if (! utils.level_ended) utils.check_in_teleport(scene, [sphere.position.x,sphere.position.y,sphere.position.z])
 
 
         // if (utils.reset_pg){
@@ -436,10 +442,24 @@ function main() {
         }
 
         if ( keys.w ){
+            // x
             z = sphere.getLinearVelocity().z-VELOCITY;
+            // var rotation_matrix = new THREE.Matrix4().extractRotation(sphere.matrix);
+            // var force_vector = new THREE.Vector3(0, 100, 0).applyMatrix4(rotation_matrix);
+            // sphere.applyCentralImpulse(force_vector);
+            // var force = new THREE.Vector3(100, 0, 0)
+            // sphere.applyCentralImpulse(force.applyMatrix4( sphere.matrix));
+            // sphere.applyCentralImpulse(sphere.matrix.multiplyVector3(new THREE.Vector3(0, 10, 0)));
+
+            // var rotation_matrix = new THREE.Matrix4();
+            // rotation_matrix.extractRotation(sphere.matrix);
+            // var force_vector = new THREE.Vector3(0, 100, 0);
+            // var final_force_vector = rotation_matrix.multiplyVector3(force_vector);
+            // sphere.applyCentralForce(final_force_vector);
         }
         if ( keys.s ){
             z = sphere.getLinearVelocity().z+VELOCITY;
+
         }
 
         // camera_pivot = new THREE.Object3D()
@@ -454,17 +474,24 @@ function main() {
             
 
         if ( keys.a ){
-            x = sphere.getLinearVelocity().x-VELOCITY;
-            // sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
-            t = (sphere.rotation.y);
+            // x = sphere.getLinearVelocity().x-VELOCITY;
+            sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
+            // sphere.__dirtyRotation = true
+            // sphere.rotation.y = sphere.rotation.y + utils.degrees_to_radians(2)
+            // scene.simulate()
+            // t = (sphere.rotation.y);
         }
         if ( keys.d ){
-            x = sphere.getLinearVelocity().x+VELOCITY;
-            // sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,-VELOCITY,sphere.getAngularVelocity().z));
-            t =  (sphere.rotation.y);
+            // x = sphere.getLinearVelocity().x+VELOCITY;
+            sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,-VELOCITY,sphere.getAngularVelocity().z));
+            // sphere.__dirtyRotation = true
+            // sphere.rotation.y = sphere.rotation.y + utils.degrees_to_radians(-2)
+            // scene.simulate()
+            // t =  (sphere.rotation.y);
         }
+        // console.log(t)
         if ( keys.space ){
-            y = sphere.getLinearVelocity().y+JUMP_VELOCITY;
+            y = sphere.getLinearVelocity().y+JUMP_VELOCITY/10;
         }
 
         if(x > MAX_VELOCITY){
@@ -544,7 +571,6 @@ function main() {
         TWEEN.update();
         scene.simulate();
         camera.lookAt( sphere.position );
-
         controls.update();
         // // console.log(sphere.getLinearVelocity())
         // // TWEEN.update();
