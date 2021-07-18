@@ -33,6 +33,7 @@ var sphere;
 
 var keys;
 var pressable_q = true;
+var pressable_w = true;
 
 var listener;
 var curr_sounds = new Map([]);
@@ -558,7 +559,7 @@ function main() {
         pg[0].__dirtyRotation = false;
         
         /* ************************* MAiN SPHERE ***********************************/
-        sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, [0,3.5,0], true);
+        sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, [0,20,0], true); //3.5
 
         controls = new OrbitControls(camera, canvas);
         controls.update();
@@ -636,29 +637,34 @@ function main() {
     var x = 0;
     var y = 0;
     var z = 0;
-    setInterval(function(){
-        if(keys.w | keys.s | keys.d | keys.a | keys.space){
-            if(what_look_at != undefined){
+    // setInterval(function(){
+    //     if(keys.w | keys.s | keys.d | keys.a | keys.space){
+    //         if(what_look_at != undefined){
         
-            }else{
-                if(keys.w){
-                    console.log("sphere.setLinearVelocity")
-                    sphere.setLinearVelocity(new THREE.Vector3(x, y ,z));
-                }
-            }
-        }
+    //         }else{
+    //             if(keys.w){
+    //                 console.log("sphere.setLinearVelocity")
+    //                 sphere.setLinearVelocity(new THREE.Vector3(x, y ,z));
+    //             }
+    //         }
+    //     }
     
     
-    },500);
+    // },500);
 
 
+
+    var quat_x = sphere.quaternion.x;
+    var quat_z = sphere.quaternion.z;
+    var print_it = true
 
     function render() {
 
         // some animations need to be called in the render
         utils.animateTeleport(scene);
-        if (! utils.level_ended) utils.check_in_teleport(scene, [sphere.position.x,sphere.position.y,sphere.position.z])
+        if (! utils.level_completed && ! utils.gameOver) utils.check_in_teleport(scene, [sphere.position.x,sphere.position.y,sphere.position.z])
 
+        // if(utils.level_completed) utils.resetAll(scene,10);
 
         // if (utils.reset_pg){
         //     console.log(" **** resettando il pg ****");
@@ -667,276 +673,409 @@ function main() {
         // }
 
         
-        if (utils.resizeRendererToDisplaySize(renderer)) {
-            const canvas = renderer.domElement;
-            camera.aspect = canvas.clientWidth / canvas.clientHeight;
-            camera.updateProjectionMatrix();
-        }
+
 
         // head.position.set(head.position.x, head.position.y +head_displacement_update , head.position.z) 
         // hit_box_2.position.set(head.position.x, head.position.y +hb2_displacement_update , head.position.z)
 
 
         
-        TWEEN.update();
-        scene.simulate();
+        // TWEEN.update();
+        // scene.simulate();
         // controls.enabled = false;
         
+        if (! utils.level_completed && ! utils.gameOver){
 
-        var VELOCITY = 2;
-        var MAX_VELOCITY = 50;
-        var JUMP_VELOCITY = 10;
-        var MAX_JUMP_VELOCITY = 50;
+            if(print_it){
+                print_it = false;
+                setTimeout(function(){
+                    console.log("level completed " + String(utils.level_completed))
+                    console.log("game over " + String(utils.gameOver))
+                    print_it = true
+                }, 10000);
+             }
 
-        var t = utils.degrees_to_radians(0);
-  
+            var VELOCITY = 2;
+            var VELOCITY_w = 20;
 
-        // console.log(sphere.getLinearVelocity());
-        // console.log(utils.radians_to_degrees(sphere.rotation.y))
+            // var MAX_ANGULAR_VELOCITY =
+            var MAX_VELOCITY = 50;
+            var JUMP_VELOCITY = 10;
+            var MAX_JUMP_VELOCITY = 50;
 
-        if ( keys.q && pressable_q==true){
-            console.log("pressed q");
-            what_look_at = utils.change_main(scene,camera);
+            var t = utils.degrees_to_radians(0);
+    
 
-            console.log(what_look_at);
-            pressable_q = false;
-            setTimeout(function(){
-                pressable_q = true;
-            }, 2000);
+            // console.log(sphere.getLinearVelocity());
+            // console.log(utils.radians_to_degrees(sphere.rotation.y))
+
+            if ( keys.q && pressable_q==true){
+                console.log("pressed q");
+                what_look_at = utils.change_main(scene,camera);
+
+                console.log(what_look_at);
+                pressable_q = false;
+                setTimeout(function(){
+                    pressable_q = true;
+                }, 500);
+                
+            }
+
+
+            if ( keys.w){  // set the angular velocity to 0 in a way of having a straight trajectory? // sphere.setAngularVelocity(new THREE.Vector3(0,0,0));
+
+
+                // if(pressable_w){
+                    var quaternion = sphere.quaternion.clone();
+                    quaternion.x = 0;
+                    quaternion.z = 0;
+                    var rotation_matrix = new THREE.Matrix4();
+                    rotation_matrix = rotation_matrix.makeRotationFromQuaternion(quaternion);
+                    var vel_vector = new THREE.Vector3(0,0, -VELOCITY_w).applyMatrix4(rotation_matrix);
+                    sphere.setLinearVelocity(vel_vector)
+
+
+
+                    // sphere.applyCentralImpulse(new THREE.Vector3(0,-100,0))
+                    // pressable_w = false;
+
+                //     setTimeout(function(){
+                //         pressable_w = true;
+                //     }, 1000);
+
+                // }
+
+
+
+                // x
+                // z = sphere.getLinearVelocity().z-VELOCITY;
+                // console.log(sphere.getWorldRotation())
+
+                // console.log(sphere.quaternion)
+
+                // var euler_rotation = sphere.getWorldRotation();
+                // var euler_vector = new THREE.Euler( 0, euler_rotation.y, 0, 'XYZ' );
+
+                // var quaternion = new THREE.Quaternion();
+                // quaternion.setFromEuler(euler_vector);
+
+                // rotation_matrix.makeRotationY(0);
+
+
+                // quaternion.setFromAxisAngle( new THREE.Vector3( 1, 0, 0 ), 0 );
+                // quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), utils.degrees_to_radians(90) );
+                // quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), 0 );
+
+                // var rotObjectMatrix = new THREE.Matrix4();
+                // rotObjectMatrix.makeRotationFromQuaternion(quaternion);
+                // quaternion.x = 0;
+
+                // quaternion.y = 0;
+                // var old_vec = sphere.getLinearVelocity();
+
+
+                // var vel_vector = new THREE.Vector3(0, 0,-VELOCITY_w).applyQuaternion(quaternion);
+
+
+                // if(vel_vector.z >= -0.2){
+                //     quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), utils.degrees_to_radians(90) );
+                //     vel_vector = new THREE.Vector3(0, 0,-VELOCITY_w).applyQuaternion(quaternion);
+                // }
+                // console.log(vel_vector);
+
+                // var vel_vector = new THREE.Vector3(0, 0,-VELOCITY_w).applyEuler(euler_vector);
+
+                // var rotation_matrix = new THREE.Matrix4().makeRotationY(quaternion.y);
+                // var vel_vector = new THREE.Vector3(0, 0,-VELOCITY_w).applyMatrix4(rotation_matrix);
+
+                // sphere.setLinearVelocity(new THREE.Vector3(0, , 0))
+
+
+                
+
+                // var rotation_matrix = new THREE.Matrix4().extractRotation(sphere.matrix);
+                // if(pressable_w){
+                    // console.log(utils.radians_to_degrees(sphere.rotation.y))
+                    // var rotation_matrix = new THREE.Matrix4().makeRotationY(sphere.rotation.y);
+                    // var force_vector = new THREE.Vector3(1000, 1000, 0).applyMatrix4(rotation_matrix);
+                    // sphere.applyCentralImpulse(force_vector);
+                    // // scene.simulate()
+                    // pressable_w = false;
+                // }
+                // setTimeout(function(){
+                //     pressable_w = true;
+                // }, 100);
+
+                // var force = new THREE.Vector3(100, 0, 0)
+                // sphere.applyCentralImpulse(force.applyMatrix4( sphere.matrix));
+
+                // sphere.applyCentralImpulse(sphere.matrix.multiplyVector3(new THREE.Vector3(0, 10, 0)));
+
+                // var rotation_matrix = new THREE.Matrix4();
+                // rotation_matrix.extractRotation(sphere.matrix);
+                // var force_vector = new THREE.Vector3(0, 100, 0);
+                // var final_force_vector = rotation_matrix.multiplyVector3(force_vector);
+                // sphere.applyCentralForce(final_force_vector);
+            }
+            if ( keys.s ){
+
+                var quaternion = sphere.quaternion.clone();
+
+                quaternion.x = 0;
+                quaternion.z = 0;
+
+                var rotation_matrix = new THREE.Matrix4();
+                rotation_matrix = rotation_matrix.makeRotationFromQuaternion(quaternion);
+
+                var vel_vector = new THREE.Vector3(0, 0, VELOCITY_w).applyMatrix4(rotation_matrix);
+
+                sphere.setLinearVelocity(vel_vector)
+
+
+
+
+                // z = sphere.getLinearVelocity().z+VELOCITY;
+
+            //     if(what_look_at != undefined){
+            //         what_look_at.__dirtyPosition = true;
+            //         what_look_at.__dirtyRotation = true;
+            //         what_look_at.translateZ(VELOCITY);
+            //         camera.lookAt( what_look_at.position );
+            //         scene.simulate();
+            //     }
+            //     else
+            //         z = sphere.getLinearVelocity().z-VELOCITY;
+            // }
+            // if ( keys.s ){
+            //     if(what_look_at != undefined){  
+            //         what_look_at.__dirtyPosition = true;
+            //         what_look_at.__dirtyRotation = true;
+            //         what_look_at.position.z = what_look_at.position.z - VELOCITY;
+            //         camera.lookAt( what_look_at.position );
+            //         scene.simulate();
+            //     }else
+            //         z = sphere.getLinearVelocity().z+VELOCITY;
+
+            }
+
+            // camera_pivot = new THREE.Object3D()
+                // var Y_AXIS = new THREE.Vector3( 0, 1, 0 );
+
+                // scene.add( camera_pivot );
+                // camera_pivot.add( camera );
+                // // camera.position.set( 500, 0, 0 );
+                // camera.lookAt( camera_pivot.position );
+                // camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
+
+                
+
+            if ( keys.a ){
+                var ang_vel = sphere.getAngularVelocity();
+                // console.log(ang_vel)
+
+                if(ang_vel.y <= 20)
+                    sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y + VELOCITY/10,ang_vel.z));
+                else sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y,ang_vel.z));
+
+                // x = sphere.getLinearVelocity().x-VELOCITY;
+                // sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
+                // sphere.__dirtyRotation = true
+                // sphere.rotation.y = sphere.rotation.y + utils.degrees_to_radians(2)
+                // scene.simulate()
+                // t = (sphere.rotation.y);
+            }
+            if ( keys.d ){
+
+                var ang_vel = sphere.getAngularVelocity();
+                // console.log(ang_vel)
+
+                if(ang_vel.y >= -20)
+                    sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y - VELOCITY/10,ang_vel.z));
+                else sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y,ang_vel.z));
+
+                // sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
+
+
+                // x = sphere.getLinearVelocity().x+VELOCITY;
+                // sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,-VELOCITY,sphere.getAngularVelocity().z));
+                // sphere.__dirtyRotation = true
+                // sphere.rotation.y = sphere.rotation.y + utils.degrees_to_radians(-2)
+                // scene.simulate()
+                // t =  (sphere.rotation.y);
+
+            //     if(what_look_at != undefined){
+            //         x = what_look_at.position.x;
+            //         x -= VELOCITY;
+            //         t = (what_look_at.rotation.y);
+            //     }
+            //     else{
+            //         x = sphere.getLinearVelocity().x-VELOCITY;
+            //         t = (sphere.rotation.y);
+            //     }
+            // }
+            // if ( keys.d ){
+            //     if(what_look_at != undefined){
+            //         x = what_look_at.position.x ;
+            //         x += VELOCITY;
+            //         t =  (what_look_at.rotation.y);
+            //     }else{
+            //         x = sphere.getLinearVelocity().x+VELOCITY;
+            //         t =  (sphere.rotation.y);
+            //     }
+
+            }
+            // console.log(t)
+            if ( keys.space ){
+
+                var lin_vel  = sphere.getLinearVelocity();
+                sphere.setLinearVelocity(new THREE.Vector3(lin_vel.x, lin_vel.y + VELOCITY,lin_vel.z));
+                // y = sphere.getLinearVelocity().y+JUMP_VELOCITY/10;
+
+                // if(what_look_at != undefined){
+                //     y = what_look_at.position.y;
+                //     y += JUMP_VELOCITY;
+                // }else
+                //     y = sphere.getLinearVelocity().y+JUMP_VELOCITY;
+
+            }
+
+            if(x > MAX_VELOCITY){
+                x = MAX_VELOCITY;
+            }        
+            if(y > MAX_VELOCITY){
+                y = MAX_VELOCITY;
+            }        
+            if(z > MAX_VELOCITY){
+                z = MAX_VELOCITY;
+            }
+
+            if(x < -MAX_VELOCITY){
+                x = -MAX_VELOCITY;
+            }        
+            if(y < -MAX_VELOCITY){
+                y = -MAX_VELOCITY;
+            }        
+            if(z < -MAX_VELOCITY){
+                z = -MAX_VELOCITY;
+            }
+
+            if(y > MAX_JUMP_VELOCITY){
+                y = MAX_JUMP_VELOCITY;
+            }
+
+            if(y < -MAX_JUMP_VELOCITY){
+                y = -MAX_JUMP_VELOCITY;
+            }  
+
+
+            if(keys.w | keys.s | keys.d | keys.a | keys.space){
+
+                // sphere.__dirtyPosition = true;
+                // sphere.__dirtyRotation = true;
+                
             
-        }
 
-        if ( keys.w ){
+                // sphere.__dirtyPosition = true;
+                // sphere.__dirtyRotation = true;
+                // sphere.setLinearVelocity(new THREE.Vector3(x,y,z));
+                // console.log(quaternion);
 
-            // x
-            z = sphere.getLinearVelocity().z-VELOCITY;
-            // var rotation_matrix = new THREE.Matrix4().extractRotation(sphere.matrix);
-            // var force_vector = new THREE.Vector3(0, 100, 0).applyMatrix4(rotation_matrix);
-            // sphere.applyCentralImpulse(force_vector);
-            // var force = new THREE.Vector3(100, 0, 0)
-            // sphere.applyCentralImpulse(force.applyMatrix4( sphere.matrix));
-            // sphere.applyCentralImpulse(sphere.matrix.multiplyVector3(new THREE.Vector3(0, 10, 0)));
 
-            // var rotation_matrix = new THREE.Matrix4();
-            // rotation_matrix.extractRotation(sphere.matrix);
-            // var force_vector = new THREE.Vector3(0, 100, 0);
-            // var final_force_vector = rotation_matrix.multiplyVector3(force_vector);
-            // sphere.applyCentralForce(final_force_vector);
-        }
-        if ( keys.s ){
-            z = sphere.getLinearVelocity().z+VELOCITY;
+                    //             camera_pivot = new THREE.Object3D()
+                    // var Y_AXIS = new THREE.Vector3( 0, 1, 0 );
 
-        //     if(what_look_at != undefined){
-        //         what_look_at.__dirtyPosition = true;
-        //         what_look_at.__dirtyRotation = true;
-        //         what_look_at.translateZ(VELOCITY);
-        //         camera.lookAt( what_look_at.position );
-        //         scene.simulate();
-        //     }
-        //     else
-        //         z = sphere.getLinearVelocity().z-VELOCITY;
-        // }
-        // if ( keys.s ){
-        //     if(what_look_at != undefined){  
-        //         what_look_at.__dirtyPosition = true;
-        //         what_look_at.__dirtyRotation = true;
-        //         what_look_at.position.z = what_look_at.position.z - VELOCITY;
-        //         camera.lookAt( what_look_at.position );
-        //         scene.simulate();
-        //     }else
-        //         z = sphere.getLinearVelocity().z+VELOCITY;
+                    // scene.add( camera_pivot );
+                    // camera_pivot.add(sphere);
+                    // camera_pivot.add( camera );
+                    // // camera.position.set( 500, 0, 0 );
+                    // camera.lookAt( camera_pivot.position );
+                    // camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
 
-        }
+                // var vel  =new THREE.Vector3(x, y ,z);
+                // console.log(vel);
+                if(what_look_at != undefined){
 
-        // camera_pivot = new THREE.Object3D()
-// var Y_AXIS = new THREE.Vector3( 0, 1, 0 );
+                    // what_look_at.__dirtyPosition = true;
+                    // what_look_at.__dirtyRotation = true;
+                    
+                    // // what_look_at.__dirtyPosition = true;
+                    // // what_look_at.__dirtyRotation = true;
 
-// scene.add( camera_pivot );
-// camera_pivot.add( camera );
-// // camera.position.set( 500, 0, 0 );
-// camera.lookAt( camera_pivot.position );
-// camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
+                    // // what_look_at.position.x += x;
+                    // // what_look_at.position.y += y;
+                    // what_look_at.position.z = what_look_at.position.z + 2;
+                    // camera.lookAt( what_look_at.position );
+                    // scene.simulate();
+                    // what_look_at.__dirtyPosition = false;
+                    // what_look_at.__dirtyRotation = false;
+                }//else
+                    // sphere.setLinearVelocity(new THREE.Vector3(x, y ,z));   
+                //   sphere.translateZ(z);
+                // sphere.position.y = (sphere.position.y + y);
+                // sphere.position.x = (sphere.position.x + x);
+
+            }
+
+            // console.log(utils.radians_to_degrees(sphere.rotation.y));
+
+            // camera.position.z = sphere.position.z + camera_z_pos;
+            // camera.position.y = sphere.position.y + camera_y_pos;
+            // camera.position.x = sphere.position.x;
 
             
+            // METTERE CAMERA CHE SEGUE LA PALLA
+            // FARE CHE FUNZIONANO I PULTANTI CONTEMPORANEAMENTE
 
-        if ( keys.a ){
+            // console.log(sphere.getLinearVelocity())
 
-            // x = sphere.getLinearVelocity().x-VELOCITY;
-            sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
-            // sphere.__dirtyRotation = true
-            // sphere.rotation.y = sphere.rotation.y + utils.degrees_to_radians(2)
-            // scene.simulate()
-            // t = (sphere.rotation.y);
-        }
-        if ( keys.d ){
-            // x = sphere.getLinearVelocity().x+VELOCITY;
-            sphere.setAngularVelocity(new THREE.Vector3(sphere.getAngularVelocity().x,-VELOCITY,sphere.getAngularVelocity().z));
-            // sphere.__dirtyRotation = true
-            // sphere.rotation.y = sphere.rotation.y + utils.degrees_to_radians(-2)
-            // scene.simulate()
-            // t =  (sphere.rotation.y);
+            // camera.lookAt( sphere.position );
+            if(what_look_at != undefined){  
 
-        //     if(what_look_at != undefined){
-        //         x = what_look_at.position.x;
-        //         x -= VELOCITY;
-        //         t = (what_look_at.rotation.y);
-        //     }
-        //     else{
-        //         x = sphere.getLinearVelocity().x-VELOCITY;
-        //         t = (sphere.rotation.y);
-        //     }
-        // }
-        // if ( keys.d ){
-        //     if(what_look_at != undefined){
-        //         x = what_look_at.position.x ;
-        //         x += VELOCITY;
-        //         t =  (what_look_at.rotation.y);
-        //     }else{
-        //         x = sphere.getLinearVelocity().x+VELOCITY;
-        //         t =  (sphere.rotation.y);
-        //     }
-
-        }
-        // console.log(t)
-        if ( keys.space ){
-            y = sphere.getLinearVelocity().y+JUMP_VELOCITY/10;
-
-            // if(what_look_at != undefined){
-            //     y = what_look_at.position.y;
-            //     y += JUMP_VELOCITY;
-            // }else
-            //     y = sphere.getLinearVelocity().y+JUMP_VELOCITY;
-
-        }
-
-        if(x > MAX_VELOCITY){
-            x = MAX_VELOCITY;
-        }        
-        if(y > MAX_VELOCITY){
-            y = MAX_VELOCITY;
-        }        
-        if(z > MAX_VELOCITY){
-            z = MAX_VELOCITY;
-        }
-
-        if(x < -MAX_VELOCITY){
-            x = -MAX_VELOCITY;
-        }        
-        if(y < -MAX_VELOCITY){
-            y = -MAX_VELOCITY;
-        }        
-        if(z < -MAX_VELOCITY){
-            z = -MAX_VELOCITY;
-        }
-
-        if(y > MAX_JUMP_VELOCITY){
-            y = MAX_JUMP_VELOCITY;
-        }
-
-        if(y < -MAX_JUMP_VELOCITY){
-            y = -MAX_JUMP_VELOCITY;
-        }  
-
-
-        if(keys.w | keys.s | keys.d | keys.a | keys.space){
-
-            // sphere.__dirtyPosition = true;
-            // sphere.__dirtyRotation = true;
-            
-          
-
-            // sphere.__dirtyPosition = true;
-            // sphere.__dirtyRotation = true;
-            // sphere.setLinearVelocity(new THREE.Vector3(x,y,z));
-            // console.log(quaternion);
-
-
-//             camera_pivot = new THREE.Object3D()
-// var Y_AXIS = new THREE.Vector3( 0, 1, 0 );
-
-// scene.add( camera_pivot );
-// camera_pivot.add(sphere);
-// camera_pivot.add( camera );
-// // camera.position.set( 500, 0, 0 );
-// camera.lookAt( camera_pivot.position );
-// camera_pivot.rotateOnAxis( Y_AXIS, 15 );    // radians
-
-            // var vel  =new THREE.Vector3(x, y ,z);
-            // console.log(vel);
-            if(what_look_at != undefined){
+                
 
                 // what_look_at.__dirtyPosition = true;
                 // what_look_at.__dirtyRotation = true;
-                
-                // // what_look_at.__dirtyPosition = true;
-                // // what_look_at.__dirtyRotation = true;
+        
+        
+                // scene.simulate(); //update the new position for physijs
+        
 
-                // // what_look_at.position.x += x;
-                // // what_look_at.position.y += y;
-                // what_look_at.position.z = what_look_at.position.z + 2;
+
+
+                // camera.position.z = what_look_at.position.z + utils.camera_z_pos;
+                // camera.position.y = what_look_at.position.y + utils.camera_y_pos;
+                // camera.position.x = what_look_at.position.x;
+
                 // camera.lookAt( what_look_at.position );
-                // scene.simulate();
+
                 // what_look_at.__dirtyPosition = false;
                 // what_look_at.__dirtyRotation = false;
-            }//else
-                // sphere.setLinearVelocity(new THREE.Vector3(x, y ,z));   
-            //   sphere.translateZ(z);
-            // sphere.position.y = (sphere.position.y + y);
-            // sphere.position.x = (sphere.position.x + x);
+            }
+            else{
+                // camera.position.z = sphere.position.z + utils.camera_z_pos;
+                // camera.position.y = sphere.position.y + utils.camera_y_pos;
+                // camera.position.x = sphere.position.x;
 
-        }
+                //sphere.add(camera);
 
-        // console.log(utils.radians_to_degrees(sphere.rotation.y));
-
-        // camera.position.z = sphere.position.z + camera_z_pos;
-        // camera.position.y = sphere.position.y + camera_y_pos;
-        // camera.position.x = sphere.position.x;
-
-        
-        // METTERE CAMERA CHE SEGUE LA PALLA
-        // FARE CHE FUNZIONANO I PULTANTI CONTEMPORANEAMENTE
-
-        // console.log(sphere.getLinearVelocity())
-
-        // camera.lookAt( sphere.position );
-        if(what_look_at != undefined){  
-
-            
-
-            // what_look_at.__dirtyPosition = true;
-            // what_look_at.__dirtyRotation = true;
-    
-    
-            // scene.simulate(); //update the new position for physijs
-    
-
-
-
-            // camera.position.z = what_look_at.position.z + utils.camera_z_pos;
-            // camera.position.y = what_look_at.position.y + utils.camera_y_pos;
-            // camera.position.x = what_look_at.position.x;
-
-            // camera.lookAt( what_look_at.position );
-
-            // what_look_at.__dirtyPosition = false;
-            // what_look_at.__dirtyRotation = false;
-        }
-        else{
-            // camera.position.z = sphere.position.z + utils.camera_z_pos;
-            // camera.position.y = sphere.position.y + utils.camera_y_pos;
-            // camera.position.x = sphere.position.x;
-
-            //sphere.add(camera);
+                camera.lookAt( sphere.position );
+            }
 
             camera.lookAt( sphere.position );
         }
 
 
+
+        if (utils.resizeRendererToDisplaySize(renderer)) {
+            const canvas = renderer.domElement;
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+        }
+
+
         TWEEN.update();
         scene.simulate();
-
-        camera.lookAt( sphere.position );
-
+        
         controls.update();
         // // console.log(sphere.getLinearVelocity())
         // // TWEEN.update();

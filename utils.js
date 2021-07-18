@@ -39,9 +39,12 @@ export var is_pg_sphere = true;
 
 
 //stats game
-export var life = 3;
-export var level_ended = false;
+export var life = 1;  //3w
+
+export var gameOver = false;
+export var level_completed = false;
 var life_tag = document.getElementById("curr_life");
+life_tag.innerHTML = life;
 
 
 export var camera_x_pos = 0;
@@ -227,7 +230,11 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
                 life = life -1;
                 console.log("lives left: " + String(life));
                 life_tag.innerHTML = life;
-                if(life==0) resetAll(scene,20);
+                if(life=="0"){
+                    console.log("Game over!!");
+                    gameOver = true;
+                    resetAll(scene,20);
+                }
                 else{
                     console.log("the hit box of the pg has hit the floor")  // choose the respawn/reposition or remove from the scene
                     scene.remove(other_object)
@@ -235,8 +242,18 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
                 }
           
             }
+            else if (other_object.name == ("mainSphere")){
+                life = life -1;
+                console.log("lives left: " + String(life));
+                life_tag.innerHTML = life;
+                if(life=="0"){
+                    console.log("Game over!!");
+                    gameOver = true;
+                    resetAll(scene,20);
+                }
+            }
             
-            else if (other_object.name != "mainSphere"){
+            else{   //other objects 
                 scene.remove(other_object)
                 console.log("the object: " + String(other_object.name) + " has been removed, map limit exceeded.\nHitten the bound: " + String(plane_box.name));
             }
@@ -471,12 +488,17 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     sphere.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
         if(is_main){
             if(other_object.name.includes("bound_")){
-                console.log("Urca la palla ha colpito il bound")
-                life = life -1;
-                console.log("lives left: " + String(life));
-                life_tag.innerHTML = life;
-                if(life==0) resetAll(scene,20);
-                else{
+                // console.log("Urca la palla ha colpito il bound")
+                // life = life -1;
+                // console.log("lives left: " + String(life));
+                // life_tag.innerHTML = life;
+                // if(life=="0"){
+                //     console.log("Game over!!");
+                //     gameOver = true;
+                //     resetAll(scene,20);
+                // }
+                // if(life==0) resetAll(scene,20);
+                // else{
                     sphere.__dirtyPosition = true;
                     sphere.__dirtyRotation = true;
                     sphere.position.set(pos[0],pos[1],pos[2])
@@ -485,10 +507,27 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
                     sphere.setAngularVelocity(new THREE.Vector3(0,0,0));
 
                     scene.simulate()
-                }
+                // }
             }
         }
     });
+
+    if(is_main){   // add the direction arrow 
+        const dir = new THREE.Vector3( 1, 2, 0 );
+
+        //normalize the direction vector (convert to vector of length 1)
+        dir.normalize();
+
+        const origin = new THREE.Vector3( pos[0], pos[1], pos[2] );
+        const length = 20;
+        const hex = 0x00ff00;
+
+        const arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
+        arrowHelper.setLength(20,7.5,7.5);
+        arrowHelper.width = 20;
+        arrowHelper.name = "sphere_direction";
+        scene.add( arrowHelper );
+    }
     objects_group.push(sphere);
     scene.add(sphere);
     return sphere;
@@ -1247,9 +1286,9 @@ export function check_in_teleport(scene, pos_main_pg){
         var conditiony =  (teleport.position.y - height_size_check   < pos_main_pg[1])   &&  (pos_main_pg[1]<  teleport.position.y + height_size_check);
         var conditionz =  (teleport.position.z - radius_size_check   < pos_main_pg[2])   &&  (pos_main_pg[2]<  teleport.position.z + radius_size_check);
         if(conditionx && conditiony && conditionz){
-            console.log("Livello finito");
-            level_ended = true;
-            resetAll(scene,100);
+            console.log("Level completed!! ");
+            level_completed = true;
+            resetAll(scene,10);
         }
     }
 }
@@ -1320,13 +1359,21 @@ export function remove_buttons(scene) {
 
 export function resetAll(scene, time) {
     setTimeout(function () {
-        remove_OtherObjects(scene);
-        remove_allBounds(scene);
-        remove_allBoxes(scene);
-        remove_hit_boxes(scene);
-        remove_buttons(scene);
+        // remove_OtherObjects(scene);
+        // remove_allBounds(scene);
+        // remove_allBoxes(scene);
+        // remove_hit_boxes(scene);
+        // remove_buttons(scene);
+        // scene.remove(scene.getObjectByName("sphere_direction"));
+        while(scene.children.length > 0){ 
+            scene.remove(scene.children[0]); 
+            // scene.simulate()
+        }
+
         reset_data();
-        scene.simulate()
+        // createFlatLand(4,4, "Namecc", [30, 0, 30], scene);
+        // scene.simulate()
+        scene.onSimulationResume();
     },
         time
     )
