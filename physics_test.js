@@ -34,6 +34,7 @@ var sphere;
 var keys;
 var pressable_q = true;
 var pressable_w = true;
+var pressable_space = true;
 
 var listener;
 var curr_sounds = new Map([]);
@@ -451,7 +452,7 @@ function main() {
     /* ************************* PLANES ***********************************/
 
     {
-        utils.create_Box_Plane([0, 0, 0], [0, 0, 0], 40, scene, false);
+        utils.create_Box_Plane([0, 0, 0], [0, 0, 0], 1000, scene, false);
     }
 
     /* ************************* BOXES ***********************************/
@@ -561,13 +562,15 @@ function main() {
         /* ************************* MAiN SPHERE ***********************************/
         sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, [0,20,0], true); //3.5
 
-        controls = new OrbitControls(camera, canvas);
-        controls.update();
-
         camera.position.z = sphere.position.z + utils.camera_z_pos;
         camera.position.y = sphere.position.y + utils.camera_y_pos;
         camera.position.x = sphere.position.x;
         camera.lookAt(sphere.position);
+
+        controls = new OrbitControls(camera, canvas);
+        controls.update();
+
+
 
         scene.add(camera);
         // sphere.add(camera);
@@ -651,28 +654,75 @@ function main() {
     
     
     // },500);
+    // sphere.add(camera);
 
 
-
-    var quat_x = sphere.quaternion.x;
-    var quat_z = sphere.quaternion.z;
     var print_it = true
+    controls.minDIstance =50;
+    controls.maxDistance = utils.camera_z_pos;
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.maxPolarAngle = Math.PI / 2
 
     function render() {
+
+        if (controls.target.y < sphere.position.y + utils.camera_y_pos){
+            controls.enabled = false;
+            // camera.position.z = sphere.position.z + utils.camera_z_pos;
+            camera.position.y = sphere.position.y + utils.camera_y_pos;
+            controls.enabled = true;
+        }
+    
+        // camera.position.x = sphere.position.x;
+
+        // controls.target.set(controls.target.x,controls.target.y,sphere.position.z)
+        controls.target.set(sphere.position.x,sphere.position.y,sphere.position.z)
+        
+        
+
+        // compute vector direction from camera to sphere
+        var pos_sphere = sphere.position.clone();
+        var pos_camera = camera.position.clone();
+        var dir = pos_sphere.sub(pos_camera);
+        dir.y = 0;
+        dir.normalize();
+
+
+        if(print_it){
+           print_it = false;
+           setTimeout(function(){
+            // console.log("camera pos: ");
+            // console.log(camera.position.x);               
+            // console.log(camera.position.y);           
+            // console.log(camera.position.z);
+            // console.log("*********************************");
+            var camera_dir = scene.getObjectByName("sphere_direction");
+            if(camera_dir) scene.remove(camera_dir);
+
+            const origin = new THREE.Vector3( 0, 10, 0 );
+            
+        
+            const length = 20;
+            const hex = 0x0000ff;
+        
+            var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
+        
+            arrowHelper.setLength(20,5,5);
+
+            arrowHelper.name = "camera_dir";
+            arrowHelper.children[0].scale.z = 100;
+            scene.add( arrowHelper );
+
+            print_it = true
+           }, 5000);
+        }
+
+
 
         // some animations need to be called in the render
         utils.animateTeleport(scene);
         if (! utils.level_completed && ! utils.gameOver) utils.check_in_teleport(scene, [sphere.position.x,sphere.position.y,sphere.position.z])
 
-        // if(utils.level_completed) utils.resetAll(scene,10);
-
-        // if (utils.reset_pg){
-        //     console.log(" **** resettando il pg ****");
-        //     pg = utils.create_pg(scene);
-        //     utils.reset_pg = false;
-        // }
-
-        
 
 
         // head.position.set(head.position.x, head.position.y +head_displacement_update , head.position.z) 
@@ -684,21 +734,15 @@ function main() {
         // scene.simulate();
         // controls.enabled = false;
         
+
+        // if game is active, take the commands from the user
         if (! utils.level_completed && ! utils.gameOver){
 
-            if(print_it){
-                print_it = false;
-                setTimeout(function(){
-                    console.log("level completed " + String(utils.level_completed))
-                    console.log("game over " + String(utils.gameOver))
-                    print_it = true
-                }, 10000);
-             }
+  
 
             var VELOCITY = 2;
             var VELOCITY_w = 20;
 
-            // var MAX_ANGULAR_VELOCITY =
             var MAX_VELOCITY = 50;
             var JUMP_VELOCITY = 10;
             var MAX_JUMP_VELOCITY = 50;
@@ -725,25 +769,74 @@ function main() {
             if ( keys.w){  // set the angular velocity to 0 in a way of having a straight trajectory? // sphere.setAngularVelocity(new THREE.Vector3(0,0,0));
 
 
+
+                //     sphere.setAngularVelocity(new THREE.Vector3(0,0,0));
                 // if(pressable_w){
-                    var quaternion = sphere.quaternion.clone();
-                    quaternion.x = 0;
-                    quaternion.z = 0;
-                    var rotation_matrix = new THREE.Matrix4();
-                    rotation_matrix = rotation_matrix.makeRotationFromQuaternion(quaternion);
-                    var vel_vector = new THREE.Vector3(0,0, -VELOCITY_w).applyMatrix4(rotation_matrix);
-                    sphere.setLinearVelocity(vel_vector)
+                //     var quaternion = sphere.quaternion.clone();
+                //     quaternion.x = 0;
+                //     quaternion.z = 0;
+                //     // quaternion.w = 0;
+                //     // quaternion.y = 0;
+                //     var rotation_matrix = new THREE.Matrix4();
+                //     rotation_matrix = rotation_matrix.makeRotationFromQuaternion(quaternion);
+                //     var vel_vector = new THREE.Vector3(0,0, -VELOCITY_w*500).applyMatrix4(rotation_matrix);
+                //     // sphere.setLinearVelocity(vel_vector)
+                //     sphere.applyCentralImpulse(vel_vector)
+                //     // sphere.__dirtyRotation = true;
+                //     // sphere.rotation.x = 0;
+                //     // sphere.rotation.z = 0;
+                //     // scene.simulate();
 
 
 
-                    // sphere.applyCentralImpulse(new THREE.Vector3(0,-100,0))
-                    // pressable_w = false;
+                //     // sphere.applyCentralImpulse(new THREE.Vector3(0,-100,0))
+                //     pressable_w = false;
 
                 //     setTimeout(function(){
                 //         pressable_w = true;
-                //     }, 1000);
+                //     }, 500);
 
                 // }
+
+
+                // var force_vector = new THREE.Vector3(0,0, -VELOCITY_w*10);
+                var force_vector = dir.clone().multiplyScalar(VELOCITY_w*10);
+                sphere.applyCentralImpulse(force_vector);
+
+
+
+                var sphere_direction = scene.getObjectByName("sphere_direction");
+                if(sphere_direction){
+                    // const origin = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z );
+                    // const destination = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z - 20 );
+                    // const dir = destination.sub(origin);
+
+                    sphere_direction.setDirection(dir.clone());
+                    sphere_direction.position.x = sphere.position.x;
+                    sphere_direction.position.y = sphere.position.y + 5;
+                    sphere_direction.position.z = sphere.position.z;
+                }
+                else{
+
+                    // const origin = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z );
+                    // const destination = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z - 20 );
+                    // const dir = destination.sub(origin);
+                
+                
+                    const arrow_pos = new THREE.Vector3( sphere.position.x, sphere.position.y+5, sphere.position.z );
+                
+                    const length = 20;
+                    const hex = 0x00ff00;
+                
+                    var arrowHelper = new THREE.ArrowHelper(dir.clone(), arrow_pos, length, hex );
+                
+                    arrowHelper.setLength(7.5,2,2);
+
+                    arrowHelper.name = "sphere_direction";
+                    arrowHelper.children[0].scale.z = 100;
+                    scene.add( arrowHelper );
+                }
+
 
 
 
@@ -819,17 +912,53 @@ function main() {
             }
             if ( keys.s ){
 
-                var quaternion = sphere.quaternion.clone();
+                // var quaternion = sphere.quaternion.clone();
 
-                quaternion.x = 0;
-                quaternion.z = 0;
+                // quaternion.x = 0;
+                // quaternion.z = 0;
 
-                var rotation_matrix = new THREE.Matrix4();
-                rotation_matrix = rotation_matrix.makeRotationFromQuaternion(quaternion);
+                // var rotation_matrix = new THREE.Matrix4();
+                // rotation_matrix = rotation_matrix.makeRotationFromQuaternion(quaternion);
 
-                var vel_vector = new THREE.Vector3(0, 0, VELOCITY_w).applyMatrix4(rotation_matrix);
+                // var vel_vector = new THREE.Vector3(0, 0, VELOCITY_w).applyMatrix4(rotation_matrix);
 
-                sphere.setLinearVelocity(vel_vector)
+                // sphere.setLinearVelocity(vel_vector)
+                var force_vector =  dir.clone().multiplyScalar(-VELOCITY_w*10);
+                sphere.applyCentralImpulse(force_vector);
+
+                var sphere_direction = scene.getObjectByName("sphere_direction");
+                if(sphere_direction){
+                    // const origin = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z );
+                    // const destination = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z + 20 );
+                    // const dir = destination.sub(origin);
+                    // dir = dir.clone()
+
+                    sphere_direction.setDirection(dir.clone().multiplyScalar(-1));
+                    sphere_direction.position.x = sphere.position.x;
+                    sphere_direction.position.y = sphere.position.y + 5;
+                    sphere_direction.position.z = sphere.position.z;
+                }
+                else{
+
+                    // const origin = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z );
+                    // const destination = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z + 20 );
+                    // const dir = destination.sub(origin);
+                
+                
+                    const arrow_pos = new THREE.Vector3( sphere.position.x, sphere.position.y+5, sphere.position.z );
+                    // dir.normalize();
+                
+                    const length = 20;
+                    const hex = 0x00ff00;
+                
+                    var arrowHelper = new THREE.ArrowHelper( dir.clone().multiplyScalar(-1), arrow_pos, length, hex );
+                
+                    arrowHelper.setLength(7.5,2,2);
+
+                    arrowHelper.name = "sphere_direction";
+                    scene.add( arrowHelper );
+                }
+
 
 
 
@@ -873,9 +1002,52 @@ function main() {
                 var ang_vel = sphere.getAngularVelocity();
                 // console.log(ang_vel)
 
-                if(ang_vel.y <= 20)
-                    sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y + VELOCITY/10,ang_vel.z));
-                else sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y,ang_vel.z));
+                // if(ang_vel.y <= 20)
+                //     sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y + VELOCITY/10,ang_vel.z));
+                // else sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y,ang_vel.z));
+
+
+                var axis = new THREE.Vector3(0,1,0);
+                var angle = utils.degrees_to_radians(90);
+
+                var force_vector =  dir.clone().multiplyScalar(VELOCITY_w*10).applyAxisAngle( axis, angle );
+
+                // var force_vector = new THREE.Vector3( -VELOCITY_w*10,0,0);
+
+                sphere.applyCentralImpulse(force_vector);
+
+                var sphere_direction = scene.getObjectByName("sphere_direction");
+                if(sphere_direction){
+                    // const origin = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z );
+                    // const destination = new THREE.Vector3( sphere.position.x -20, sphere.position.y, sphere.position.z);
+                    // const dir = destination.sub(origin);
+
+                    sphere_direction.setDirection(dir.clone().applyAxisAngle( axis, angle ));
+                    sphere_direction.position.x = sphere.position.x;
+                    sphere_direction.position.y = sphere.position.y + 5;
+                    sphere_direction.position.z = sphere.position.z;
+                }
+                else{
+
+                    // const origin = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z );
+                    // const destination = new THREE.Vector3( sphere.position.x -20, sphere.position.y, sphere.position.z - 20 );
+                    // const dir = destination.sub(origin);
+                
+                
+                    const arrow_pos = new THREE.Vector3( sphere.position.x, sphere.position.y+5, sphere.position.z );
+                    // dir.normalize();
+                
+                    const length = 20;
+                    const hex = 0x00ff00;
+                
+                    var arrowHelper = new THREE.ArrowHelper( dir.clone().applyAxisAngle( axis, angle ), arrow_pos, length, hex );
+                
+                    arrowHelper.setLength(7.5,2,2);
+
+                    arrowHelper.name = "sphere_direction";
+                    scene.add( arrowHelper );
+                }
+
 
                 // x = sphere.getLinearVelocity().x-VELOCITY;
                 // sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
@@ -886,14 +1058,54 @@ function main() {
             }
             if ( keys.d ){
 
-                var ang_vel = sphere.getAngularVelocity();
-                // console.log(ang_vel)
+                var axis = new THREE.Vector3(0,1,0);
+                var angle = utils.degrees_to_radians(-90);
 
-                if(ang_vel.y >= -20)
-                    sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y - VELOCITY/10,ang_vel.z));
-                else sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y,ang_vel.z));
+                var force_vector =  dir.clone().multiplyScalar(VELOCITY_w*10).applyAxisAngle( axis, angle );
 
-                // sphere.setAngularVelocity(new THREE.Vector3(camera_pivot,VELOCITY,sphere.getAngularVelocity().z));
+                // var force_vector = new THREE.Vector3( VELOCITY_w*10,0,0);
+                sphere.applyCentralImpulse(force_vector);
+
+                var sphere_direction = scene.getObjectByName("sphere_direction");
+                if(sphere_direction){
+                    // const origin = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z );
+                    // const destination = new THREE.Vector3( sphere.position.x +20, sphere.position.y, sphere.position.z);
+                    // const dir = destination.sub(origin);
+
+                    sphere_direction.setDirection(dir.clone().applyAxisAngle( axis, angle ));
+
+                    sphere_direction.position.x = sphere.position.x;
+                    sphere_direction.position.y = sphere.position.y + 5;
+                    sphere_direction.position.z = sphere.position.z;
+                }
+                else{
+
+                    // const origin = new THREE.Vector3( sphere.position.x, sphere.position.y, sphere.position.z );
+                    // const destination = new THREE.Vector3( sphere.position.x +20, sphere.position.y, sphere.position.z - 20 );
+                    // const dir = destination.sub(origin);
+                
+                
+                    const arrow_pos = new THREE.Vector3( sphere.position.x, sphere.position.y+5, sphere.position.z );
+                    dir.normalize();
+                
+                    const length = 20;
+                    const hex = 0x00ff00;
+                
+                    var arrowHelper = new THREE.ArrowHelper( dir.clone().applyAxisAngle( axis, angle ), arrow_pos, length, hex );
+                
+                    arrowHelper.setLength(7.5,2,2);
+
+                    arrowHelper.name = "sphere_direction";
+                    scene.add( arrowHelper );
+                }
+
+                // var ang_vel = sphere.getAngularVelocity();
+                // // console.log(ang_vel)
+
+                // if(ang_vel.y >= -20)
+                //     sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y - VELOCITY/10,ang_vel.z));
+                // else sphere.setAngularVelocity(new THREE.Vector3(ang_vel.x,ang_vel.y,ang_vel.z));
+
 
 
                 // x = sphere.getLinearVelocity().x+VELOCITY;
@@ -927,8 +1139,17 @@ function main() {
             // console.log(t)
             if ( keys.space ){
 
-                var lin_vel  = sphere.getLinearVelocity();
-                sphere.setLinearVelocity(new THREE.Vector3(lin_vel.x, lin_vel.y + VELOCITY,lin_vel.z));
+                // console.log("can jump:" + String(sphere.canJump));
+
+                // var lin_vel  = sphere.getLinearVelocity();
+                // sphere.setLinearVelocity(new THREE.Vector3(lin_vel.x, lin_vel.y + VELOCITY,lin_vel.z));
+                if(sphere.canJump){
+                    sphere.canJump = false;
+                    var force_vector = new THREE.Vector3( 0,VELOCITY_w*1000,0)
+                    sphere.applyCentralImpulse(force_vector)
+                   
+                }
+
                 // y = sphere.getLinearVelocity().y+JUMP_VELOCITY/10;
 
                 // if(what_look_at != undefined){
@@ -939,6 +1160,21 @@ function main() {
 
             }
 
+            // remove arrow if no input has been detected
+            if(!(keys.w | keys.s | keys.d | keys.a | keys.space)){
+                var sphere_direction = scene.getObjectByName("sphere_direction");
+                if(sphere_direction) scene.remove(sphere_direction);
+            }
+
+
+            // reduce max height reachable while jumping
+            if(sphere.getLinearVelocity().y >= 20){
+                console.log(sphere.getLinearVelocity());
+                sphere.setLinearVelocity(new THREE.Vector3(sphere.getLinearVelocity().x, 20 ,sphere.getLinearVelocity().z))
+            }
+
+
+            // si può cancellare
             if(x > MAX_VELOCITY){
                 x = MAX_VELOCITY;
             }        
@@ -968,7 +1204,7 @@ function main() {
             }  
 
 
-            if(keys.w | keys.s | keys.d | keys.a | keys.space){
+            // if(keys.w | keys.s | keys.d | keys.a | keys.space){
 
                 // sphere.__dirtyPosition = true;
                 // sphere.__dirtyRotation = true;
@@ -993,7 +1229,7 @@ function main() {
 
                 // var vel  =new THREE.Vector3(x, y ,z);
                 // console.log(vel);
-                if(what_look_at != undefined){
+                // if(what_look_at != undefined){
 
                     // what_look_at.__dirtyPosition = true;
                     // what_look_at.__dirtyRotation = true;
@@ -1008,13 +1244,13 @@ function main() {
                     // scene.simulate();
                     // what_look_at.__dirtyPosition = false;
                     // what_look_at.__dirtyRotation = false;
-                }//else
+                // }else
                     // sphere.setLinearVelocity(new THREE.Vector3(x, y ,z));   
                 //   sphere.translateZ(z);
                 // sphere.position.y = (sphere.position.y + y);
                 // sphere.position.x = (sphere.position.x + x);
 
-            }
+            // }
 
             // console.log(utils.radians_to_degrees(sphere.rotation.y));
 
@@ -1029,7 +1265,7 @@ function main() {
             // console.log(sphere.getLinearVelocity())
 
             // camera.lookAt( sphere.position );
-            if(what_look_at != undefined){  
+            // if(what_look_at != undefined){  
 
                 
 
@@ -1051,18 +1287,18 @@ function main() {
                 // what_look_at.__dirtyPosition = false;
                 // what_look_at.__dirtyRotation = false;
             }
-            else{
+            // else{
                 // camera.position.z = sphere.position.z + utils.camera_z_pos;
                 // camera.position.y = sphere.position.y + utils.camera_y_pos;
                 // camera.position.x = sphere.position.x;
 
                 //sphere.add(camera);
 
-                camera.lookAt( sphere.position );
-            }
+        //         camera.lookAt( sphere.position );
+        //     }
 
-            camera.lookAt( sphere.position );
-        }
+        //     camera.lookAt( sphere.position );
+        // }
 
 
 
@@ -1077,15 +1313,8 @@ function main() {
         scene.simulate();
         
         controls.update();
-        // // console.log(sphere.getLinearVelocity())
-        // // TWEEN.update();
-        // // scene.simulate();
 
-        // camera.lookAt( zombie.mesh.position );
-        // renderer.render(scene, camera);
-        // // effect.render(scene, camera);
-
-        // // camera.lookAt( sphere.position );
+        // effect.render(scene, camera);
 
         renderer.render(scene, camera);
         requestAnimationFrame(render);

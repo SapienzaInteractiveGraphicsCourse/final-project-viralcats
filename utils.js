@@ -48,8 +48,8 @@ life_tag.innerHTML = life;
 
 
 export var camera_x_pos = 0;
-export var camera_y_pos = 68;
-export var camera_z_pos = 250;
+export var camera_y_pos = 70;
+export var camera_z_pos = 200;
 
 // dictionary that shows wich textures must be used, in order: top texture, side texture, bottom texture
 const cubes_type = {
@@ -482,11 +482,16 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     }else{
         sphere.position.set(-sphereRadius - 1 - 25, sphereRadius + 20, 0);
     }
-    if(is_main) sphere.name = "mainSphere";
+    if(is_main){
+        sphere.name = "mainSphere";
+        sphere.canJump = true;
+    }
     else  sphere.name = "sphere_" + String(prog_spheres);
     prog_spheres++;
     sphere.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
         if(is_main){
+
+            sphere.canJump = true;   //will be false when the jump is used.
             if(other_object.name.includes("bound_")){
                 // console.log("Urca la palla ha colpito il bound")
                 // life = life -1;
@@ -512,22 +517,33 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
         }
     });
 
-    if(is_main){   // add the direction arrow 
-        const dir = new THREE.Vector3( 1, 2, 0 );
+    // if(is_main){   // add the direction arrow 
+    //     const origin = new THREE.Vector3( pos[0], pos[1], pos[2] );
+    //     const destination = new THREE.Vector3( pos[0], pos[1], pos[2] + 20 ); 
+    //     const dir = origin.sub(destination);
 
-        //normalize the direction vector (convert to vector of length 1)
-        dir.normalize();
 
-        const origin = new THREE.Vector3( pos[0], pos[1], pos[2] );
-        const length = 20;
-        const hex = 0x00ff00;
+    //     const arrow_pos = new THREE.Vector3( 0, 5, 0 );
 
-        const arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
-        arrowHelper.setLength(20,7.5,7.5);
-        arrowHelper.width = 20;
-        arrowHelper.name = "sphere_direction";
-        scene.add( arrowHelper );
-    }
+
+    //     //normalize the direction vector (convert to vector of length 1)
+    //     dir.normalize();
+
+        
+    //     const length = 20;
+    //     const hex = 0x00ff00;
+
+    //     const arrowHelper = new THREE.ArrowHelper( dir, arrow_pos, length, hex );
+
+    //     console.log("arrow\n");
+    //     console.log(arrowHelper)
+    //     arrowHelper.setLength(10,3,3);
+    //     // arrowHelper.width = 20;
+    //     arrowHelper.name = "sphere_direction";
+
+    //     sphere.add(arrowHelper)
+    //     // scene.add( arrowHelper );
+    // }
     objects_group.push(sphere);
     scene.add(sphere);
     return sphere;
@@ -1276,6 +1292,16 @@ export function change_main(scene, camera){
     return is_pg_sphere == true ? undefined : pg[0];
 }
 
+export function update_arrow_sphere(scene){  //update with the direction of the sphere 
+    if(is_pg_sphere){
+        var sphere  = scene.getObjectByName("mainSphere");
+        var sphere_direction = scene.getObjectByName("sphere_direction");
+        var from = sphere.position
+        var to = new THREE.Vector3(from.x, from.y, from.z + 10);
+
+    }
+}
+
 export function check_in_teleport(scene, pos_main_pg){
     var teleport = scene.getObjectByName("teleport");
     if (teleport) {
@@ -1371,7 +1397,6 @@ export function resetAll(scene, time) {
         }
 
         reset_data();
-        // createFlatLand(4,4, "Namecc", [30, 0, 30], scene);
         // scene.simulate()
         scene.onSimulationResume();
     },
