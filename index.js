@@ -43,8 +43,6 @@ const canvas = document.querySelector('#c');
 
 
 
-
-
 var zombie = {
   joints:{
     arms:{
@@ -133,8 +131,6 @@ function init(){
         camera.aspect = window.innerWidth/window.innerHeight;
     });
 
-
-      
     keys = {
         a: false,
         s: false,

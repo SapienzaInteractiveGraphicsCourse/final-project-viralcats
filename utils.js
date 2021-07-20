@@ -39,12 +39,16 @@ export var is_pg_sphere = true;
 
 
 //stats game
-export var life = 1;  //3w
-
+export var level;
+export var life = 3; 
 export var gameOver = false;
 export var level_completed = false;
 var life_tag = document.getElementById("curr_life");
 life_tag.innerHTML = life;
+
+
+//starting positions
+export var start_level_1 = [0,5,400];
 
 
 export var camera_x_pos = 0;
@@ -168,28 +172,40 @@ function degtorad(degrees) {
 
 /************************************************ OBJECTS CREATION  [start] ***************************************************/
 
-export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
+export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, num= null) {
 
+    var texture;
+    var materials; 
     const textureLoader = new THREE.TextureLoader();
-    // var texture = textureLoader.load('./textures/blocks/test_wall.png');
+    if(name == null){
+        texture = textureLoader.load('./textures/blocks/test_wall.png');
+        materials = [
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 }),
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 }),
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 }),
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 }),
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 }),
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 })
+        ];
+    }
+    else{
+        texture = textureLoader.load(name);
 
-    // var materials = [
-    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
-    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
-    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
-    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
-    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 }),
-    //     new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.6 })
-    // ];
-
-    var materials = [
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 })
+        materials = [
+        new THREE.MeshBasicMaterial({ color: 0xffffff}),
+        new THREE.MeshBasicMaterial({ color: 0xffffff}),
+        new THREE.MeshBasicMaterial({ color: 0xffffff}),
+        new THREE.MeshBasicMaterial({ color: 0xffffff}),
+        new THREE.MeshBasicMaterial({ color: 0xffffff}),
+        new THREE.MeshBasicMaterial({ color: 0xffffff})
     ];
+
+        materials[num] =  new THREE.MeshBasicMaterial({ map: texture});
+
+    }
+
+    
+
 
 
 
@@ -226,23 +242,23 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound) {
     if (is_bound) {
         plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
 
-            if (other_object.name == ("Hitbox_pg")){   //the hit_box of the pg
-                life = life -1;
-                console.log("lives left: " + String(life));
-                life_tag.innerHTML = life;
-                if(life=="0"){
-                    console.log("Game over!!");
-                    gameOver = true;
-                    resetAll(scene,20);
-                }
-                else{
-                    console.log("the hit box of the pg has hit the floor")  // choose the respawn/reposition or remove from the scene
-                    scene.remove(other_object)
-                    create_pg(scene);
-                }
+            // if (other_object.name == ("Hitbox_pg")){   //the hit_box of the pg
+            //     life = life -1;
+            //     console.log("lives left: " + String(life));
+            //     life_tag.innerHTML = life;
+            //     if(life=="0"){
+            //         console.log("Game over!!");
+            //         gameOver = true;
+            //         resetAll(scene,20);
+            //     }
+            //     else{
+            //         console.log("the hit box of the pg has hit the floor")  // choose the respawn/reposition or remove from the scene
+            //         scene.remove(other_object)
+            //         create_pg(scene);
+            //     }
           
-            }
-            else if (other_object.name == ("mainSphere")){
+            // }
+            if (other_object.name == ("mainSphere")){
                 life = life -1;
                 console.log("lives left: " + String(life));
                 life_tag.innerHTML = life;
@@ -315,11 +331,12 @@ export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_v
     box.name = "Hitbox_" + String(prog_hit_box);
     prog_hit_box++;
     }
-    box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-        if(other_object.name == "mainSphere"){
-            console.log("la main palla ha colpito l'hitbox")
-        }
-    });
+
+    // box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+    //     if(other_object.name == "mainSphere"){
+    //         console.log("la main palla ha colpito l'hitbox")
+    //     }
+    // });
 
     box.setCcdMotionThreshold(0.1);
     hit_boxes_group.push(box);
@@ -405,14 +422,14 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= fals
     else box.name = "box_" + String(prog_cubes);
 
     prog_cubes++;
-    box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-        if(other_object.name == "mainSphere"){
-            console.log("la main palla ha colpito un box")
-        }
+    // box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+    //     if(other_object.name == "mainSphere"){
+    //         console.log("la main palla ha colpito un box")
+    //     }
         // console.log("Che botta!");
         // box.setAngularVelocity(new THREE.Vector3(20, 0, 0));
         // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
-    });
+    // });
 
     box.setCcdMotionThreshold(0.1);
     cubes_group.push(box);
@@ -737,7 +754,7 @@ export function createFlatLand(n_width, n_depth, type, left_top_pos, scene) {
 
 
 
-    var hit_box = create_hitbox(null, [left_top_pos[0] + hit_box_width/2 -dim_cube/2 , left_top_pos[1] , left_top_pos[2] + hit_box_depth/2 -dim_cube/2], 0, scene, 0.9 ,true, [hit_box_width,hit_box_height,hit_box_depth]);
+    var hit_box = create_hitbox(null, [left_top_pos[0] + hit_box_width/2 -dim_cube/2 , left_top_pos[1] , left_top_pos[2] + hit_box_depth/2 -dim_cube/2], 0, scene, 0.9 ,false, [hit_box_width,hit_box_height,hit_box_depth]);
     hit_box.initial_pos = [left_top_pos[0] + hit_box_width/2, left_top_pos[1], left_top_pos[2] + hit_box_depth/2];
 
 
