@@ -7,3 +7,4 @@ level 1)
 - applicate sounds 
 - first page(intro with images and sounds) and win/game over images. 
 - do levels.
+-insert specular and normal maps
