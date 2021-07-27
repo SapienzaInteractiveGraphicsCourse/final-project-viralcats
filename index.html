@@ -26,6 +26,34 @@
   </head>
 
 <style>
+
+.imgbox {
+    display: grid;
+    height: 100%;
+    vertical-align: middle;
+}
+.center-fit {
+    max-width: 100%;
+    max-height: 100%;
+    /* margin: auto; */
+    vertical-align: middle;
+}
+.resize_fit_center {
+    max-width:100%;
+    max-height:100%;
+    margin: auto;
+    vertical-align: middle;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+
+
 html, body {
   margin: 0;
   height: 100%;
@@ -33,7 +61,6 @@ html, body {
 
 .header_obj { grid-area: header; }
 .main_obj   { grid-area: main; }
-
 
 .grid-container {
   width: 100%;
@@ -66,22 +93,13 @@ html, body {
 
 </style>
   
-<body id="body"class="d-flex h-100 text-center text-white bg-dark">
-
-
-    <!-- <div id="scores_box" absolute>
-      <div class="Row">
-        <div class="Column">
-          <img src="asserts/game/heart-16.png"></img>
-          <h2 id="health"></h2>
-        </div>
-      </div>
-    </div> -->
-
+<body id="body"class="d-flex h-100 text-center text-white bg-dark ">
 
     <div id="grid_container" class="grid-container" style="display: none;">
-      <div class="header_obj">
-        <div id="life_counter"class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="header_obj d-flex flex-row">
+
+        
+        <div id="life_counter"class="toast show ml-2" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="toast-body">
             <img src="asserts/game/heart-16.png" class="rounded mr-2" alt="">
             <strong class="mr-auto">Current Life: </strong>
@@ -89,6 +107,21 @@ html, body {
           </div>
         </div>
         
+        <div id="zombie_counter"class="toast show ml-2" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-body">
+            <img src="asserts/game/zombie.png" class="rounded mr-2" alt="">
+            <strong class="mr-auto">Current Zombie: </strong>
+              <h2 id="curr_zombie">5</h2>
+          </div>
+        </div>
+
+        <div id="none"class="toast ml-2" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-body">
+            <img src="asserts/game/heart-16.png" class="rounded mr-2" alt="">
+            <strong class="mr-auto"> </strong>
+              <h2 id="_">0</h2>
+          </div>
+        </div>
 
 
       </div>
@@ -107,7 +140,7 @@ html, body {
 
 
 
-
+    <!-- #######################      INTRO PAGE      ####################################################################################################################### -->
     <div id="intro_page" class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column hidden">
       <header class="mb-auto">
         <div>
@@ -120,8 +153,74 @@ html, body {
         <p class="lead">This game is a simple and easy game that everyone can play and have fun!</p>
         <br>
         <p class="lead">These are the simple information that you need to know: <br>- You can move the sphere with A S D W <br>- You can change the camera view using the mouse <br>- The game has 3 levels and you've only 3 life for complete all the levels</p>
+        <br>
+
+
+        <div class="header_obj d-flex flex-row">
+
+        
+          <div id="life_counter_info"class="toast show mx-auto" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body">
+              <img src="asserts/game/heart-16.png" class="rounded mr-2" alt="">
+              <strong class="mr-auto">Current Life: </strong>
+                <h2 id="curr_life_info">3</h2>
+            </div>
+          </div>
+          
+          <div id="zombie_counter_info"class="toast show " role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body">
+              <img src="asserts/game/zombie.png" class="rounded mr-2" alt="">
+              <strong class="mr-auto">Current Zombie: </strong>
+                <h2 id="curr_zombie_info">5</h2>
+            </div>
+          </div>
+  
+          <div id="none_info"class="toast ml-2" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body">
+              <img src="asserts/game/heart-16.png" class="rounded mr-2" alt="">
+              <strong class="mr-auto"> </strong>
+                <h2 id="_info">0</h2>
+            </div>
+          </div>
+  
+  
+        </div>
+        
+        <p class="lead"><br><br><br>Choose the difficult of the game:</p>
+        <button id="game_easy"type="button" class="btn btn-success" onclick="easy_level()">EASY</button>
+        <button id="game_medium"type="button" class="btn btn-warning"onclick="medium_level()">MEDIUM</button>
+        <button id="game_hard"type="button" class="btn btn-danger"onclick="hard_level()">HARD</button>
+        <br>
+        <br>
+        <br>
+
         <button id="game_start"type="button" class="btn btn-light">Let's start the game!</button>
+
+
       </main>
+
+      <script>
+          function easy_level(){
+              document.getElementById("curr_life_info").innerText    = 3;
+              document.getElementById("curr_zombie_info").innerText  = 5; 
+          }
+          function medium_level(){
+              document.getElementById("curr_life_info").innerText    = 2;
+              document.getElementById("curr_zombie_info").innerText  = 8; 
+          }
+          function hard_level(){
+              document.getElementById("curr_life_info").innerText    = 1;
+              document.getElementById("curr_zombie_info").innerText  = 8; 
+          }
+      </script>
+
+      <!-- <div class="modal-body">
+        <h5>Popover in a modal</h5>
+        <p>This <a href="#" role="button" class="btn btn-secondary popover-test" title="Popover title" data-content="Popover body content is set in this attribute.">button</a> triggers a popover on click.</p>
+        <hr>
+        <h5>Tooltips in a modal</h5>
+        <p><a href="#" class="tooltip-test" title="Tooltip">This link</a> and <a href="#" class="tooltip-test" title="Tooltip">that link</a> have tooltips on hover.</p>
+      </div> -->
     
       <footer class="mt-auto text-white-50">
         <p>This game was made by <a href="https://www.linkedin.com/in/edoardo-papa-74b7b814b" class="text-white">Edoardo Papa</a> and <a href="indirizzo di fabrizio" class="text-white">Fabrizio Casadei</a>.</p>
@@ -131,11 +230,21 @@ html, body {
       
       
           
-
+    <!-- ############################     PROGRESS BAR (INIT)       ###################################################################################-->
 
     <div class="progress position-absolute" style="width: 100%;height: 15%;" id="loadings">
       <div id="sounds_progressbar" class="progress-bar progress-bar-striped " role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">Loading Sounds</div>
     </div>
+
+
+
+
+
+
+    <div id="game_over" class="hidden" style="display: none;">
+            <p class="center">Center this text!</p>
+    </div>
+
 
 
 

@@ -50,6 +50,8 @@ const sounds = {
 	background  :  { url: './asserts/sounds/background.wav' },
 	ambient     :  { url: './asserts/sounds/ambient.flac' },
 	adventure   :  { url: './asserts/sounds/adventure.wav' },
+    jump        :  { url: './asserts/sounds/jump.wav' },
+    level_1     :  { url: './asserts/sounds/level_1.wav' },
     // _1ssssssbackground  :  { url: './asserts/sounds/background.wav' },
 	// _1ssssssambient     :  { url: './asserts/sounds/ambient.flac' },
 	// _1ssssssadventure   :  { url: './asserts/sounds/adventure.wav' },
@@ -326,12 +328,12 @@ function loadSounds() {
 	} 
 }
 
-function playSound(sound){
+function playSound(sound,loop = false){
 
     var sound_to_play = new THREE_AUDIO.Audio(listener);
     sound_to_play.isPlaying = false;
     sound_to_play.setBuffer( sound );
-	sound_to_play.setLoop( true );
+	sound_to_play.setLoop( loop );
 	sound_to_play.setVolume( 0.3 );
 	sound_to_play.play();
 
@@ -352,6 +354,14 @@ function stopSound(sound){
     }
 }
 
+function toggle_html_element_visibility(who){
+    var catdiv = document.getElementById(who);
+    if(catdiv.style.display == ""){  
+        catdiv.style.display = "none";  
+    } else {  
+        catdiv.style.display = "";  
+    } 
+}
 
 function initializate_page(){
     
@@ -364,15 +374,27 @@ function initializate_page(){
     document.getElementById("body").removeAttribute("text-center");
     document.getElementById("body").removeAttribute("text-white");
     document.getElementById("body").removeAttribute("bg-dark");
-    
+
+
     document.getElementById("game_start").onclick = function(event) {
         
+    
+        console.log( "VALUE: " + (document.getElementById("curr_life_info").innerText))
+
+        document.getElementById("curr_life").innerText = (document.getElementById("curr_life_info").innerText);
+        document.getElementById("curr_zombie").innerText = (document.getElementById("curr_zombie_info").innerText);
+        
+    
         document.getElementById("grid_container").style = ("");
         canvas.setAttribute("hidden", true);
         // document.getElementById('intro_page').classList.add("invisible");
         document.getElementById('intro_page').remove();
         document.getElementById('life_counter').removeAttribute("hidden");
         canvas.removeAttribute("hidden");
+        // toggle_html_element_visibility("game_over");
+        // toggle_html_element_visibility("grid_container");
+        
+        utils.setLife(document.getElementById("curr_life").innerText);
         main();
     };
     
@@ -382,6 +404,110 @@ function initializate_page(){
 
 
 loadSounds();
+
+
+function getNextLevel(curr_level){
+    if(curr_level == 1){
+        stopSound(sounds.background.sound);
+        playSound(sounds.level_1.sound,true);
+        return level_1;
+    }
+}
+
+function level_0(){
+
+    /* ************************* PLANES ***********************************/
+
+    {
+        // utils.create_Box_Plane([0, 0, 0], [0, 0, 0], 1000, scene, false);
+    }
+
+    /* ************************* BOXES ***********************************/
+
+    {
+
+
+        utils.createFlatLand(30,20, "Grass", [-45, 0, 370], scene);
+        utils.createFlatLand(10,10, "Grass", [-45, 0, 340], scene);
+
+        utils.createFlatLand(10,10, "Grass", [0, 0, 290], scene);
+        utils.createFlatLand(10,10, "Grass", [-45, 0, 240], scene);
+
+        utils.create_Box_Plane([90, 20, 330], [0, 30, 90], 60, scene, false, './textures/bgs/spacebar.PNG',2);
+
+        utils.create_Box_Plane([-90, 20, 330], [0, -30, 90], 60, scene, false, './textures/bgs/wasd.jpg',3 );
+
+        utils.create_Box_Plane([0,75, 260], [90, 0, 0], 60, scene, false, './textures/bgs/mouse.jpg',2);
+
+
+    }
+
+    /* ************************* SPHERES ***********************************/
+
+    {
+        utils.create_teleport([0, 20, 350], scene); // emissive light of the teleport
+    }
+
+
+    /* ************************* LIGHT ***********************************/
+    {
+        utils.create_pointLIght([10,10,10],0xffffff,scene);
+    }
+
+    /* ************************* BOUNDS ***********************************/
+    {
+        utils.create_Box_Plane([0, -1300 / 2, 0], [0, 0, 0],  1300, scene, true); //ceil/floor
+        utils.create_Box_Plane([0, 1300 / 2, 0], [0, 0, 0],   1300, scene, true); 
+        utils.create_Box_Plane([-1300 / 2, 0, 0], [0, 0, 90], 1300, scene, true); // lateral walls
+        utils.create_Box_Plane([1300 / 2, 0, 0], [0, 0, 90],  1300, scene, true);
+        utils.create_Box_Plane([0, 0, 1300 / 2], [90, 0, 0],  1300, scene, true); // front and back walls
+        utils.create_Box_Plane([0, 0, -1300 / 2], [90, 0, 0], 1300, scene, true);
+    }
+
+    /* ************************* MAiN SPHERE ***********************************/
+    sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, utils.start_level_1, true);
+}
+
+
+function level_1(scene){
+
+    /* ************************* BOXES ***********************************/
+
+    {
+
+
+        utils.createFlatLand(30,20, "Grass", [-45, 0, 370], scene);
+
+        utils.createFlatLand(10,10, "Grass", [45, 0, 290], scene);
+        utils.createFlatLand(10,10, "Grass", [45, 0, 240], scene);
+
+    }
+
+    /* ************************* SPHERES ***********************************/
+
+    {
+        utils.create_teleport([0, 0, 350], scene); // emissive light of the teleport
+    }
+
+
+    /* ************************* LIGHT ***********************************/
+    {
+        utils.create_pointLIght([10,10,10],0xffffff,scene);
+    }
+
+    /* ************************* BOUNDS ***********************************/
+    {
+        utils.create_Box_Plane([0, -1300 / 2, 0], [0, 0, 0],  1300, scene, true); //ceil/floor
+        utils.create_Box_Plane([0, 1300 / 2, 0], [0, 0, 0],   1300, scene, true); 
+        utils.create_Box_Plane([-1300 / 2, 0, 0], [0, 0, 90], 1300, scene, true); // lateral walls
+        utils.create_Box_Plane([1300 / 2, 0, 0], [0, 0, 90],  1300, scene, true);
+        utils.create_Box_Plane([0, 0, 1300 / 2], [90, 0, 0],  1300, scene, true); // front and back walls
+        utils.create_Box_Plane([0, 0, -1300 / 2], [90, 0, 0], 1300, scene, true);
+    }
+
+    /* ************************* MAiN SPHERE ***********************************/
+    sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, utils.start_level_1, true);
+}
 
 
 function main() {
@@ -398,7 +524,6 @@ function main() {
 
     var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     //camera.position.set(0, 10, 100);
-
 
 	// create an AudioListener and add it to the camera
 	listener = new THREE_AUDIO.AudioListener();
@@ -441,130 +566,12 @@ function main() {
         // sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
     });
 
-    /* ************************* PLANES ***********************************/
 
-    {
-        // utils.create_Box_Plane([0, 0, 0], [0, 0, 0], 1000, scene, false);
-    }
-
-    /* ************************* BOXES ***********************************/
-
-    {
-      
-        // land1 = utils.createFlatLand(20,20, "Namecc", [30, 0, 30], scene);
-
-
-
-
-        utils.createFlatLand(30,20, "Grass", [-45, 0, 370], scene);
-        utils.createFlatLand(10,10, "Grass", [-45, 0, 340], scene);
-
-        utils.createFlatLand(10,10, "Grass", [0, 0, 290], scene);
-        utils.createFlatLand(10,10, "Grass", [-45, 0, 240], scene);
-
-        utils.create_Box_Plane([90, 20, 330], [0, 30, 90], 60, scene, false, './textures/bgs/spacebar.PNG',2);
-
-        utils.create_Box_Plane([-90, 20, 330], [0, -30, 90], 60, scene, false, './textures/bgs/wasd.jpg',3 );
-
-        utils.create_Box_Plane([0,75, 260], [90, 0, 0], 60, scene, false, './textures/bgs/mouse.jpg',2);
-
-        // utils.create_Box_Plane([90, 20, 330], [0, 0, 90], 60, scene, false);W
-
-        // utils.create_Box_Plane([-90, 20, 320], [0, 0, 90], 60, scene, false);
-
-        // utils.create_Box_Plane([-90, 20, 320], [0, 0, 90], 60, scene, false);
-        // utils.create_Box_Plane([0,0,0], [0, 0, 90], 100, scene, false);
-        // utils.create_Box_Plane([0,0,0], [0, 0, 90], 100, scene, false);
-
-        // utils.createFlatLand(10,10, "Grass", [-45, 0, 340], scene);
-
-        // utils.createFlatLand(30,20, "Grass", [-45, 0, 370], scene);
-
-        // utils.createFlatLand(30,20, "Grass", [-45, 0, 370], scene);
-        // utils.createFlatLand(30,20, "Grass", [-45, 0, 400], scene);
-        // utils.createFlatLand(30,20, "Grass", [-45, 0, 400], scene);
-        // utils.createFlatLand(30,20, "Grass", [-45, 0, 400], scene);
-
-        // orbit  = utils.createFlatLand(5,3, "Grass", [-30,30,-30], scene);
-
-        // utils.createUphillLand(10, 10, 10, "Lava", [0, 0, -80], scene)
-
-        // ascent = utils.createAscentGround(5, 5, 10, "Amethyst", [-39, 0, -5], scene)
-
-        // descent = utils.createDescentGround(5, 5, 10, "Rock", [-39, 0, -5], scene)
-
-        // var brick_wall = utils.createPhysicWall("Rock",scene,13,13,[17,0,-20],false);
-
-    }
-
-    /* ************************* SPHERES ***********************************/
-
-    // {
-    //     utils.create_Sphere(3, 0xFFFF00, "Rock", scene);
-    // }
-
-    {
-        utils.create_teleport([0, 0, -400], scene); // emissive light of the teleport
-    }
-
-    // {
-    //     utils.create_button(scene ,[-10, 0.75, -10]); // emissive light of the teleport
-    // }
-
-    /* ************************* LIGHT ***********************************/
-    {
-        utils.create_pointLIght([10,10,10],0xffffff,scene);
-    }
-
-    /* ************************* BOUNDS ***********************************/
-    {
-        utils.create_Box_Plane([0, -1300 / 2, 0], [0, 0, 0],  1300, scene, true); //ceil/floor
-        utils.create_Box_Plane([0, 1300 / 2, 0], [0, 0, 0],   1300, scene, true); 
-        utils.create_Box_Plane([-1300 / 2, 0, 0], [0, 0, 90], 1300, scene, true); // lateral walls
-        utils.create_Box_Plane([1300 / 2, 0, 0], [0, 0, 90],  1300, scene, true);
-        utils.create_Box_Plane([0, 0, 1300 / 2], [90, 0, 0],  1300, scene, true); // front and back walls
-        utils.create_Box_Plane([0, 0, -1300 / 2], [90, 0, 0], 1300, scene, true);
-    }
+    level_0();
+    playSound(sounds.background.sound,true);
 
     /* ****************************** PG ***********************************/
-    {
-        //hierarchical model
-
-        // utils.create_pg(scene)
-
-        // pg = utils.pg
-
-        // test HM moving and rotating
-
-        /*
-        if you use the hitbox make sure to modify the flag before launch the simulation of phyisjs otherwise are only 
-        three js 3D object you can change rotation and position normally
-        */
-
-    //     setInterval(function(){
-    //          utils.rotateArmsLegs(pg[3],1)
-    //     },50);
-
-    //     setInterval(function(){
-    //         utils.rotateArmsLegs(pg[4],-1)
-    //    },50);
-
-
-        // i want to use the physijs hitbox, i set the dirty motions flag to true
-
-        // pg[0].__dirtyPosition = true;
-        // pg[0].__dirtyRotation = true;
-
-        // pg[0].position.set(15, 40, -70)
-
-        // scene.simulate(); //update the new position for physijs
-
-        // pg[0].__dirtyPosition = false;
-        // pg[0].__dirtyRotation = false;
-        
-        /* ************************* MAiN SPHERE ***********************************/
-        sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, utils.start_level_1, true);
-
+    {       
         camera.position.z = sphere.position.z + utils.camera_z_pos;
         camera.position.y = sphere.position.y + utils.camera_y_pos;
         camera.position.x = sphere.position.x;
@@ -600,57 +607,8 @@ function main() {
         
     }
 
-    /* ************************* ANIMATIONS ******************************/
-
-    // using names
-    // anim_box_repeat = utils.animateBackAndForwardName("box_5", scene, 'y', 100, 20, 5000);
-    // anim_box_repeat.start();
-    // anim_box_single = utils.animatePlatformByName("box_1", scene, 'z', 100, 5000);
-    // anim_box_single.start();
-
-    // using a single instance
-    // anim_box_single_instance = utils.animatePlatformByInstance(box_1, scene, 'z', -100, 5000)
-    // anim_box_single_instance.start();
-
-    // anim_box_repeat_instance = utils.animateBackAndForwardInstance(box_3, scene, 'x', -100, 0, 5000);
-    // anim_box_repeat_instance.start();
-
-    // using groups single animation
-
-    // land_anim_a = utils.animateBackAndForwardInstanceGroup(land.group, scene, 'x', 70, 30, 5000, land.hitbox);
-    // land_anim_a.forEach(anim => { anim.start()});
-
-    // using groups multiple animation
-
-    // animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'z', 30,5000,-30,[5,3], orbit.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-    // animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'x', 30,5000,-30,[5,3], orbit.hitbox));
-    // animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'z',-30,5000, 30,[5,3], orbit.hitbox));
-    // animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'x',-30,5000, 30,[5,3], orbit.hitbox));
-
-    // animations_conc = utils.concatenateAnimationsGroup(animations_conc);
-    // animations_conc.forEach(elem => elem.start());
-
-    // tumble animation group
-    // utils.animateFallenPlatformGroup(land_grass.group, scene, undefined, land_grass.hitbox);
-    
-    /* ************************* RESETS ******************************/
-
-    //stopSound(sounds.background.sound);
-
-
-
-    // controls.enablePan = false;
-    // controls.enableZoom = false;
-    // controls.maxPolarAngle = Math.PI / 2
-
     function render() {
 
-        // if (controls.target.y < sphere.position.y + utils.camera_y_pos){
-        //     controls.enabled = false;
-        //     // camera.position.z = sphere.position.z + utils.camera_z_pos;
-        //     camera.position.y = sphere.position.y + utils.camera_y_pos;
-        //     controls.enabled = true;
-        // }
 
         controls.target.set(sphere.position.x,sphere.position.y,sphere.position.z)
         
@@ -667,7 +625,16 @@ function main() {
 
         // some animations need to be called in the render
         utils.animateTeleport(scene);
-        if (! utils.level_completed && ! utils.gameOver) utils.check_in_teleport(scene, [sphere.position.x,sphere.position.y,sphere.position.z])
+        if (! utils.level_completed && ! utils.gameOver){
+            utils.check_in_teleport(scene, [sphere.position.x,sphere.position.y,sphere.position.z])
+        } 
+
+        if(utils.level_completed){
+            utils.toggle_level_completed();
+            var level = utils.curr_level;
+            utils.changeLevel(scene,getNextLevel(level));
+        }
+
 
         
 
@@ -834,7 +801,7 @@ function main() {
                     sphere.canJump = false;
                     var force_vector = new THREE.Vector3( 0,VELOCITY_w*2000,0)
                     sphere.applyCentralImpulse(force_vector)
-                   
+                    playSound(sounds.jump.sound);
                 }
 
             }

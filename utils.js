@@ -5,6 +5,8 @@ import { MathUtils } from './libs/threejs/build/three.module.js';
 import TWEEN from './libs/tween.esm.js';
 // import * as THREE from './libs/threejs/build/three.module.js';
 
+export var curr_level = 0;
+
 // progressives objects
 var prog_cubes = 0;
 var prog_planes = 0;
@@ -40,7 +42,7 @@ export var is_pg_sphere = true;
 
 //stats game
 export var level;
-export var life = 3; 
+export var life = document.getElementById("curr_life").innerText; 
 export var gameOver = false;
 export var level_completed = false;
 var life_tag = document.getElementById("curr_life");
@@ -54,6 +56,10 @@ export var start_level_1 = [0,5,400];
 export var camera_x_pos = 0;
 export var camera_y_pos = 70;
 export var camera_z_pos = 200;
+
+export function setLife(curr_life){
+    life = curr_life;
+}
 
 // dictionary that shows wich textures must be used, in order: top texture, side texture, bottom texture
 const cubes_type = {
@@ -1111,6 +1117,30 @@ export function animateBackAndForwardInstanceGroup(group, scene, axis, new_posit
     return animations_a;
 }
 
+function resetScene(scene) {
+    scene.children.forEach(function(object){
+        if (object) {
+            scene.remove(object);
+        }
+    });
+
+    for (var i in scene._objects) {
+        if (scene._objects[i]) {
+            scene.remove(scene._objects[i]);
+        }
+    }
+
+    for( var i = scene.children.length - 1; i >= 0; i--) { 
+        var obj = scene.children[i];
+        if(obj)
+            scene.remove(obj); 
+   }
+}
+
+export function changeLevel(scene,function_init_scene){
+    resetScene(scene);
+    function_init_scene(scene);
+}
 
 export function concatenateAnimationsGroup(animations) {
     var length_animations = animations.length;
@@ -1319,6 +1349,10 @@ export function update_arrow_sphere(scene){  //update with the direction of the 
     }
 }
 
+export function toggle_level_completed(){
+    level_completed = false;
+}
+
 export function check_in_teleport(scene, pos_main_pg){
     var teleport = scene.getObjectByName("teleport");
     if (teleport) {
@@ -1330,8 +1364,9 @@ export function check_in_teleport(scene, pos_main_pg){
         var conditionz =  (teleport.position.z - radius_size_check   < pos_main_pg[2])   &&  (pos_main_pg[2]<  teleport.position.z + radius_size_check);
         if(conditionx && conditiony && conditionz){
             console.log("Level completed!! ");
+            curr_level++;
             level_completed = true;
-            resetAll(scene,10);
+            //resetAll(scene,10);
         }
     }
 }
@@ -1376,7 +1411,7 @@ export function reset_data() {
     pg = null;
     is_pg_sphere = false;
 
-    life = 3;
+    life = document.getElementById("curr_life").innerText;
 }
 
 

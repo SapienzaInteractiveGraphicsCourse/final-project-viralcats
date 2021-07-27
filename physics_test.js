@@ -58,6 +58,8 @@ const sounds = {
 	background  :  { url: './asserts/sounds/background.wav' },
 	ambient     :  { url: './asserts/sounds/ambient.flac' },
 	adventure   :  { url: './asserts/sounds/adventure.wav' },
+    jump        :  { url: './asserts/sounds/jump.wav' },
+    level_1     :  { url: './asserts/sounds/level_1.wav' },
     // _1ssssssbackground  :  { url: './asserts/sounds/background.wav' },
 	// _1ssssssambient     :  { url: './asserts/sounds/ambient.flac' },
 	// _1ssssssadventure   :  { url: './asserts/sounds/adventure.wav' },
@@ -410,7 +412,7 @@ function main() {
 
 	// create an AudioListener and add it to the camera
 	listener = new THREE_AUDIO.AudioListener();
-	//camera.add(listener);
+	// camera.add(listener);
     
 
     //playBackgroundSound();
@@ -1147,8 +1149,10 @@ function main() {
                     sphere.canJump = false;
                     var force_vector = new THREE.Vector3( 0,VELOCITY_w*1000,0)
                     sphere.applyCentralImpulse(force_vector)
-                   
+                    playSound(sounds.jump.sound);
                 }
+
+                
 
                 // y = sphere.getLinearVelocity().y+JUMP_VELOCITY/10;
 
@@ -1324,4 +1328,4 @@ function main() {
     render();
 }
 
-initializate_page();
+// initializate_page();
