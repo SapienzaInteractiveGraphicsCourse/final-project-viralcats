@@ -4,7 +4,10 @@
 - add the number of cyber mans remained on the UI
 - make possible the change of the level (try to pass from physijs_test to 
 level 1)
-- applicate sounds 
+- applicate sounds
+
 - first page(intro with images and sounds) and win/game over images. 
 - do levels.
--insert specular and normal maps
+- insert specular and normal maps
+
+- loading system

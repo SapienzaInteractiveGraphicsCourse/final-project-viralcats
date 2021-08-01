@@ -29,6 +29,22 @@ var scene;
 var pg;
 var sphere;
 
+//groups for the checkpoints
+var group_1 = [];
+var group_2 = [];
+var group_fallen_lands = [];
+
+
+// falling lands variables
+var fallen1 = false
+var fallen2 = false
+var fallen3 = false
+var fallen4 = false
+var fallingLand;
+var fallingLand2;
+var fallingLand3;
+var fallingLand4;
+
 var keys;
 var pressable_q = true;
 
@@ -385,7 +401,6 @@ loadSounds();
 
 
 function main() {
-    
 
     var renderer = new THREE.WebGLRenderer({ canvas });
 
@@ -452,23 +467,216 @@ function main() {
     {
       
         // land1 = utils.createFlatLand(20,20, "Namecc", [30, 0, 30], scene);
+        var temp;  //temporary variable to unpack the objects 
+
+
+        temp = utils.createFlatLand(30,20, "Grass", [-45, 0, 370], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+
+        temp = utils.createFlatLand(10,10, "Grass", [-45, 0, 340], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+        
+
+        temp = utils.createFlatLand(10,10, "Grass", [0, 0, 290], scene);
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+        temp =utils.createFlatLand(10,10, "Grass", [-45, 0, 240], scene);
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+        // tutorial on commands
+
+        temp = utils.create_Box_Plane([90, 20, 330], [0, 30, 90], 40, scene, false, './textures/bgs/mouse.jpg',2);
+        group_1.push(temp);
+
+        temp = utils.create_Box_Plane([-90, 20, 330], [0, -30, 90], 40, scene, false, './textures/bgs/wasd.jpg',3 );
+        group_1.push(temp);
+        
+        temp =utils.create_Box_Plane([20,20, 240], [90, 0, 0], 40, scene, false, './textures/bgs/spacebar.PNG',2);
+        group_1.push(temp);
+
+
+        temp = utils.createAscentGround(15, 5, 25, "Grass", [-40, 0, 230], scene, "+z");
+        temp.forEach(Element => group_1.push(Element));
+
+        temp = utils.createAscentGround(15, 5, 25, "Grass", [-25, 10, 200], scene, "+z");
+        temp.forEach(Element => group_1.push(Element));
+
+        temp =utils.createAscentGround(15, 5, 25, "Grass", [-10, 20, 170], scene, "+z");
+        temp.forEach(Element => group_1.push(Element));
+
+
+        temp = utils.createAscentGround(15, 5, 25, "Grass", [5, 30, 140], scene, "+z");
+        temp.forEach(Element => group_1.push(Element));
+
+        temp =utils.createAscentGround(15, 5, 25, "Grass", [20, 40, 110], scene, "+z");
+        temp.forEach(Element => group_1.push(Element));
+
+        temp =utils.createAscentGround(15, 5, 25, "Grass", [20, 50, 80], scene, "+z");
+        temp.forEach(Element => group_1.push(Element));
+
+        temp =utils.createAscentGround(15, 5, 25, "Grass", [5, 60, 50], scene, "+z");
+        temp.forEach(Element => group_1.push(Element));
+
+        temp =utils.createAscentGround(15, 5, 25, "Grass", [-10, 70, 20], scene, "+z");
+        temp.forEach(Element => group_1.push(Element));
+
+        temp =utils.createAscentGround(15, 5, 25, "Grass", [-25, 80, -10], scene, "+z");
+        temp.forEach(Element => group_1.push(Element));
+
+        temp =utils.createAscentGround(15, 5, 25, "Grass", [-40, 90, -40], scene, "+z");
+        temp.forEach(Element => group_1.push(Element));
 
 
 
+        
 
-        utils.createFlatLand(30,20, "Grass", [-45, 0, 370], scene);
-        utils.createFlatLand(10,10, "Grass", [-45, 0, 340], scene);
 
-        utils.createFlatLand(10,10, "Grass", [0, 0, 290], scene);
-        utils.createFlatLand(10,10, "Grass", [-45, 0, 240], scene);
+        temp = utils.createFlatLand(10,15, "Grass", [-40, 105, -125], scene);
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
 
-        utils.create_Box_Plane([90, 20, 330], [0, 30, 90], 60, scene, false, './textures/bgs/spacebar.PNG',2);
+        temp = utils.createFlatLand(10,15, "Namecc", [20, 105, -125], scene);
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
 
-        utils.create_Box_Plane([-90, 20, 330], [0, -30, 90], 60, scene, false, './textures/bgs/wasd.jpg',3 );
+        temp = utils.createFlatLand(10,15, "Lava", [-100, 105, -125], scene);
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
 
-        utils.create_Box_Plane([0,75, 260], [90, 0, 0], 60, scene, false, './textures/bgs/mouse.jpg',2);
+        {
+            temp = utils.create_button(scene , [35,107.5,-105], group_1);
+            group_2.push(temp)
+        }
 
-        // utils.create_Box_Plane([90, 20, 330], [0, 0, 90], 60, scene, false);W
+        // tutorial for gameplay
+
+        temp = utils.create_Box_Plane([180, 135, -104], [0, 0, 90], 40, scene, false, './textures/bgs/checkpoint.png',2);
+        group_2.push(temp);
+        
+        temp = utils.create_Box_Plane([-240, 135, -104], [0, 0, 90], 40, scene, false, './textures/bgs/theBoy.png',3 );
+        group_2.push(temp);
+
+
+        temp = utils.createDescentGround(15, 5, 40, "Rock", [-35, 90, -225], scene, "+z");
+        temp.forEach(Element => group_2.push(Element));
+
+
+        temp = utils.createDescentGround(15, 5, 40, "Rock", [-5, 60, -260], scene, "+z");
+        temp.forEach(Element => group_2.push(Element));
+
+
+        temp = utils.createFlatLand(10,15, "Grass", [-40, 90, -220], scene);
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
+        utils.createPhysicWall("Rock",scene,5,9,[-40, 92, -220],true)
+        utils.createPhysicWall("Rock",scene,5,9,[-40, 92, -180],true)
+
+
+        // falling platforms 
+
+        // ------ 1st
+
+        fallingLand = utils.createFlatLand(5,5, "Grass", [-5, 10, -330], scene);
+
+        fallingLand.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        // var fallen1 = false
+        if(other_object.name == "mainSphere" && !fallen1){
+            fallen1 = true;
+            // console.log("provaaaaaaaah")
+            utils.animateFallenPlatformGroup(fallingLand.group, scene, undefined, fallingLand.hitbox,sphere);
+            // try {
+            //     scene.remove(fallingLand.hitbox);
+            // } catch (error) {
+            //     console.log(error);
+            // }
+        }
+        });
+
+        fallingLand["group"].forEach(Element => group_fallen_lands.push(Element));
+        group_fallen_lands.push(fallingLand["hitbox"]);
+
+        // ------ 2nd
+
+        fallingLand2 = utils.createFlatLand(5,5, "Grass", [-5, 5, -370], scene);
+
+        fallingLand2.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        
+        if(other_object.name == "mainSphere" && !fallen2){
+             fallen2 = true;
+             // console.log("provaaaaaaaah")
+             utils.animateFallenPlatformGroup(fallingLand2.group, scene, undefined, fallingLand2.hitbox,sphere);
+            //  try {
+            //     scene.remove(fallingLand2.hitbox);
+            // } catch (error) {
+            //    console.log(error);
+            // }
+        }
+        });
+
+        fallingLand2["group"].forEach(Element => group_fallen_lands.push(Element));
+        group_fallen_lands.push(fallingLand2["hitbox"]);
+
+
+        // ------ 3rd
+
+        fallingLand3 = utils.createFlatLand(5,5, "Grass", [-5, 0, -410], scene);
+
+        fallingLand3.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        if(other_object.name == "mainSphere" && !fallen3){
+            fallen3 = true;
+            // console.log("provaaaaaaaah")
+            utils.animateFallenPlatformGroup(fallingLand3.group, scene, undefined, fallingLand3.hitbox,sphere);
+            // try {
+            //     scene.remove(fallingLand3.hitbox);
+            // } catch (error) {
+            //     console.log(error);
+            // }
+
+            }
+        });
+
+
+        fallingLand3["group"].forEach(Element => group_fallen_lands.push(Element));
+        group_fallen_lands.push(fallingLand3["hitbox"]);
+
+
+        // ------ 4th
+
+        fallingLand4 = utils.createFlatLand(5,5, "Grass", [-5, -5, -450], scene);
+
+        fallingLand4.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        if(other_object.name == "mainSphere" && !fallen4){
+            fallen4 = true;
+            // console.log("provaaaaaaaah")
+            utils.animateFallenPlatformGroup(fallingLand4.group, scene, undefined, fallingLand4.hitbox,sphere);
+            // try {
+            //     scene.remove(fallingLand4.hitbox);
+            // } catch (error) {
+            //     console.log(error);
+            // }
+            
+            }
+        });
+
+        fallingLand4["group"].forEach(Element => group_fallen_lands.push(Element));
+        group_fallen_lands.push(fallingLand4["hitbox"]);
+
+        // teleport platform
+
+        utils.createFlatLand(8,8, "Grass", [-11, -8.5, -512], scene);
+        temp =utils.create_Box_Plane([-2, 10, -540], [90, 0, 0], 40, scene, false, './textures/bgs/teleport.png',2);
+        group_2.push(temp);
+
+
+            
+
+        // utils.create_Box_Plane([90, 20, 330], [0, 0, 90], 60, scene, false);
 
         // utils.create_Box_Plane([-90, 20, 320], [0, 0, 90], 60, scene, false);
 
@@ -497,76 +705,60 @@ function main() {
 
     }
 
-    /* ************************* SPHERES ***********************************/
-
-    // {
-    //     utils.create_Sphere(3, 0xFFFF00, "Rock", scene);
-    // }
+    /* ************************* OTHER ELEMENTS ***********************************/
 
     {
-        utils.create_teleport([0, 0, -400], scene); // emissive light of the teleport
+        utils.create_teleport([0, 0, -500], scene); // emissive light of the teleport
+    }
+    {
+        utils.create_pg(scene)
+
+        pg = utils.pg
+
+        pg[0].__dirtyPosition = true;
+        pg[0].__dirtyRotation = true;
+
+
+        pg[0].position.set(-85,115,-105)
+        pg[0].rotation.set(0,utils.degrees_to_radians(45),0)
+
+        scene.simulate(); //update the new position for physijs
+
+        pg[0].__dirtyPosition = false;
+        pg[0].__dirtyRotation = false;
     }
 
-    // {
-    //     utils.create_button(scene ,[-10, 0.75, -10]); // emissive light of the teleport
-    // }
+
 
     /* ************************* LIGHT ***********************************/
     {
-        utils.create_pointLIght([10,10,10],0xffffff,scene);
+        // utils.create_pointLight([0,10,400],0xffffff,scene);
+        // utils.create_directionalLight(0xffffff,scene,[0,1,0])
+        utils.create_directionalLight(0xffffff,scene,[0,1,1])
+        // utils.create_directionalLight(0xffffff,scene,[0,0,1])
+        // utils.create_directionalLight(0xffffff,scene,[1,1,0])
+        // utils.create_directionalLight(0xffffff,scene,[-1,1,0])
     }
 
     /* ************************* BOUNDS ***********************************/
     {
-        utils.create_Box_Plane([0, -1300 / 2, 0], [0, 0, 0],  1300, scene, true); //ceil/floor
-        utils.create_Box_Plane([0, 1300 / 2, 0], [0, 0, 0],   1300, scene, true); 
+        utils.create_Box_Plane([0, -300, 0], [0, 0, 0],  1300, scene, true); //ceil/floor
+        utils.create_Box_Plane([0, 300, 0], [0, 0, 0],   1300, scene, true); 
         utils.create_Box_Plane([-1300 / 2, 0, 0], [0, 0, 90], 1300, scene, true); // lateral walls
         utils.create_Box_Plane([1300 / 2, 0, 0], [0, 0, 90],  1300, scene, true);
         utils.create_Box_Plane([0, 0, 1300 / 2], [90, 0, 0],  1300, scene, true); // front and back walls
         utils.create_Box_Plane([0, 0, -1300 / 2], [90, 0, 0], 1300, scene, true);
     }
 
-    /* ****************************** PG ***********************************/
-    {
-        //hierarchical model
 
-        // utils.create_pg(scene)
-
-        // pg = utils.pg
-
-        // test HM moving and rotating
-
-        /*
-        if you use the hitbox make sure to modify the flag before launch the simulation of phyisjs otherwise are only 
-        three js 3D object you can change rotation and position normally
-        */
-
-    //     setInterval(function(){
-    //          utils.rotateArmsLegs(pg[3],1)
-    //     },50);
-
-    //     setInterval(function(){
-    //         utils.rotateArmsLegs(pg[4],-1)
-    //    },50);
-
-
-        // i want to use the physijs hitbox, i set the dirty motions flag to true
-
-        // pg[0].__dirtyPosition = true;
-        // pg[0].__dirtyRotation = true;
-
-        // pg[0].position.set(15, 40, -70)
-
-        // scene.simulate(); //update the new position for physijs
-
-        // pg[0].__dirtyPosition = false;
-        // pg[0].__dirtyRotation = false;
         
         /* ************************* MAiN SPHERE ***********************************/
-        sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, utils.start_level_1, true);
-
+        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,[20, 120, -125], true); // [0,5,400][20, 120, -125]
+        
+        // set the start position of the camera (will change)
         camera.position.z = sphere.position.z + utils.camera_z_pos;
-        camera.position.y = sphere.position.y + utils.camera_y_pos;
+        // camera.position.y = sphere.position.y + utils.camera_y_pos;
+        camera.position.y = sphere.position.y;
         camera.position.x = sphere.position.x;
         camera.lookAt(sphere.position);
 
@@ -580,7 +772,6 @@ function main() {
         canvas.onmousedown = function(e){
             mouse_x = e.pageX;
             mouse_pressing = true;
-        }
         
         canvas.addEventListener('mousemove', e => {
             // sphere.__dirtyPosition = true;
@@ -641,9 +832,129 @@ function main() {
 
     // controls.enablePan = false;
     // controls.enableZoom = false;
-    // controls.maxPolarAngle = Math.PI / 2
-
+    controls.maxPolarAngle = Math.PI / 2
+    controls.minDistance = 139;
+    controls.maxDistance = 140;
+    var removed = false;
     function render() {
+
+        // re-build the falling platform
+
+        if(removed == false){  //if the ball is dropped
+            // removed = true 
+            // setTimeout(function () {
+
+
+            // clean all the platform that are still there
+
+            group_fallen_lands.forEach(Elem => scene.remove(Elem));
+
+            // }, 15000);
+        // }else{
+
+            // rebuild platoforms
+
+        }
+
+
+
+
+        // if(fallen1){
+
+        //     fallen1 = false
+        //     var touched1 = false
+        //     setTimeout(function () {
+        //         // try {
+        //         //     scene.remove(fallingLand.hitbox);
+        //         // } catch (error) {
+        //         //     console.log(error);
+        //         // }
+
+
+        //         fallingLand = utils.createFlatLand(5,5, "Grass", [-5, 10, -330], scene);
+
+        //         fallingLand.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        //         if(other_object.name == "mainSphere" && !fallen1){
+        
+        //             utils.animateFallenPlatformGroup(fallingLand.group, scene, undefined, fallingLand.hitbox,sphere);
+        //             fallen1 = true;
+        //             }
+        //         });
+
+        //     }, 15000)
+        // }
+
+
+        // if(fallen2){
+        //     // scene.remove(fallingLand2);
+
+        //     fallen2 = false
+        //     setTimeout(function () {
+        //         // try {
+        //         //     scene.remove(fallingLand2.hitbox);
+        //         // } catch (error) {
+        //         //     console.log(error);
+        //         // }
+
+        //         fallingLand2 =  utils.createFlatLand(5,5, "Grass", [-5, 5, -370], scene);
+
+        //         fallingLand2.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        //         if(other_object.name == "mainSphere" && !fallen2){
+        
+        //             utils.animateFallenPlatformGroup(fallingLand2.group, scene, undefined, fallingLand2.hitbox,sphere);
+        //             fallen2 = true;
+        //             }
+        //         });
+
+        //     }, 15000)
+        // }
+
+        // if(fallen3){
+        //     fallen3 = false
+        //     setTimeout(function () {
+        //         // try {
+        //         //     scene.remove(fallingLand3.hitbox);
+        //         // } catch (error) {
+        //         //     console.log(error);
+        //         // }
+
+        //         fallingLand3 = utils.createFlatLand(5,5, "Grass", [-5, 0, -410], scene);
+
+        //         fallingLand3.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        //         if(other_object.name == "mainSphere" && !fallen3){
+        
+        //             utils.animateFallenPlatformGroup(fallingLand3.group, scene, undefined, fallingLand3.hitbox,sphere);
+        //             fallen3 = true;
+        //             }
+        //         });
+
+        //     }, 15000)
+        // }
+
+        // if(fallen4){
+        //     fallen4 = false
+        //     setTimeout(function () {
+        //         // try {
+        //         //     scene.remove(fallingLand4.hitbox);
+        //         // } catch (error) {
+        //         //     console.log(error);
+        //         // }
+        //         fallingLand4 = utils.createFlatLand(5,5, "Grass", [-5, -5, -450], scene);
+
+        //         fallingLand4.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        //         if(other_object.name == "mainSphere" && !fallen4){
+        
+        //             utils.animateFallenPlatformGroup(fallingLand4.group, scene, undefined, fallingLand4.hitbox,sphere);
+        //             fallen4 = true;
+        //             }
+        //         });
+
+        //     }, 15000)
+        // }
+
+
+    /* if is present a point light move with the sphere
+     pointLight.position.set(sphere.position.x,sphere.position.y + 200,sphere.position.z) */
 
         // if (controls.target.y < sphere.position.y + utils.camera_y_pos){
         //     controls.enabled = false;
@@ -677,19 +988,6 @@ function main() {
 
             var VELOCITY_w = 20;
     
-
-            if ( keys.q && pressable_q==true){
-                console.log("pressed q");
-                what_look_at = utils.change_main(scene,camera);
-
-                console.log(what_look_at);
-                pressable_q = false;
-                setTimeout(function(){
-                    pressable_q = true;
-                }, 500);  
-            }
-
-
             if ( keys.w){  
 
                 var force_vector = dir.clone().multiplyScalar(VELOCITY_w*10);
@@ -832,7 +1130,7 @@ function main() {
 
                 if(sphere.canJump){
                     sphere.canJump = false;
-                    var force_vector = new THREE.Vector3( 0,VELOCITY_w*2000,0)
+                    var force_vector = new THREE.Vector3( 0,VELOCITY_w*1000,0)
                     sphere.applyCentralImpulse(force_vector)
                    
                 }
@@ -843,7 +1141,13 @@ function main() {
             if(!(keys.w | keys.s | keys.d | keys.a | keys.space)){
                 var sphere_direction = scene.getObjectByName("sphere_direction");
                 if(sphere_direction) scene.remove(sphere_direction);
+
+
+
             }
+
+            // increase gravity effect simulation
+            sphere.applyCentralImpulse(new THREE.Vector3( 0,-VELOCITY_w*5,0))
 
 
             // reduce max height reachable while jumping
@@ -851,7 +1155,6 @@ function main() {
                 sphere.setLinearVelocity(new THREE.Vector3(sphere.getLinearVelocity().x, 30 ,sphere.getLinearVelocity().z))
             }
         }
-
 
 
 
