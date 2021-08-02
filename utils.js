@@ -602,6 +602,7 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     if(is_main){
         sphere.name = "mainSphere";
         sphere.canJump = true;
+        sphere.isFallen = false;
     }
     else  sphere.name = "sphere_" + String(prog_spheres);
     prog_spheres++;
@@ -627,6 +628,8 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
 
                     sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
                     sphere.setAngularVelocity(new THREE.Vector3(0,0,0));
+
+                    sphere.isFallen = true;
 
                     scene.simulate()
                 // }
@@ -1524,7 +1527,7 @@ export function check_in_teleport(scene, pos_main_pg){
         if(conditionx && conditiony && conditionz){
             console.log("Level completed!! ");
             level_completed = true;
-            resetAll(scene,10);
+            resetAll(scene,1000);
         }
     }
 }

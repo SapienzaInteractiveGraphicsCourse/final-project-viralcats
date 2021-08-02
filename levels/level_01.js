@@ -453,20 +453,14 @@ function main() {
         if (keys[key] !== undefined ){
             keys[key] = false;
         }
-        // sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
+
     });
 
-    /* ************************* PLANES ***********************************/
-
-    {
-        // utils.create_Box_Plane([0, 0, 0], [0, 0, 0], 1000, scene, false);
-    }
 
     /* ************************* BOXES ***********************************/
 
     {
       
-        // land1 = utils.createFlatLand(20,20, "Namecc", [30, 0, 30], scene);
         var temp;  //temporary variable to unpack the objects 
 
 
@@ -588,13 +582,8 @@ function main() {
         // var fallen1 = false
         if(other_object.name == "mainSphere" && !fallen1){
             fallen1 = true;
-            // console.log("provaaaaaaaah")
+            console.log("colpita la prima piattaforma")
             utils.animateFallenPlatformGroup(fallingLand.group, scene, undefined, fallingLand.hitbox,sphere);
-            // try {
-            //     scene.remove(fallingLand.hitbox);
-            // } catch (error) {
-            //     console.log(error);
-            // }
         }
         });
 
@@ -609,13 +598,7 @@ function main() {
         
         if(other_object.name == "mainSphere" && !fallen2){
              fallen2 = true;
-             // console.log("provaaaaaaaah")
              utils.animateFallenPlatformGroup(fallingLand2.group, scene, undefined, fallingLand2.hitbox,sphere);
-            //  try {
-            //     scene.remove(fallingLand2.hitbox);
-            // } catch (error) {
-            //    console.log(error);
-            // }
         }
         });
 
@@ -630,14 +613,7 @@ function main() {
         fallingLand3.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
         if(other_object.name == "mainSphere" && !fallen3){
             fallen3 = true;
-            // console.log("provaaaaaaaah")
             utils.animateFallenPlatformGroup(fallingLand3.group, scene, undefined, fallingLand3.hitbox,sphere);
-            // try {
-            //     scene.remove(fallingLand3.hitbox);
-            // } catch (error) {
-            //     console.log(error);
-            // }
-
             }
         });
 
@@ -653,14 +629,7 @@ function main() {
         fallingLand4.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
         if(other_object.name == "mainSphere" && !fallen4){
             fallen4 = true;
-            // console.log("provaaaaaaaah")
             utils.animateFallenPlatformGroup(fallingLand4.group, scene, undefined, fallingLand4.hitbox,sphere);
-            // try {
-            //     scene.remove(fallingLand4.hitbox);
-            // } catch (error) {
-            //     console.log(error);
-            // }
-            
             }
         });
 
@@ -672,36 +641,6 @@ function main() {
         utils.createFlatLand(8,8, "Grass", [-11, -8.5, -512], scene);
         temp =utils.create_Box_Plane([-2, 10, -540], [90, 0, 0], 40, scene, false, './textures/bgs/teleport.png',2);
         group_2.push(temp);
-
-
-            
-
-        // utils.create_Box_Plane([90, 20, 330], [0, 0, 90], 60, scene, false);
-
-        // utils.create_Box_Plane([-90, 20, 320], [0, 0, 90], 60, scene, false);
-
-        // utils.create_Box_Plane([-90, 20, 320], [0, 0, 90], 60, scene, false);
-        // utils.create_Box_Plane([0,0,0], [0, 0, 90], 100, scene, false);
-        // utils.create_Box_Plane([0,0,0], [0, 0, 90], 100, scene, false);
-
-        // utils.createFlatLand(10,10, "Grass", [-45, 0, 340], scene);
-
-        // utils.createFlatLand(30,20, "Grass", [-45, 0, 370], scene);
-
-        // utils.createFlatLand(30,20, "Grass", [-45, 0, 370], scene);
-        // utils.createFlatLand(30,20, "Grass", [-45, 0, 400], scene);
-        // utils.createFlatLand(30,20, "Grass", [-45, 0, 400], scene);
-        // utils.createFlatLand(30,20, "Grass", [-45, 0, 400], scene);
-
-        // orbit  = utils.createFlatLand(5,3, "Grass", [-30,30,-30], scene);
-
-        // utils.createUphillLand(10, 10, 10, "Lava", [0, 0, -80], scene)
-
-        // ascent = utils.createAscentGround(5, 5, 10, "Amethyst", [-39, 0, -5], scene)
-
-        // descent = utils.createDescentGround(5, 5, 10, "Rock", [-39, 0, -5], scene)
-
-        // var brick_wall = utils.createPhysicWall("Rock",scene,13,13,[17,0,-20],false);
 
     }
 
@@ -753,7 +692,7 @@ function main() {
 
         
         /* ************************* MAiN SPHERE ***********************************/
-        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,[20, 120, -125], true); // [0,5,400][20, 120, -125]
+        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,400], true); // [0,5,400][20, 120, -125]
         
         // set the start position of the camera (will change)
         camera.position.z = sphere.position.z + utils.camera_z_pos;
@@ -790,39 +729,6 @@ function main() {
 
         
     }
-
-    /* ************************* ANIMATIONS ******************************/
-
-    // using names
-    // anim_box_repeat = utils.animateBackAndForwardName("box_5", scene, 'y', 100, 20, 5000);
-    // anim_box_repeat.start();
-    // anim_box_single = utils.animatePlatformByName("box_1", scene, 'z', 100, 5000);
-    // anim_box_single.start();
-
-    // using a single instance
-    // anim_box_single_instance = utils.animatePlatformByInstance(box_1, scene, 'z', -100, 5000)
-    // anim_box_single_instance.start();
-
-    // anim_box_repeat_instance = utils.animateBackAndForwardInstance(box_3, scene, 'x', -100, 0, 5000);
-    // anim_box_repeat_instance.start();
-
-    // using groups single animation
-
-    // land_anim_a = utils.animateBackAndForwardInstanceGroup(land.group, scene, 'x', 70, 30, 5000, land.hitbox);
-    // land_anim_a.forEach(anim => { anim.start()});
-
-    // using groups multiple animation
-
-    // animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'z', 30,5000,-30,[5,3], orbit.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-    // animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'x', 30,5000,-30,[5,3], orbit.hitbox));
-    // animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'z',-30,5000, 30,[5,3], orbit.hitbox));
-    // animations_conc.push(utils.animatePlatformByGroupInstance(orbit.group,scene,'x',-30,5000, 30,[5,3], orbit.hitbox));
-
-    // animations_conc = utils.concatenateAnimationsGroup(animations_conc);
-    // animations_conc.forEach(elem => elem.start());
-
-    // tumble animation group
-    // utils.animateFallenPlatformGroup(land_grass.group, scene, undefined, land_grass.hitbox);
     
     /* ************************* RESETS ******************************/
 
@@ -835,122 +741,9 @@ function main() {
     controls.maxPolarAngle = Math.PI / 2
     controls.minDistance = 139;
     controls.maxDistance = 140;
-    var removed = false;
+
     function render() {
 
-        // re-build the falling platform
-
-        if(removed == false){  //if the ball is dropped
-            // removed = true 
-            // setTimeout(function () {
-
-
-            // clean all the platform that are still there
-
-            group_fallen_lands.forEach(Elem => scene.remove(Elem));
-
-            // }, 15000);
-        // }else{
-
-            // rebuild platoforms
-
-        }
-
-
-
-
-        // if(fallen1){
-
-        //     fallen1 = false
-        //     var touched1 = false
-        //     setTimeout(function () {
-        //         // try {
-        //         //     scene.remove(fallingLand.hitbox);
-        //         // } catch (error) {
-        //         //     console.log(error);
-        //         // }
-
-
-        //         fallingLand = utils.createFlatLand(5,5, "Grass", [-5, 10, -330], scene);
-
-        //         fallingLand.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-        //         if(other_object.name == "mainSphere" && !fallen1){
-        
-        //             utils.animateFallenPlatformGroup(fallingLand.group, scene, undefined, fallingLand.hitbox,sphere);
-        //             fallen1 = true;
-        //             }
-        //         });
-
-        //     }, 15000)
-        // }
-
-
-        // if(fallen2){
-        //     // scene.remove(fallingLand2);
-
-        //     fallen2 = false
-        //     setTimeout(function () {
-        //         // try {
-        //         //     scene.remove(fallingLand2.hitbox);
-        //         // } catch (error) {
-        //         //     console.log(error);
-        //         // }
-
-        //         fallingLand2 =  utils.createFlatLand(5,5, "Grass", [-5, 5, -370], scene);
-
-        //         fallingLand2.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-        //         if(other_object.name == "mainSphere" && !fallen2){
-        
-        //             utils.animateFallenPlatformGroup(fallingLand2.group, scene, undefined, fallingLand2.hitbox,sphere);
-        //             fallen2 = true;
-        //             }
-        //         });
-
-        //     }, 15000)
-        // }
-
-        // if(fallen3){
-        //     fallen3 = false
-        //     setTimeout(function () {
-        //         // try {
-        //         //     scene.remove(fallingLand3.hitbox);
-        //         // } catch (error) {
-        //         //     console.log(error);
-        //         // }
-
-        //         fallingLand3 = utils.createFlatLand(5,5, "Grass", [-5, 0, -410], scene);
-
-        //         fallingLand3.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-        //         if(other_object.name == "mainSphere" && !fallen3){
-        
-        //             utils.animateFallenPlatformGroup(fallingLand3.group, scene, undefined, fallingLand3.hitbox,sphere);
-        //             fallen3 = true;
-        //             }
-        //         });
-
-        //     }, 15000)
-        // }
-
-        // if(fallen4){
-        //     fallen4 = false
-        //     setTimeout(function () {
-        //         // try {
-        //         //     scene.remove(fallingLand4.hitbox);
-        //         // } catch (error) {
-        //         //     console.log(error);
-        //         // }
-        //         fallingLand4 = utils.createFlatLand(5,5, "Grass", [-5, -5, -450], scene);
-
-        //         fallingLand4.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-        //         if(other_object.name == "mainSphere" && !fallen4){
-        
-        //             utils.animateFallenPlatformGroup(fallingLand4.group, scene, undefined, fallingLand4.hitbox,sphere);
-        //             fallen4 = true;
-        //             }
-        //         });
-
-        //     }, 15000)
-        // }
 
 
     /* if is present a point light move with the sphere
@@ -985,8 +778,117 @@ function main() {
         // if game is active, take the commands from the user
         if (! utils.level_completed && ! utils.gameOver){
 
+                    // re-build the falling platform
 
-            var VELOCITY_w = 20;
+        if(sphere.isFallen){  //if the ball is dropped
+            sphere.isFallen = false;
+
+            // clean all the platform that are still there
+
+            group_fallen_lands = [];
+            if(!fallen1){
+                // console.log("rimuovo prima piattaforma")
+                fallingLand["group"].forEach(Element => scene.remove(Element));
+                scene.remove(fallingLand["hitbox"]);
+            }
+            if(!fallen2){
+                // console.log("rimuovo seconda piattaforma")
+                fallingLand2["group"].forEach(Element => scene.remove(Element));
+                scene.remove(fallingLand2["hitbox"]);
+            }
+            if(!fallen3){
+                // console.log("rimuovo terza piattaforma")
+                fallingLand3["group"].forEach(Element => scene.remove(Element));
+                scene.remove(fallingLand3["hitbox"]);
+            }
+            if(!fallen4){
+                // console.log("rimuovo quarta piattaforma")
+                fallingLand4["group"].forEach(Element => scene.remove(Element));
+                scene.remove(fallingLand4["hitbox"]);
+            }
+
+
+             // rebuild platoforms
+
+
+            // ------ 1st
+
+            fallingLand = utils.createFlatLand(5,5, "Grass", [-5, 10, -330], scene);
+            fallen1 = false;
+
+            fallingLand.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+            if(other_object.name == "mainSphere" && !fallen1){
+                fallen1 = true;
+                utils.animateFallenPlatformGroup(fallingLand.group, scene, undefined, fallingLand.hitbox,sphere);
+            }
+            });
+
+            fallingLand["group"].forEach(Element => group_fallen_lands.push(Element));
+            group_fallen_lands.push(fallingLand["hitbox"]);
+
+            // ------ 2nd
+
+            fallingLand2 = utils.createFlatLand(5,5, "Grass", [-5, 5, -370], scene);
+            fallen2 = false;
+
+            fallingLand2.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+            if(other_object.name == "mainSphere" && !fallen2){
+                fallen2 = true;
+                utils.animateFallenPlatformGroup(fallingLand2.group, scene, undefined, fallingLand2.hitbox,sphere);
+            }
+            });
+
+            fallingLand2["group"].forEach(Element => group_fallen_lands.push(Element));
+            group_fallen_lands.push(fallingLand2["hitbox"]);
+
+
+            // ------ 3rd
+
+            fallingLand3 = utils.createFlatLand(5,5, "Grass", [-5, 0, -410], scene);
+            fallen3 = false;
+
+            fallingLand3.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+            if(other_object.name == "mainSphere" && !fallen3){
+                fallen3 = true;
+                utils.animateFallenPlatformGroup(fallingLand3.group, scene, undefined, fallingLand3.hitbox,sphere);
+                }
+            });
+
+
+            fallingLand3["group"].forEach(Element => group_fallen_lands.push(Element));
+            group_fallen_lands.push(fallingLand3["hitbox"]);
+
+
+            // ------ 4th
+
+            fallingLand4 = utils.createFlatLand(5,5, "Grass", [-5, -5, -450], scene);
+            fallen4 = false;
+
+            fallingLand4.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+            if(other_object.name == "mainSphere" && !fallen4){
+                fallen4 = true;
+                utils.animateFallenPlatformGroup(fallingLand4.group, scene, undefined, fallingLand4.hitbox,sphere);
+                
+                }
+            });
+
+            fallingLand4["group"].forEach(Element => group_fallen_lands.push(Element));
+            group_fallen_lands.push(fallingLand4["hitbox"]);
+
+
+            // setTimeout(function () {
+
+            // group_fallen_lands.forEach(Elem => scene.remove(Elem));
+
+            // }, 15000);
+        // }else{
+
+            // rebuild platoforms
+
+        }
+
+
+            var VELOCITY_w = 40;
     
             if ( keys.w){  
 
@@ -1130,7 +1032,7 @@ function main() {
 
                 if(sphere.canJump){
                     sphere.canJump = false;
-                    var force_vector = new THREE.Vector3( 0,VELOCITY_w*1000,0)
+                    var force_vector = new THREE.Vector3( 0,VELOCITY_w*500,0)
                     sphere.applyCentralImpulse(force_vector)
                    
                 }
