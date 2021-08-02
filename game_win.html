@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>Final Project</title>
+        
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Edoardo Papa & Fabrizio Casadei">
+    <style>
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            font-family: 'Press Start 2P', cursive;
+            background-color: limegreen;
+        }
+
+        .gameWin {
+            width: 500px;
+            height: 200px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: -100px 0 0 -175px;
+        }
+
+        .textGame {
+            font-size: 100px;
+            color: white;
+            display: block;
+        }
+
+        .textButton {
+            font-size: 35px;
+            color: black;
+            background-color: whitesmoke;
+            display: block;
+            margin-top: 40px;
+            position: absolute;
+            left: 10%;
+        }
+
+        .subTextGame {
+            font-size: 15px;
+            color: white;
+            display: block;
+            margin-top: 20px;
+        }
+
+        .scale-up-center {
+	        -webkit-animation: scale-up-center 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) backwards;
+	        animation: scale-up-center 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) backwards;
+        }
+
+        @-webkit-keyframes scale-up-center {
+            0% {
+            -webkit-transform: scale(0.5);
+                    transform: scale(0.5);
+            }
+            100% {
+            -webkit-transform: scale(1);
+                    transform: scale(1);
+            }
+        }
+        @keyframes scale-up-center {
+            0% {
+            -webkit-transform: scale(0.5);
+                    transform: scale(0.5);
+            }
+            100% {
+            -webkit-transform: scale(1);
+                    transform: scale(1);
+            }
+        }
+
+
+    </style>
+
+</head>
+
+<body>
+    <div class="gameWin" >
+        <span class="textGame scale-up-center">YOU WIN!</span>
+                <span class="subTextGame text-shadow-pop-top"></span>
+                <br>
+                <br>
+        <button id="game_win_button"type="button" class="textButton scale-up-center">RESTART...</button>
+    </div>
+
+    <script src="./game_win.js" type="module"></script>
+
+</body>
+
+</html>
