@@ -5,6 +5,6 @@
 - make possible the change of the level (try to pass from physijs_test to               # /
 level 1)                                                                                # DONE
 - applicate sounds                                                                      # DONE
-- first page(intro with images and sounds) and win/game over images.                    # FIRST PAGE DONE.
-- do levels.                                                                            #
--insert specular and normal maps                                                        #
+- first page(intro with images and sounds) and win/game over images.                    # FIRST PAGE DONE. GAME OVER DONE. WIN GAME DONE.
+- do levels.                                                                            # 
+- insert specular and normal maps                                                       # 

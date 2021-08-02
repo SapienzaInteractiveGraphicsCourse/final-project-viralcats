@@ -466,6 +466,30 @@ export function rotateArmsLegs(box, angle){
     box.translateOnAxis(moveDir, moveDist);
 }
 
+
+export function move(box, angle){
+
+    var anchorPoint = new THREE.Vector3(box.position.x, box.position.y + (box.dimensions[1]/2 - 1), box.position.z);
+    // console.log(anchorPoint);
+
+    let moveDir = new THREE.Vector3(
+        anchorPoint.x - box.position.x,
+        anchorPoint.y - box.position.y,
+        anchorPoint.z - box.position.z
+    );
+
+    moveDir.normalize();
+    let moveDist = box.position.distanceTo(anchorPoint);
+    
+    box.translateOnAxis(moveDir, moveDist);
+
+    box.translateZ(degrees_to_radians(angle));
+
+    moveDir.multiplyScalar(-1);
+    box.translateOnAxis(moveDir, moveDist);
+}
+
+
 export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     var path;
     if(cubes_type[type] != undefined ){
@@ -736,7 +760,7 @@ export function create_pg(scene, loc = undefined){
     body.add(right_leg)
 
     pg = [hit_box,head,body,left_arm,right_arm,left_leg,right_leg];
-    // return pg;
+    return pg;
 }
 
 /**************************************************** OBJECTS CREATION  [end] ******************************************************/

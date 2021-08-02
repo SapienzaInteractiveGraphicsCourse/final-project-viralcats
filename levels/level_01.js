@@ -32,12 +32,16 @@ var sphere;
 var keys;
 var pressable_q = true;
 
+var start_x_pos;
+var start_z_pos;
 
 var listener;
 var curr_sounds = new Map([]);
 
 var mouse_x;
 var mouse_pressing = false;
+
+var max_num_of_levels = 1
 
 const canvas = document.querySelector('#c');
 
@@ -290,6 +294,15 @@ const sounds = {
 	// _12ad44htrshthtrhtrenture   :  { url: './asserts/sounds/adventure.wav' },
 }
 
+function game_over(){
+    playSound(sounds.background.sound,true);
+    window.location.href = window.location.href + "game_over.html"
+}
+
+function game_win(){
+    playSound(sounds.background.sound,true);
+    window.location.href = window.location.href + "game_win.html"
+}
 
 function loadSounds() {
 
@@ -405,8 +418,11 @@ function initializate_page(){
 
 loadSounds();
 
-
+var list_of_pgs = new Array();
 function getNextLevel(curr_level){
+    if(curr_level == 0){
+        return level_0;
+    }
     if(curr_level == 1){
         stopSound(sounds.background.sound);
         playSound(sounds.level_1.sound,true);
@@ -448,7 +464,6 @@ function level_0(){
         utils.create_teleport([0, 20, 350], scene); // emissive light of the teleport
     }
 
-
     /* ************************* LIGHT ***********************************/
     {
         utils.create_pointLIght([10,10,10],0xffffff,scene);
@@ -476,17 +491,36 @@ function level_1(scene){
     {
 
 
-        utils.createFlatLand(30,20, "Grass", [-45, 0, 370], scene);
+        utils.createFlatLand(30,20, "Grass", [0, 0, 370], scene);
 
-        utils.createFlatLand(10,10, "Grass", [45, 0, 290], scene);
-        utils.createFlatLand(10,10, "Grass", [45, 0, 240], scene);
+        utils.createFlatLand(10,10, "Grass", [0, 15, 330], scene);
+
+        utils.createFlatLand(10,10, "Grass", [0, 30, 280], scene);
+        utils.createFlatLand(10,10, "Grass", [0, 50, 220], scene);
+        utils.createFlatLand(10,10, "Grass", [0, 65, 150], scene);
+        utils.createFlatLand(4,4, "Grass",   [10, 90, 110], scene);
+
+
+
+
+        for(var i = 0; i < parseInt(document.getElementById("curr_zombie").innerText)-1; i++){
+            list_of_pgs.push(utils.create_pg(scene,[10+i*15,20,380]));
+        }
+
+        utils.createAscentGround(5*2, 5*2, 10, "Amethyst", [50, 65, 150], scene);
+        utils.createFlatLand(10,10, "Grass", [80, 65, 150], scene);
+        list_of_pgs.push(utils.create_pg(scene,[95, 100, 150]));
+                
+        // utils.createFlatLand(10,10, "Grass", [45, 0, 290], scene);
+        // utils.createFlatLand(10,10, "Grass", [45, 0, 240], scene);
+
 
     }
 
     /* ************************* SPHERES ***********************************/
 
     {
-        utils.create_teleport([0, 0, 350], scene); // emissive light of the teleport
+        utils.create_teleport([15, 115, 100], scene); // emissive light of the teleport
     }
 
 
@@ -507,6 +541,458 @@ function level_1(scene){
 
     /* ************************* MAiN SPHERE ***********************************/
     sphere = utils.create_Sphere(3, 0xFFFFFF, "body_f", scene, utils.start_level_1, true);
+
+    if(utils.curr_level == 1)
+        walk_around(list_of_pgs[0]);
+    // walk_around(list_of_pgs[1]);
+    // walk_around(list_of_pgs[2]);
+    // walk_around(list_of_pgs[3]);
+
+    // setInterval(() => {
+    //     list_of_pgs.forEach(element => {
+    //         var pg = element
+    //         utils.rotateArmsLegs(pg[3],getRandomArbitrary(-1,1))
+    //     });
+    // }, 5);
+
+    // setInterval(() => {
+    //     list_of_pgs.forEach(element => {
+    //         var pg = element
+    //         utils.rotateArmsLegs(pg[4],getRandomArbitrary(-1,1))
+    //     });
+    // }, 5);
+
+    // setInterval(() => {
+    //     list_of_pgs.forEach(element => {
+    //         var pg = element
+    //         utils.rotateArmsLegs(pg[5],1)
+    //     });
+    // }, 50);
+
+    // setInterval(() => {
+    //     list_of_pgs.forEach(element => {
+    //         var pg = element
+    //         utils.rotateArmsLegs(pg[6],1)
+    //     });
+    // }, 50);
+}
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+var left_end    = false;
+var right_end   = false;
+
+var left_leg_end    = false;
+var right_leg_end   = false;
+
+function move_arms(who){
+
+    var start_rotate_pos = 0;
+
+    var time = 15;
+
+    it_arm_1 = setInterval(() => {
+        who[3].__dirtyPosition = true;
+        who[3].__dirtyRotation = true;
+        utils.rotateArmsLegs(who[3],1);
+
+        scene.simulate();
+        // console.log(who[3].rotation.x + " >= " +  String(start_rotate_pos + 1))
+        if(who[3].rotation.x >= start_rotate_pos + 1){
+            clearInterval(it_arm_1);
+            it_arm_2 = setInterval(() => {
+                who[3].__dirtyPosition = true;
+                who[3].__dirtyRotation = true;
+                utils.rotateArmsLegs(who[3],-1);
+        
+                scene.simulate();
+                // console.log(who[3].rotation.x + " <= " +  String(start_rotate_pos - 1))
+                if(who[3].rotation.x <= start_rotate_pos - 1){
+                    clearInterval(it_arm_2);
+                    right_end = true;
+                    if(left_end && right_end){
+                        left_end = false;
+                        right_end = false;
+                        clearInterval(it_arm_1);
+                        clearInterval(it_arm_2);
+                        clearInterval(it_arm_3);
+                        clearInterval(it_arm_4);
+                        move_arms(who);
+                    }
+                }
+        
+            }, 10);
+        }
+
+    }, 10);
+
+
+    it_arm_3 = setInterval(() => {
+        who[4].__dirtyPosition = true;
+        who[4].__dirtyRotation = true;
+        utils.rotateArmsLegs(who[4],-1);
+
+        scene.simulate();
+        // console.log(who[3].rotation.x + " >= " +  String(start_rotate_pos + 1))
+        if(who[4].rotation.x <= start_rotate_pos - 1){
+            clearInterval(it_arm_3);
+            it_arm_4 = setInterval(() => {
+                who[4].__dirtyPosition = true;
+                who[4].__dirtyRotation = true;
+                utils.rotateArmsLegs(who[4],1);
+        
+                scene.simulate();
+                // console.log(who[3].rotation.x + " <= " +  String(start_rotate_pos - 1))
+                if(who[4].rotation.x >= start_rotate_pos + 1){
+                    clearInterval(it_arm_4);
+                    left_end = true;
+                    if(left_end && right_end){
+                        left_end = false;
+                        right_end = false;
+                        clearInterval(it_arm_1);
+                        clearInterval(it_arm_2);
+                        clearInterval(it_arm_3);
+                        clearInterval(it_arm_4);
+                        move_arms(who);
+                    }
+                }
+        
+            }, 10);
+        }
+
+    }, 10);
+
+
+
+    if(left_end && right_end){
+        left_end = false;
+        right_end = false;
+        clearInterval(it_arm_1);
+        clearInterval(it_arm_2);
+        clearInterval(it_arm_3);
+        clearInterval(it_arm_4);
+        move_arms(who);
+    }
+
+
+
+}
+
+
+function move_legs(who){
+
+    var start_rotate_pos = 0;
+
+    var time = 15;
+
+    it_leg_1 = setInterval(() => {
+        who[6].__dirtyPosition = true;
+        who[6].__dirtyRotation = true;
+        utils.rotateArmsLegs(who[6],1);
+
+        scene.simulate();
+        // console.log(who[6].rotation.x + " >= " +  String(start_rotate_pos + 1))
+        if(who[6].rotation.x >= start_rotate_pos + 1){
+            clearInterval(it_leg_1);
+            it_leg_2 = setInterval(() => {
+                who[6].__dirtyPosition = true;
+                who[6].__dirtyRotation = true;
+                utils.rotateArmsLegs(who[6],-1);
+        
+                scene.simulate();
+                // console.log(who[6].rotation.x + " <= " +  String(start_rotate_pos - 1))
+                if(who[6].rotation.x <= start_rotate_pos - 1){
+                    clearInterval(it_leg_2);
+                    right_leg_end = true;
+                    if(left_leg_end && right_leg_end){
+                        left_leg_end = false;
+                        right_leg_end = false;
+                        clearInterval(it_leg_1);
+                        clearInterval(it_leg_2);
+                        clearInterval(it_leg_3);
+                        clearInterval(it_leg_4);
+                        //move_legs(who);
+                    }
+                }
+        
+            }, 10);
+        }
+
+    }, 10);
+
+
+    it_leg_3 = setInterval(() => {
+        who[5].__dirtyPosition = true;
+        who[5].__dirtyRotation = true;
+        utils.rotateArmsLegs(who[5],-1);
+
+        scene.simulate();
+        // console.log(who[3].rotation.x + " >= " +  String(start_rotate_pos + 1))
+        if(who[5].rotation.x <= start_rotate_pos - 1){
+            clearInterval(it_leg_3);
+            it_leg_4 = setInterval(() => {
+                who[5].__dirtyPosition = true;
+                who[5].__dirtyRotation = true;
+                utils.rotateArmsLegs(who[5],1);
+        
+                scene.simulate();
+                // console.log(who[3].rotation.x + " <= " +  String(start_rotate_pos - 1))
+                if(who[5].rotation.x >= start_rotate_pos + 1){
+                    clearInterval(it_leg_4);
+                    left_leg_end = true;
+                    if(left_leg_end && right_leg_end){
+                        left_leg_end = false;
+                        right_leg_end = false;
+                        clearInterval(it_leg_1);
+                        clearInterval(it_leg_2);
+                        clearInterval(it_leg_3);
+                        clearInterval(it_leg_4);
+                        //move_legs(who);
+                    }
+                }
+        
+            }, 10);
+        }
+
+    }, 10);
+
+
+
+    if(left_leg_end && right_leg_end){
+        left_leg_end = false;
+        right_leg_end = false;
+        clearInterval(it_leg_1);
+        clearInterval(it_leg_2);
+        clearInterval(it_leg_3);
+        clearInterval(it_leg_4);
+        move_legs(who);
+    }
+
+
+
+}
+
+
+var it_move_1;
+var it_move_2;
+var it_move_3;
+var it_move_4;
+
+var it_leg_1;
+var it_leg_2;
+var it_leg_3;
+var it_leg_4;
+
+var it_arm_1;
+var it_arm_2;
+var it_arm_3;
+var it_arm_4;
+
+var walk_end = false;
+
+
+var step = 0;
+function walk_around(who){
+
+    
+    // move_arms(who);
+    // move_legs(who);
+
+    // var pos = { value: start_z_pos };
+    // var tween_1 = new TWEEN.Tween(pos) 
+	// .to({value: start_z_pos +50}, 5000)
+    // .easing(TWEEN.Easing.Quadratic.Out)
+	// .onUpdate(function() {
+    //     who[0].__dirtyPosition = true;
+    //     who[0].__dirtyRotation = true;
+    //     who[0].translateZ(0.1);
+
+    //     scene.simulate();
+	// });
+
+    // var pos_2 = { value: start_x_pos};
+
+    // var tween_2 = new TWEEN.Tween(pos_2) 
+	// .to({value: start_x_pos - 8}, 50)
+    // .easing(TWEEN.Easing.Quadratic.Out)
+	// .onUpdate(function() {
+    //     who[0].__dirtyPosition = true;
+    //     who[0].__dirtyRotation = true;
+    //     who[0].translateZ(0.1);
+
+    //     scene.simulate();
+	// });
+
+    
+
+
+    // var pos_3 = { value: who[0].position.z };
+    // var tween_3 = new TWEEN.Tween(pos_3) 
+	// .to({value: start_z_pos}, 50)
+    // .easing(TWEEN.Easing.Quadratic.Out)
+	// .onUpdate(function() {
+    //     who[0].__dirtyPosition = true;
+    //     who[0].__dirtyRotation = true;
+    //     who[0].translateZ(0.1);
+
+    //     scene.simulate();
+	// });
+
+    // var pos_4 = { value: who[0].position.x};
+
+    // var tween_4 = new TWEEN.Tween(pos_4) 
+	// .to({value: start_x_pos}, 50)
+    // .easing(TWEEN.Easing.Quadratic.Out)
+	// .onUpdate(function() {
+    //     who[0].__dirtyPosition = true;
+    //     who[0].__dirtyRotation = true;
+    //     who[0].translateZ(0.1);
+
+    //     scene.simulate();
+	// });
+
+    // tween_1.start().onComplete(function() {
+    //     console.log("FINIRO");
+    // });
+
+
+    // // tween_1.start().onComplete(function() {
+    // //     tween_2.start().onComplete(function() {
+    // //         tween_3.start().onComplete(function() {
+    // //             tween_4.start().onComplete(function() {
+        
+    // //             });
+    // //         });
+    // //     });
+    // // });
+
+
+
+    switch(step){
+        case 0:
+            who[0].__dirtyPosition = true;
+            who[0].__dirtyRotation = true;
+            who[0].translateZ(0.1);
+    
+            scene.simulate();
+    
+            // who[0].__dirtyPosition = false;
+            // who[0].__dirtyRotation = false;
+            
+            if(who[0].position.z >= start_z_pos + 15){
+                step = 1;
+            }
+        break;
+        case 1:
+            who[0].__dirtyPosition = true;
+            who[0].__dirtyRotation = true;
+            who[0].translateX(-0.1);
+    
+            scene.simulate();
+    
+            // who[0].__dirtyPosition = false;
+            // who[0].__dirtyRotation = false;
+            if(who[0].position.x < start_x_pos - 8){
+                step = 2;
+            }
+        break;
+        case 2:
+            who[0].__dirtyPosition = true;
+            who[0].__dirtyRotation = true;
+            who[0].translateZ(-0.1);
+
+            scene.simulate();
+
+            // who[0].__dirtyPosition = false;
+            // who[0].__dirtyRotation = false;
+            if(who[0].position.z <= start_z_pos){
+                step = 3;
+            }
+        break;
+        case 3:
+            who[0].__dirtyPosition = true;
+            who[0].__dirtyRotation = true;
+            who[0].translateX(0.1);
+
+            scene.simulate();
+
+            // who[0].__dirtyPosition = false;
+            // who[0].__dirtyRotation = false;
+            if(who[0].position.x >= start_x_pos){
+                step = 0;
+            }
+        break;
+    }
+
+
+
+
+
+
+    return;
+    it_move_1 = setInterval(() => {
+        who[0].__dirtyPosition = true;
+        who[0].__dirtyRotation = true;
+        who[0].translateZ(0.1);
+
+        scene.simulate();
+
+        // who[0].__dirtyPosition = false;
+        // who[0].__dirtyRotation = false;
+        
+        if(who[0].position.z >= start_z_pos + 15){
+            clearInterval(it_move_1);
+            it_move_2 = setInterval(() => {
+                who[0].__dirtyPosition = true;
+                who[0].__dirtyRotation = true;
+                who[0].translateX(-0.1);
+        
+                scene.simulate();
+        
+                // who[0].__dirtyPosition = false;
+                // who[0].__dirtyRotation = false;
+                if(who[0].position.x < start_x_pos - 8){
+                    clearInterval(it_move_2);
+
+                    it_move_3 = setInterval(() => {
+                        who[0].__dirtyPosition = true;
+                        who[0].__dirtyRotation = true;
+                        who[0].translateZ(-0.1);
+                
+                        scene.simulate();
+                
+                        // who[0].__dirtyPosition = false;
+                        // who[0].__dirtyRotation = false;
+                        if(who[0].position.z <= start_z_pos){
+                            clearInterval(it_move_3);
+
+                            it_move_4 = setInterval(() => {
+                                who[0].__dirtyPosition = true;
+                                who[0].__dirtyRotation = true;
+                                who[0].translateX(0.1);
+                        
+                                scene.simulate();
+                        
+                                // who[0].__dirtyPosition = false;
+                                // who[0].__dirtyRotation = false;
+                                if(who[0].position.x >= start_x_pos){
+                                    clearInterval(it_move_4);
+
+                                    //walk_around(who);
+                                    walk_end = true;
+                                }
+                        
+                            }, 50);
+                        }
+                
+                    }, 50);
+
+                }
+        
+            }, 50);
+        }
+
+    }, 50);
 }
 
 
@@ -606,6 +1092,20 @@ function main() {
 
         
     }
+    var level = utils.curr_level;
+    utils.changeLevel(scene,getNextLevel(level));
+    document.getElementById("curr_level_info").innerText = level;
+
+
+    walk_end = true;
+    var counter = 0;
+
+    if(utils.curr_level == 1){
+        start_x_pos = list_of_pgs[0][0].position.x;
+        start_z_pos = list_of_pgs[0][0].position.z;
+    }
+
+//ToDo:fare movimento braccia come step fatto per movimento normale
 
     function render() {
 
@@ -632,10 +1132,25 @@ function main() {
         if(utils.level_completed){
             utils.toggle_level_completed();
             var level = utils.curr_level;
-            utils.changeLevel(scene,getNextLevel(level));
+            if(utils.curr_level <= max_num_of_levels){
+                utils.changeLevel(scene,getNextLevel(level));
+                document.getElementById("curr_level_info").innerText = level;
+            }
         }
 
+        if(utils.gameOver){
+            game_over();
+        }
 
+        if(utils.curr_level > max_num_of_levels){
+            game_win();
+        }
+
+        if(utils.curr_level == 1){
+            counter++;
+            if(counter % 2 == 0)
+                walk_around(list_of_pgs[0]);
+        }
         
 
         // if game is active, take the commands from the user
@@ -826,8 +1341,11 @@ function main() {
             const canvas = renderer.domElement;
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
-        }
 
+        }
+        // camera.position.z = sphere.position.z + utils.camera_z_pos;
+        // camera.position.y = sphere.position.y + utils.camera_y_pos;
+        // camera.position.x = sphere.position.x;
 
         TWEEN.update();
         scene.simulate();
