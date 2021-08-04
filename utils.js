@@ -34,7 +34,7 @@ const restitution_box = 0.0; // low restitution (bouncing factor)
 
 
 //pg variable
-export var pg;
+// export var pg;
 export var is_pg_sphere = true;
 
 
@@ -232,6 +232,12 @@ function degtorad(degrees) {
 /* ************************************* external functions ************************************* */
 
 
+export function setLevel(n){
+    level = n;
+}
+
+
+
 /************************************************ OBJECTS CREATION  [start] ***************************************************/
 
 export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, num= null) {
@@ -240,7 +246,19 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
     var materials; 
     const textureLoader = new THREE.TextureLoader();
     if(name == null){
+        // if (level == 1){
+
         texture = textureLoader.load('./textures/blocks/test_wall.png');
+
+        // }
+        // else if (level == 2){
+        //     texture = textureLoader.load('./textures/blocks/sky.jpg');
+        // }
+        // else{
+        //     texture = textureLoader.load('./textures/blocks/test_wall.png');
+        // }
+
+        // if (level == 1){
         materials = [
             new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 1.0 }),
             new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 1.0 }),
@@ -249,6 +267,19 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
             new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 1.0 }),
             new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 1.0 })
         ];
+        // }
+        // else if(level == 2){
+        //     materials = [
+        //         new THREE.MeshBasicMaterial({ color: 0x000000 }),      // right face
+        //         new THREE.MeshBasicMaterial({ color: 0x000000 }),     // left face
+        //         new THREE.MeshBasicMaterial({ map: texture}),    //  upper face
+        //         new THREE.MeshBasicMaterial({ map: texture}),   // lower face
+        //         new THREE.MeshBasicMaterial({ color: 0x000000}),      // front face
+        //         new THREE.MeshBasicMaterial({ color: 0x000000 })     // opposite face
+        //     ];
+        // }
+
+
     }
     else{
         texture = textureLoader.load(name);
@@ -788,7 +819,6 @@ export function create_button(scene, pos, group){
             mainSphere.setAngularVelocity(new THREE.Vector3(0,0,0));
 
             removeByGroup(group,scene);
-            scene.simulate()
             button.pushed = true;
             // resetAll(scene,50)
             // remove
@@ -852,8 +882,8 @@ export function create_pg(scene, loc = undefined){
     body.add(left_leg)
     body.add(right_leg)
 
-    pg = [hit_box,head,body,left_arm,right_arm,left_leg,right_leg];
-    // return pg;
+    // var pg = [hit_box,head,body,left_arm,right_arm,left_leg,right_leg];
+    return [hit_box,head,body,left_arm,right_arm,left_leg,right_leg];
 }
 
 /**************************************************** OBJECTS CREATION  [end] ******************************************************/
@@ -998,6 +1028,9 @@ export function createPhysicWall(type, scene, row, columns, left_down_pos, on_x)
                 box = create_Box(type, [(left_down_pos[0] + dim_cube/2) + j * dim_cube, (left_down_pos[1]+ dim_cube/2) + i * dim_cube, (left_down_pos[2]+ dim_cube/2)], 1.0, scene);
             else  //create along z axis 
                 box = create_Box(type, [(left_down_pos[0] + dim_cube/2), (left_down_pos[1]+ dim_cube/2) + i * dim_cube, (left_down_pos[2]+ dim_cube/2) + j * dim_cube], 1.0, scene);
+            
+            box.__dirtyPosition = false;
+            box.__dirtyRotation = false;
             wall_group.push(box);
 
         }
@@ -1169,14 +1202,16 @@ export function animatePlatformByGroupInstance(group, scene, axis, new_position_
             animation.onUpdate(function () {
             if(hit_box != undefined || hit_box != null){ 
                 hit_box.__dirtyPosition = true;
-                var dispx,dispz;
+                var dispx,dispz,dispy;
                 if (typeof irregular_shape != 'undefined') {
-                    dispx = (irregular_shape[0]/2 * dim_cube) - dim_cube/2;;
-                    dispz = (irregular_shape[1]/2 * dim_cube) - dim_cube/2;;
+                    dispx = (irregular_shape[0]/2 * dim_cube) - dim_cube/2;
+                    dispz = (irregular_shape[1]/2 * dim_cube) - dim_cube/2;
+                    dispy = - dim_cube/2;
                 }
                 else{
-                    dispx = (max_length/2 * dim_cube) - dim_cube/2;;
+                    dispx = (max_length/2 * dim_cube) - dim_cube/2;
                     dispz = dispx;
+                    dispy = - dim_cube/2;
                 }
                 if (axis == "x") {
                     // var disp = initial_value.pos - platform.position.x;
@@ -1185,12 +1220,12 @@ export function animatePlatformByGroupInstance(group, scene, axis, new_position_
                     // if(only_fist) hit_box.position.x = platform.position.x;
                     // if(only_fist) hit_box.position.x = hit_box.position.x + disp;
                 }
-                else if (axis == 'y'){ platform.position.y = initial_value.pos;
-                    // if(only_fist) hit_box.position.y = platform.position.y;
-                    hit_box.position.y = platform.position.y -disp;
+                else if (axis == 'y'){
+                    platform.position.y = initial_value.pos;
+                    hit_box.position.y = platform.position.y -dispy;
                 }
-                else if (axis == 'z'){ platform.position.z = initial_value.pos;
-                    // if(only_fist) hit_box.position.z = platform.position.z;
+                else if (axis == 'z'){
+                    platform.position.z = initial_value.pos;
                     hit_box.position.z = platform.position.z -dispz;
                 }
                 scene.simulate()
@@ -1569,8 +1604,8 @@ export function reset_data() {
     last_time = 0;
     curr_time = 0;
 
-    pg = null;
-    is_pg_sphere = false;
+    // pg = null;
+    is_pg_sphere = true;
 
     life = 3;
 }

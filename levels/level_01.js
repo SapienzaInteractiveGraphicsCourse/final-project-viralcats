@@ -6,24 +6,10 @@ import { OrbitControls } from '../libs/threejs/examples/jsm/controls/OrbitContro
 import TWEEN from '../libs/tween.esm.js';
 import * as THREE_AUDIO from '../libs/threejs/build/three.module.js';
 
-
-// defintion of the object for the level
-
-var distance_bound = 10000;
+utils.setLevel(1);
 
 // definition and instatiation of the groups
-var anim_box_repeat;
-var anim_box_repeat_instance;
-var anim_box_single;
-var anim_box_single_instance;
-var land_anim_a;
 
-var animations_conc = [];
-var tremble_anim = [];
-
-var ascent, descent, land, land_grass, orbit;
-var box_1;
-var box_3;
 var controls;
 var scene;
 var pg;
@@ -46,7 +32,6 @@ var fallingLand3;
 var fallingLand4;
 
 var keys;
-var pressable_q = true;
 
 
 var listener;
