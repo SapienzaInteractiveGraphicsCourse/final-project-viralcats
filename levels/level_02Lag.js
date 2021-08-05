@@ -29,6 +29,8 @@ var sphere;
 
 //groups for the checkpoints
 var group_1 = [];
+var group_2 = [];
+var group_3 = [];
 
 
 var pg1;
@@ -236,229 +238,267 @@ function main() {
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-        // start of strip platforms
 
-        temp = utils.createFlatLand(2,20, "Lava", [-6, 0, 500], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-45, 8, 545], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-        //--
-
-        temp = utils.createFlatLand(2,20, "Namecc", [-12, 0, 430], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-35, 16, 525], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-        temp = utils.createFlatLand(2,20, "Namecc", [0, 0, 430], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-25, 24, 545], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-        //--
-
-        temp = utils.createFlatLand(2,20, "Lava", [-18, 0, 360], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-45, 32, 545], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-        // temp = utils.createFlatLand(2,20, "Lava", [-6, 0, 360], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(2,20, "Lava", [6, 0, 360], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-35, 40, 525], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-        //--
-
-        temp = utils.createFlatLand(2,20, "Namecc", [-24, 0, 290], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-25, 48, 545], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-        // temp = utils.createFlatLand(2,20, "Namecc", [-12, 0, 290], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
+        // end first uphill formation
 
-        // temp = utils.createFlatLand(2,20, "Namecc", [0, 0, 290], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(2,20, "Namecc", [12, 0, 290], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [15, 48, 545], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-         //--
 
-         temp = utils.createFlatLand(2,20, "Lava", [-36, 0, 220], scene)
-         temp["group"].forEach(Element => group_1.push(Element));
-         group_1.push(temp["hitbox"]);
-         
-        //  temp = utils.createFlatLand(2,15, "Lava", [-48, 0, 227.5], scene)
-        //  temp["group"].forEach(Element => group_1.push(Element));
-        //  group_1.push(temp["hitbox"]);
-
-         temp = utils.createFlatLand(2,10, "Lava", [-60, 0, 235], scene)
-         temp["group"].forEach(Element => group_1.push(Element));
-         group_1.push(temp["hitbox"]);
-
-        //  temp = utils.createFlatLand(2,5, "Lava", [-72, 0, 242.5], scene)
-        //  temp["group"].forEach(Element => group_1.push(Element));
-        //  group_1.push(temp["hitbox"]);
-
-         temp = utils.createFlatLand(2,2, "Lava", [-84, 0, 247], scene)
-         temp["group"].forEach(Element => group_1.push(Element));
-         group_1.push(temp["hitbox"]);
+        temp = utils.createFlatLand(6,6, "Namecc", [55, 48, 545], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
 
 
-         temp = utils.createFlatLand(20,1, "Lava", [-144, 0, 248.5], scene)
-         temp["group"].forEach(Element => group_1.push(Element));
-         group_1.push(temp["hitbox"]);
+        // bonus with pg
 
-         temp = utils.createFlatLand(10,10, "Namecc", [-174, 0, 235], scene)
-         temp["group"].forEach(Element => group_1.push(Element));
-         group_1.push(temp["hitbox"]);
+        temp = utils.createFlatLand(5,5, "Namecc", [105, 48, 546.5], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+
+        temp = utils.createFlatLand(4,4, "Namecc", [155, 48, 548], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+        pg1 = utils.create_pg(scene)
+    
+    
+        pg1[0].__dirtyPosition = true;
+        pg1[0].__dirtyRotation = true;
+    
+    
+        pg1[0].position.set(159.5, 70, 552.5)
+        pg1[0].rotation.set(0,utils.degrees_to_radians(-45),0)
+    
+        scene.simulate();//update the new position for physijs
+
+        group_1.push(pg1[0]);
+
+        // start second formation uphill formation
+
+        temp = utils.createFlatLand(6,6, "Namecc", [45, 56, 525], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+        temp = utils.createFlatLand(6,6, "Namecc", [65, 64, 525], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+        temp = utils.createFlatLand(6,6, "Namecc", [55, 72, 545], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+        temp = utils.createFlatLand(6,6, "Namecc", [45, 80, 525], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+        temp = utils.createFlatLand(6,6, "Namecc", [65, 88, 525], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+
+        // end second formation uphill formation
+
+        // shifty platform
+
+
+        temp = utils.createFlatLand(6,6, "Amethyst", [65, 88, 505], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+        var anim_lift1 = utils.animateBackAndForwardInstanceGroup(temp["group"], scene, 'z', 450, 505, 5000, temp["hitbox"]);
+        anim_lift1.forEach(anim => { anim.start()});
+
+
+        temp = utils.createFlatLand(6,6, "Namecc", [65, 88, 415], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+        temp = utils.createDescentGround(20, 6, 50, "Rock", [65, 88, 410], scene, "+z")
+        temp.forEach(Element => group_1.push(Element));
+
+
+        temp = utils.createFlatLand(6,6, "Amethyst", [65, 48, 330], scene)
+        temp["group"].forEach(Element => group_1.push(Element));
+        group_1.push(temp["hitbox"]);
+
+        var anim_lift2 = utils.animateBackAndForwardInstanceGroup(temp["group"], scene, 'z', 250, 330, 7000, temp["hitbox"]);
+        anim_lift2.forEach(anim => { anim.start()});
+
+
+
+
+        // main platform number 2
+
+
+        temp = utils.createFlatLand(30,20, "Moss", [-45, 0, 170], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
 
         {
-            var pg = utils.create_pg(scene);
-    
-            pg[0].__dirtyPosition = true;
-            pg[0].__dirtyRotation = true;
-    
-    
-            pg[0].position.set(-159, 10, 250)
-            pg[0].rotation.set(0,utils.degrees_to_radians(45),0)
-    
-            scene.simulate(); //update the new position for physijs
-
-            group_1.push(pg[0]);
+            temp = utils.create_button(scene , [0,2.5,185], group_1);
+            group_2.push(temp)
         }
 
+        pg2 = utils.create_pg(scene)
+    
+        pg2[0].__dirtyPosition = true;
+        pg2[0].__dirtyRotation = true;
+        scene.simulate();
+    
+    
+        pg2[0].position.set(-25, 10, 200);
+        pg2[0].rotation.set(0,utils.degrees_to_radians(90),0);
+    
+        scene.simulate(); //update the new position for physijs
 
-        temp = utils.createFlatLand(2,20, "Lava", [24, 0, 220], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
-
-        // temp = utils.createFlatLand(2,15, "Lava", [36, 0, 227.5], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(2,10, "Lava", [48, 0, 235], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
-
-        // temp = utils.createFlatLand(2,5, "Lava", [60, 0, 242.5], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(2,2, "Lava", [72, 0, 247], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(20,1, "Lava", [72, 0, 248.5], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(10,10, "Namecc", [132, 0, 235], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
-
-       {
-           var pg = utils.create_pg(scene);
-   
-           pg[0].__dirtyPosition = true;
-           pg[0].__dirtyRotation = true;
-   
-   
-           pg[0].position.set(147, 10, 250)
-           pg[0].rotation.set(0,utils.degrees_to_radians(-45),0)
-   
-           scene.simulate(); //update the new position for physijs
-
-           group_1.push(pg[0]);
-   
-       }
-
-        //--
-
-        temp = utils.createFlatLand(1,20, "Namecc", [-22.5, 0, 150], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
-       
-        // temp = utils.createFlatLand(1,20, "Namecc", [-10.5, 0, 150], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-       
-        // temp = utils.createFlatLand(1,20, "Namecc", [1.5, 0, 150], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-       
-        temp = utils.createFlatLand(1,20, "Namecc", [13.5, 0, 150], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
-
-        //--
-
-        temp = utils.createFlatLand(1,20, "Lava", [-16.5, 0, 80], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
-
-        // temp = utils.createFlatLand(1,20, "Lava", [-4.5, 0, 80], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(1,20, "Lava", [7.5, 0, 80], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
+        group_2.push(pg2[0]);
 
 
-        //--
+        temp = utils.createPhysicWall("Terracotta",scene,7,19,[-20, 1.6, 170],false)
+        temp.forEach(Elem => 
+            {group_2.push(Elem);
+        });
 
-        temp = utils.createFlatLand(1,20, "Namecc", [-10.5, 0, 10], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
+        temp = utils.createFlatLand(6,6, "Amethyst", [-45, 0, 150], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
 
-        temp = utils.createFlatLand(1,20, "Namecc", [1.5, 0, 10], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
+        var animations_conc = [];
 
-        
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', 45,7000, -45,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', 50,10000, 150,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', -45,7000, 45,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', 150,10000, 50,[6,6], temp.hitbox));
+    
+        animations_conc = utils.concatenateAnimationsGroup(animations_conc);
+        animations_conc.forEach(elem => elem.start());
+
+
+        temp = utils.createFlatLand(10,6, "Dirt", [-15, 0, 20], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
+        // block strips
+
+        temp = utils.createFlatLand(2,8, "Dirt", [9, 0, -4], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
+        temp = utils.createFlatLand(16,2, "Dirt", [-33, 0, -10], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
+        temp = utils.createFlatLand(2,10, "Dirt", [-33, 0, -36], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
+        temp = utils.createFlatLand(16,2, "Dirt", [-33, 0, -40], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
         // --
 
-        temp = utils.createFlatLand(1,20, "Lava", [-4.5, 0, -60], scene)
-        temp["group"].forEach(Element => group_1.push(Element));
-        group_1.push(temp["hitbox"]);
+        temp = utils.createFlatLand(2,10, "Dirt", [9, 0, -69], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
 
-        // main platform number 1
+        temp = utils.createFlatLand(16,2, "Dirt", [-33, 0, -75], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
 
-        temp = utils.createFlatLand(30,20, "Moss", [-48, 0, -120], scene)
+        temp = utils.createFlatLand(2,10, "Dirt", [-33, 0, -104], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
+        temp = utils.createFlatLand(16,2, "Dirt", [-33, 0, -110], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
+        // --
+
+        temp = utils.createFlatLand(1,10, "Dirt", [12, 0, - 139], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
+        temp = utils.createFlatLand(6,1, "Dirt", [-3, 0, -142], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
+        temp = utils.createFlatLand(1,32, "Dirt", [-3, 0, -238], scene)
+        temp["group"].forEach(Element => group_2.push(Element));
+        group_2.push(temp["hitbox"]);
+
+
+        // main platform number 3
+
+
+        temp = utils.createFlatLand(30,20, "Moss", [-45, 0, -300], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
 
         {
-            temp = utils.create_button(scene , [-4.5,2.5,-90], group_1);
+            temp = utils.create_button(scene , [0,2.5,-285], group_2);
+            group_3.push(temp)
         }
+
 
         // squared pattern platforms
 
         // 1st floor
 
-        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 0, -160], scene)
+        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 0, -325], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
         var animations_conc = [];
 
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', -20,10000, -108    ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -253,10000, -160 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418,10000, -325 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', - 108,10000, -20   ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -160,10000, -253 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325,10000, -418 ,[6,6], temp.hitbox));
     
         animations_conc = utils.concatenateAnimationsGroup(animations_conc);
         animations_conc.forEach(elem => elem.start());
 
         
-        temp = utils.createFlatLand(6,6, "Amethyst", [108, 0, -160], scene)
+        temp = utils.createFlatLand(6,6, "Amethyst", [108, 0, -325], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
         var animations_conc = [];
 
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',   5, 10000, 93  ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -253, 10000, -160 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418, 10000, -325 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',  93, 10000, 5  ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -160, 10000, -253 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325, 10000, -418 ,[6,6], temp.hitbox));
     
         animations_conc = utils.concatenateAnimationsGroup(animations_conc);
         animations_conc.forEach(elem => elem.start());
@@ -466,29 +506,43 @@ function main() {
 
         // left mid-plat
 
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 5, -402+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [130, 5, -402], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
 
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 10, -379+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [130, 10, -379], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 15, -356+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [130, 15, -356], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
          // right mid-plat
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 5, -402+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-130, 5, -402], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 10, -379+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-130, 10, -379], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 15, -356+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-130, 15, -356], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
         // 2nd floor
 
-        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 20, -325+150], scene)
+        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 20, -325], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
         var animations_conc = [];
 
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418+150,10000, -325+150 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418,10000, -325 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', -20,10000, -108    ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325+150,10000, -418+150 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325,10000, -418 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', - 108,10000, -20   ,[6,6], temp.hitbox));
        
     
@@ -496,13 +550,15 @@ function main() {
         animations_conc.forEach(elem => elem.start());
 
         
-        temp = utils.createFlatLand(6,6, "Amethyst", [108, 20, -325+150], scene)
+        temp = utils.createFlatLand(6,6, "Amethyst", [108, 20, -325], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
         var animations_conc = [];
 
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418+150, 10000, -325+150 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418, 10000, -325 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',   5, 10000, 93  ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325+150, 10000, -418+150 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325, 10000, -418 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',  93, 10000, 5  ,[6,6], temp.hitbox));
         
     
@@ -512,69 +568,98 @@ function main() {
 
         // mid-platoforms
 
-        temp = utils.createFlatLand(6,6, "Namecc", [-55, 25, -440+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-55, 25, -440], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
-        temp = utils.createFlatLand(6,6, "Namecc", [37, 25, -440+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [37, 25, -440], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
         
-        temp = utils.createFlatLand(6,6, "Namecc", [-32, 30, -440+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-32, 30, -440], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
-        temp = utils.createFlatLand(6,6, "Namecc", [14, 30, -440+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [14, 30, -440], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
-        temp = utils.createFlatLand(6,6, "Namecc", [-9, 35, -440+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-9, 35, -440], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
 
          // 3rd floor
 
-        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 40, -325+150], scene)
+        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 40, -325], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
         var animations_conc = [];
 
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', -20,10000, -108    ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418+150,10000, -325+150 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418,10000, -325 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', - 108,10000, -20   ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325+150,10000, -418+150 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325,10000, -418 ,[6,6], temp.hitbox));
     
         animations_conc = utils.concatenateAnimationsGroup(animations_conc);
         animations_conc.forEach(elem => elem.start());
 
         
-        temp = utils.createFlatLand(6,6, "Amethyst", [108, 40, -325+150], scene)
+        temp = utils.createFlatLand(6,6, "Amethyst", [108, 40, -325], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
         var animations_conc = [];
 
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',   5, 10000, 93  ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418+150, 10000, -325+150 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418, 10000, -325 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',  93, 10000, 5  ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325+150, 10000, -418+150,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325, 10000, -418 ,[6,6], temp.hitbox));
     
         animations_conc = utils.concatenateAnimationsGroup(animations_conc);
         animations_conc.forEach(elem => elem.start());
 
          // left mid-plat
 
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 45, -402+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [130, 45, -402], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
         
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 50, -379+150], scene)
         
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 55, -356+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [130, 50, -379], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
+        
+        temp = utils.createFlatLand(6,6, "Namecc", [130, 55, -356], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
         
          // right mid-plat
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 45, -402+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-130, 45, -402], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
         
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 50, -379+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-130, 50, -379], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
         
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 55, -356+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-130, 55, -356], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
 
         // 4th floor
 
-        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 60, -325+150], scene)
+        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 60, -325], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
     
         var animations_conc = [];
     
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418+150,10000, -325+150 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418,10000, -325 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', -20,10000, -108    ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325+150,10000, -418+150 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325,10000, -418 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', - 108,10000, -20   ,[6,6], temp.hitbox));
        
     
@@ -582,13 +667,15 @@ function main() {
         animations_conc.forEach(elem => elem.start());
 
         
-        temp = utils.createFlatLand(6,6, "Amethyst", [108, 60, -325+150], scene)
+        temp = utils.createFlatLand(6,6, "Amethyst", [108, 60, -325], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
         var animations_conc = [];
 
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418+150, 10000, -+150 ,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418, 10000, -325 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',   5, 10000, 93  ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325+150, 10000, -418+150,[6,6], temp.hitbox));
+        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325, 10000, -418 ,[6,6], temp.hitbox));
         animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',  93, 10000, 5  ,[6,6], temp.hitbox));
     
         animations_conc = utils.concatenateAnimationsGroup(animations_conc);
@@ -596,26 +683,39 @@ function main() {
 
         // mid-platoforms
 
-        temp = utils.createFlatLand(6,6, "Namecc", [-55, 65, -440+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-55, 65, -440], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
         
-        temp = utils.createFlatLand(6,6, "Namecc", [37, 65, -440+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [37, 65, -440], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
                 
-        temp = utils.createFlatLand(6,6, "Namecc", [-32, 70, -440+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-32, 70, -440], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
         
-        temp = utils.createFlatLand(6,6, "Namecc", [14, 70, -440+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [14, 70, -440], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
         
-        temp = utils.createFlatLand(6,6, "Namecc", [-9, 75, -440+150], scene)
+        temp = utils.createFlatLand(6,6, "Namecc", [-9, 75, -440], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
 
 
         // final part 
 
-        temp = utils.createFlatLand(10,10, "Moss", [-16, 80, -480+150], scene)
+        temp = utils.createFlatLand(10,10, "Moss", [-16, 80, -480], scene)
+        temp["group"].forEach(Element => group_3.push(Element));
+        group_3.push(temp["hitbox"]);
+
 
 
         // teleport platform
 
         {
-            utils.create_teleport([-2, 90,  -465+150], scene); // emissive light of the teleport
+            utils.create_teleport([-2, 90,  -465], scene); // emissive light of the teleport
         }
 
 
@@ -628,20 +728,20 @@ function main() {
     {
         utils.create_Box_Plane([0, -300, 0], [0, 0, 0],  1600, scene, true); //ceil/floor
         utils.create_Box_Plane([0, 300, 0], [0, 0, 0],   1600, scene, true); 
-        utils.create_Box_Plane([-1000 / 2, 0, 0], [0, 0, 90], 1600, scene, true); // lateral walls
-        utils.create_Box_Plane([1000 / 2, 0, 0], [0, 0, 90],  1600, scene, true);
-        utils.create_Box_Plane([0, 0, 1500 / 2], [90, 0, 0],  1600, scene, true); // front and back walls
-        utils.create_Box_Plane([0, 0, -1000 / 2], [90, 0, 0], 1600, scene, true);
+        utils.create_Box_Plane([-1300 / 2, 0, 0], [0, 0, 90], 1600, scene, true); // lateral walls
+        utils.create_Box_Plane([1300 / 2, 0, 0], [0, 0, 90],  1600, scene, true);
+        utils.create_Box_Plane([0, 0, 1600 / 2], [90, 0, 0],  1600, scene, true); // front and back walls
+        utils.create_Box_Plane([0, 0, -1600 / 2], [90, 0, 0], 1600, scene, true);
     }
 
 
         
         /* ************************* MAiN SPHERE ***********************************/
-        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [-48, 10, -120], true); // -48, 10, -120 [0,5,600]
+        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,600], true); // [0,5,600]
         // set the start position of the camera (will change)
         camera.position.z = sphere.position.z + utils.camera_z_pos;
         // camera.position.y = sphere.position.y + utils.camera_y_pos;
-        camera.position.y = sphere.position.y + 20;
+        camera.position.y = sphere.position.y;
         camera.position.x = sphere.position.x;
         camera.lookAt(sphere.position);
 
@@ -686,6 +786,105 @@ function main() {
 
         // if game is active, take the commands from the user
         if (! utils.level_completed && ! utils.gameOver){
+
+        // re-build the falling platform
+
+        // if(sphere.isFallen){  //if the ball is dropped
+        //     sphere.isFallen = false;
+
+        //     // clean all the platform that are still there
+
+        //     group_fallen_lands = [];
+        //     if(!fallen1){
+        //         // console.log("rimuovo prima piattaforma")
+        //         fallingLand["group"].forEach(Element => scene.remove(Element));
+        //         scene.remove(fallingLand["hitbox"]);
+        //     }
+        //     if(!fallen2){
+        //         // console.log("rimuovo seconda piattaforma")
+        //         fallingLand2["group"].forEach(Element => scene.remove(Element));
+        //         scene.remove(fallingLand2["hitbox"]);
+        //     }
+        //     if(!fallen3){
+        //         // console.log("rimuovo terza piattaforma")
+        //         fallingLand3["group"].forEach(Element => scene.remove(Element));
+        //         scene.remove(fallingLand3["hitbox"]);
+        //     }
+        //     if(!fallen4){
+        //         // console.log("rimuovo quarta piattaforma")
+        //         fallingLand4["group"].forEach(Element => scene.remove(Element));
+        //         scene.remove(fallingLand4["hitbox"]);
+        //     }
+
+
+        //      // rebuild platoforms
+
+
+        //     // ------ 1st
+
+        //     fallingLand = utils.createFlatLand(5,5, "Grass", [-5, 10, -330], scene);
+        //     fallen1 = false;
+
+        //     fallingLand.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        //     if(other_object.name == "mainSphere" && !fallen1){
+        //         fallen1 = true;
+        //         utils.animateFallenPlatformGroup(fallingLand.group, scene, undefined, fallingLand.hitbox,sphere);
+        //     }
+        //     });
+
+        //     fallingLand["group"].forEach(Element => group_fallen_lands.push(Element));
+        //     group_fallen_lands.push(fallingLand["hitbox"]);
+
+        //     // ------ 2nd
+
+        //     fallingLand2 = utils.createFlatLand(5,5, "Grass", [-5, 5, -370], scene);
+        //     fallen2 = false;
+
+        //     fallingLand2.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        //     if(other_object.name == "mainSphere" && !fallen2){
+        //         fallen2 = true;
+        //         utils.animateFallenPlatformGroup(fallingLand2.group, scene, undefined, fallingLand2.hitbox,sphere);
+        //     }
+        //     });
+
+        //     fallingLand2["group"].forEach(Element => group_fallen_lands.push(Element));
+        //     group_fallen_lands.push(fallingLand2["hitbox"]);
+
+
+        //     // ------ 3rd
+
+        //     fallingLand3 = utils.createFlatLand(5,5, "Grass", [-5, 0, -410], scene);
+        //     fallen3 = false;
+
+        //     fallingLand3.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        //     if(other_object.name == "mainSphere" && !fallen3){
+        //         fallen3 = true;
+        //         utils.animateFallenPlatformGroup(fallingLand3.group, scene, undefined, fallingLand3.hitbox,sphere);
+        //         }
+        //     });
+
+
+        //     fallingLand3["group"].forEach(Element => group_fallen_lands.push(Element));
+        //     group_fallen_lands.push(fallingLand3["hitbox"]);
+
+
+        //     // ------ 4th
+
+        //     fallingLand4 = utils.createFlatLand(5,5, "Grass", [-5, -5, -450], scene);
+        //     fallen4 = false;
+
+        //     fallingLand4.hitbox.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+        //     if(other_object.name == "mainSphere" && !fallen4){
+        //         fallen4 = true;
+        //         utils.animateFallenPlatformGroup(fallingLand4.group, scene, undefined, fallingLand4.hitbox,sphere);
+                
+        //         }
+        //     });
+
+        //     fallingLand4["group"].forEach(Element => group_fallen_lands.push(Element));
+        //     group_fallen_lands.push(fallingLand4["hitbox"]);
+
+        // }
 
 
             var VELOCITY_w = 40;
@@ -876,6 +1075,8 @@ function main() {
         requestAnimationFrame(render);
 
     }
+
+    renderer.compile(scene,camera);
 
     render();
 }

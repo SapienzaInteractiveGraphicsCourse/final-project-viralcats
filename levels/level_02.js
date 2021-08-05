@@ -30,7 +30,6 @@ var sphere;
 //groups for the checkpoints
 var group_1 = [];
 var group_2 = [];
-var group_3 = [];
 
 
 var pg1;
@@ -358,12 +357,9 @@ function main() {
 
 
         temp = utils.createFlatLand(30,20, "Moss", [-45, 0, 170], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         {
             temp = utils.create_button(scene , [0,2.5,185], group_1);
-            group_2.push(temp)
         }
 
         pg2 = utils.create_pg(scene)
@@ -378,17 +374,9 @@ function main() {
     
         scene.simulate(); //update the new position for physijs
 
-        group_2.push(pg2[0]);
-
-
         temp = utils.createPhysicWall("Terracotta",scene,7,19,[-20, 1.6, 170],false)
-        temp.forEach(Elem => 
-            {group_2.push(Elem);
-        });
 
         temp = utils.createFlatLand(6,6, "Amethyst", [-45, 0, 150], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         var animations_conc = [];
 
@@ -402,320 +390,47 @@ function main() {
 
 
         temp = utils.createFlatLand(10,6, "Dirt", [-15, 0, 20], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         // block strips
 
         temp = utils.createFlatLand(2,8, "Dirt", [9, 0, -4], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(16,2, "Dirt", [-33, 0, -10], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(2,10, "Dirt", [-33, 0, -36], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(16,2, "Dirt", [-33, 0, -40], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         // --
 
         temp = utils.createFlatLand(2,10, "Dirt", [9, 0, -69], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(16,2, "Dirt", [-33, 0, -75], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(2,10, "Dirt", [-33, 0, -104], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(16,2, "Dirt", [-33, 0, -110], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
+
 
         // --
 
         temp = utils.createFlatLand(1,10, "Dirt", [12, 0, - 139], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(6,1, "Dirt", [-3, 0, -142], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(1,32, "Dirt", [-3, 0, -238], scene)
-        temp["group"].forEach(Element => group_2.push(Element));
-        group_2.push(temp["hitbox"]);
 
 
         // main platform number 3
 
 
-        temp = utils.createFlatLand(30,20, "Moss", [-45, 0, -300], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-
-        {
-            temp = utils.create_button(scene , [0,2.5,-285], group_2);
-            group_3.push(temp)
-        }
-
-
-        // squared pattern platforms
-
-        // 1st floor
-
-        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 0, -325], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        var animations_conc = [];
-
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', -20,10000, -108    ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418,10000, -325 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', - 108,10000, -20   ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325,10000, -418 ,[6,6], temp.hitbox));
-    
-        animations_conc = utils.concatenateAnimationsGroup(animations_conc);
-        animations_conc.forEach(elem => elem.start());
-
-        
-        temp = utils.createFlatLand(6,6, "Amethyst", [108, 0, -325], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        var animations_conc = [];
-
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',   5, 10000, 93  ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418, 10000, -325 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',  93, 10000, 5  ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325, 10000, -418 ,[6,6], temp.hitbox));
-    
-        animations_conc = utils.concatenateAnimationsGroup(animations_conc);
-        animations_conc.forEach(elem => elem.start());
-
-
-        // left mid-plat
-
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 5, -402], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 10, -379], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 15, -356], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-         // right mid-plat
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 5, -402], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 10, -379], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 15, -356], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        // 2nd floor
-
-        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 20, -325], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        var animations_conc = [];
-
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418,10000, -325 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', -20,10000, -108    ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325,10000, -418 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', - 108,10000, -20   ,[6,6], temp.hitbox));
-       
-    
-        animations_conc = utils.concatenateAnimationsGroup(animations_conc);
-        animations_conc.forEach(elem => elem.start());
-
-        
-        temp = utils.createFlatLand(6,6, "Amethyst", [108, 20, -325], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        var animations_conc = [];
-
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418, 10000, -325 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',   5, 10000, 93  ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325, 10000, -418 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',  93, 10000, 5  ,[6,6], temp.hitbox));
-        
-    
-        animations_conc = utils.concatenateAnimationsGroup(animations_conc);
-        animations_conc.forEach(elem => elem.start());
-
-
-        // mid-platoforms
-
-        temp = utils.createFlatLand(6,6, "Namecc", [-55, 25, -440], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(6,6, "Namecc", [37, 25, -440], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-        
-        temp = utils.createFlatLand(6,6, "Namecc", [-32, 30, -440], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(6,6, "Namecc", [14, 30, -440], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        temp = utils.createFlatLand(6,6, "Namecc", [-9, 35, -440], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-
-         // 3rd floor
-
-        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 40, -325], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        var animations_conc = [];
-
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', -20,10000, -108    ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418,10000, -325 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', - 108,10000, -20   ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325,10000, -418 ,[6,6], temp.hitbox));
-    
-        animations_conc = utils.concatenateAnimationsGroup(animations_conc);
-        animations_conc.forEach(elem => elem.start());
-
-        
-        temp = utils.createFlatLand(6,6, "Amethyst", [108, 40, -325], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        var animations_conc = [];
-
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',   5, 10000, 93  ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418, 10000, -325 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',  93, 10000, 5  ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325, 10000, -418 ,[6,6], temp.hitbox));
-    
-        animations_conc = utils.concatenateAnimationsGroup(animations_conc);
-        animations_conc.forEach(elem => elem.start());
-
-         // left mid-plat
-
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 45, -402], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-        
-        
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 50, -379], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-        
-        temp = utils.createFlatLand(6,6, "Namecc", [130, 55, -356], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-        
-         // right mid-plat
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 45, -402], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-        
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 50, -379], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-        
-        temp = utils.createFlatLand(6,6, "Namecc", [-130, 55, -356], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-
-        // 4th floor
-
-        temp = utils.createFlatLand(6,6, "Amethyst", [-108, 60, -325], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-    
-        var animations_conc = [];
-    
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418,10000, -325 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', -20,10000, -108    ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325,10000, -418 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x', - 108,10000, -20   ,[6,6], temp.hitbox));
-       
-    
-        animations_conc = utils.concatenateAnimationsGroup(animations_conc);
-        animations_conc.forEach(elem => elem.start());
-
-        
-        temp = utils.createFlatLand(6,6, "Amethyst", [108, 60, -325], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-        var animations_conc = [];
-
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -418, 10000, -325 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',   5, 10000, 93  ,[6,6], temp.hitbox));//not squared platform i've to specify the shape, if not, can be avoided
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'z', -325, 10000, -418 ,[6,6], temp.hitbox));
-        animations_conc.push(utils.animatePlatformByGroupInstance(temp.group,scene,'x',  93, 10000, 5  ,[6,6], temp.hitbox));
-    
-        animations_conc = utils.concatenateAnimationsGroup(animations_conc);
-        animations_conc.forEach(elem => elem.start());
-
-        // mid-platoforms
-
-        temp = utils.createFlatLand(6,6, "Namecc", [-55, 65, -440], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-        
-        temp = utils.createFlatLand(6,6, "Namecc", [37, 65, -440], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-                
-        temp = utils.createFlatLand(6,6, "Namecc", [-32, 70, -440], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-        
-        temp = utils.createFlatLand(6,6, "Namecc", [14, 70, -440], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-        
-        temp = utils.createFlatLand(6,6, "Namecc", [-9, 75, -440], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
-
-        // final part 
-
-        temp = utils.createFlatLand(10,10, "Moss", [-16, 80, -480], scene)
-        temp["group"].forEach(Element => group_3.push(Element));
-        group_3.push(temp["hitbox"]);
-
+        temp = utils.createFlatLand(5,5, "Moss", [-9, 0, -252.5], scene)
 
 
         // teleport platform
 
         {
-            utils.create_teleport([-2, 90,  -465], scene); // emissive light of the teleport
+            utils.create_teleport([-3, 11, -246], scene); // emissive light of the teleport
         }
 
 
@@ -728,10 +443,10 @@ function main() {
     {
         utils.create_Box_Plane([0, -300, 0], [0, 0, 0],  1600, scene, true); //ceil/floor
         utils.create_Box_Plane([0, 300, 0], [0, 0, 0],   1600, scene, true); 
-        utils.create_Box_Plane([-1300 / 2, 0, 0], [0, 0, 90], 1600, scene, true); // lateral walls
-        utils.create_Box_Plane([1300 / 2, 0, 0], [0, 0, 90],  1600, scene, true);
-        utils.create_Box_Plane([0, 0, 1600 / 2], [90, 0, 0],  1600, scene, true); // front and back walls
-        utils.create_Box_Plane([0, 0, -1600 / 2], [90, 0, 0], 1600, scene, true);
+        utils.create_Box_Plane([-1000 / 2, 0, 0], [0, 0, 90], 1600, scene, true); // lateral walls
+        utils.create_Box_Plane([1000 / 2, 0, 0], [0, 0, 90],  1600, scene, true);
+        utils.create_Box_Plane([0, 0, 1500 / 2], [90, 0, 0],  1600, scene, true); // front and back walls
+        utils.create_Box_Plane([0, 0, -800 / 2], [90, 0, 0], 1600, scene, true);
     }
 
 
@@ -1075,8 +790,6 @@ function main() {
         requestAnimationFrame(render);
 
     }
-
-    renderer.compile(scene,camera);
 
     render();
 }

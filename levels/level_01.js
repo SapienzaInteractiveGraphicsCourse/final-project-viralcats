@@ -469,13 +469,13 @@ function main() {
 
         // tutorial on commands
 
-        temp = utils.create_Box_Plane([90, 20, 330], [0, 30, 90], 40, scene, false, './textures/bgs/mouse.jpg',2);
+        temp = utils.create_Box_Plane([90, 20, 330], [0, 30, 90], 40, scene, false, './textures/bgs/spacebar.PNG',2);
         group_1.push(temp);
 
         temp = utils.create_Box_Plane([-90, 20, 330], [0, -30, 90], 40, scene, false, './textures/bgs/wasd.jpg',3 );
         group_1.push(temp);
         
-        temp =utils.create_Box_Plane([20,20, 240], [90, 0, 0], 40, scene, false, './textures/bgs/spacebar.PNG',2);
+        temp =utils.create_Box_Plane([20,20, 240], [90, 0, 0], 40, scene, false, './textures/bgs/mouse.jpg',2);
         group_1.push(temp);
 
 
@@ -635,9 +635,7 @@ function main() {
         utils.create_teleport([0, 0, -500], scene); // emissive light of the teleport
     }
     {
-        utils.create_pg(scene)
-
-        pg = utils.pg
+        var pg = utils.create_pg(scene);
 
         pg[0].__dirtyPosition = true;
         pg[0].__dirtyRotation = true;

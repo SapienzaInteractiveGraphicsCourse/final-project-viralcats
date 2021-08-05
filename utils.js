@@ -127,21 +127,21 @@ function load_texture_cube(tex_top_name, tex_side_name, tex_bottom_name, normal_
     }
     else{
         var materials = [
-        // new THREE.MeshPhongMaterial({ map: texture_side  }),     // right face
-        // new THREE.MeshPhongMaterial({ map: texture_side }),     // left face
-        // new THREE.MeshPhongMaterial({ map: texture_top }),      //  upper face
-        // new THREE.MeshPhongMaterial({ map: texture_bottom }),   // lower face
-        // new THREE.MeshPhongMaterial({ map: texture_side }),     // front face
-        // new THREE.MeshPhongMaterial({ map: texture_side })      // opposite face
+        new THREE.MeshPhongMaterial({ map: texture_side  }),     // right face
+        new THREE.MeshPhongMaterial({ map: texture_side }),     // left face
+        new THREE.MeshPhongMaterial({ map: texture_top }),      //  upper face
+        new THREE.MeshPhongMaterial({ map: texture_bottom }),   // lower face
+        new THREE.MeshPhongMaterial({ map: texture_side }),     // front face
+        new THREE.MeshPhongMaterial({ map: texture_side })      // opposite face
 
 
         
-        new THREE.MeshBasicMaterial({ map: texture_side  }),     // right face
-        new THREE.MeshBasicMaterial({ map: texture_side }),     // left face
-        new THREE.MeshBasicMaterial({ map: texture_top }),      //  upper face
-        new THREE.MeshBasicMaterial({ map: texture_bottom }),   // lower face
-        new THREE.MeshBasicMaterial({ map: texture_side }),     // front face
-        new THREE.MeshBasicMaterial({ map: texture_side })      // opposite face
+        // new THREE.MeshBasicMaterial({ map: texture_side  }),     // right face
+        // new THREE.MeshBasicMaterial({ map: texture_side }),     // left face
+        // new THREE.MeshBasicMaterial({ map: texture_top }),      //  upper face
+        // new THREE.MeshBasicMaterial({ map: texture_bottom }),   // lower face
+        // new THREE.MeshBasicMaterial({ map: texture_side }),     // front face
+        // new THREE.MeshBasicMaterial({ map: texture_side })      // opposite face
         ];
     }
 
@@ -1562,7 +1562,7 @@ export function check_in_teleport(scene, pos_main_pg){
         if(conditionx && conditiony && conditionz){
             console.log("Level completed!! ");
             level_completed = true;
-            resetAll(scene,1000);
+            resetAll(scene,200);
         }
     }
 }
