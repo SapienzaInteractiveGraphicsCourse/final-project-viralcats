@@ -88,21 +88,68 @@ const dim_cube = 3;
 
 
 /* ************************************* internal functions ************************************* */
-function load_texture_cube(tex_top_name, tex_side_name, tex_bottom_name) {
+function load_texture_cube(tex_top_name, tex_side_name, tex_bottom_name, normal_top, normal_side, normal_bottom) {
     const textureLoader = new THREE.TextureLoader();
 
     var texture_top = textureLoader.load(tex_top_name);
     var texture_side = textureLoader.load(tex_side_name);
     var texture_bottom = textureLoader.load(tex_bottom_name);
 
+    var normals_present = false
+    if(normal_top != undefined){
+        var tex_nor_top = textureLoader.load(normal_top);
+        var tex_nor_side = textureLoader.load(normal_side);
+        var tex_nor_bottom = textureLoader.load(normal_bottom);
+        normals_present = true
+    }
+
+    //varType 
+    if (normals_present){
+        // console.log("no normals")
     var materials = [
-        new THREE.MeshBasicMaterial({ map: texture_side, transparent: true }),     // right face
-        new THREE.MeshBasicMaterial({ map: texture_side, transparent: true }),     // left face
-        new THREE.MeshBasicMaterial({ map: texture_top, transparent: true }),      //  upper face
-        new THREE.MeshBasicMaterial({ map: texture_bottom, transparent: true }),   // lower face
-        new THREE.MeshBasicMaterial({ map: texture_side, transparent: true }),     // front face
-        new THREE.MeshBasicMaterial({ map: texture_side, transparent: true })      // opposite face
+        // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side }),     // right face
+        // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side }),     // left face
+        // new THREE.MeshPhongMaterial({ map: texture_top   }),      //  upper face
+        // new THREE.MeshPhongMaterial({ map: texture_bottom , normalMap:tex_nor_bottom }),   // lower face
+        // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side }),     // front face
+        // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side })      // opposite face
+
+        // new THREE.MeshPhongMaterial({ map: texture_side  }),     // right face
+        // new THREE.MeshPhongMaterial({ map: texture_side }),     // left face
+        // new THREE.MeshPhongMaterial({ map: texture_top }),      //  upper face
+        // new THREE.MeshPhongMaterial({ map: texture_bottom }),   // lower face
+        // new THREE.MeshPhongMaterial({ map: texture_side }),     // front face
+        // new THREE.MeshPhongMaterial({ map: texture_side })      // opposite face
+
+
+        
+        new THREE.MeshBasicMaterial({ map: texture_side  }),     // right face
+        new THREE.MeshBasicMaterial({ map: texture_side }),     // left face
+        new THREE.MeshBasicMaterial({ map: texture_top }),      //  upper face
+        new THREE.MeshBasicMaterial({ map: texture_bottom }),   // lower face
+        new THREE.MeshBasicMaterial({ map: texture_side }),     // front face
+        new THREE.MeshBasicMaterial({ map: texture_side })      // opposite face
     ];
+    }
+    else{
+        var materials = [
+        // new THREE.MeshPhongMaterial({ map: texture_side  }),     // right face
+        // new THREE.MeshPhongMaterial({ map: texture_side }),     // left face
+        // new THREE.MeshPhongMaterial({ map: texture_top }),      //  upper face
+        // new THREE.MeshPhongMaterial({ map: texture_bottom }),   // lower face
+        // new THREE.MeshPhongMaterial({ map: texture_side }),     // front face
+        // new THREE.MeshPhongMaterial({ map: texture_side })      // opposite face
+
+
+        
+        new THREE.MeshBasicMaterial({ map: texture_side  }),     // right face
+        new THREE.MeshBasicMaterial({ map: texture_side }),     // left face
+        new THREE.MeshBasicMaterial({ map: texture_top }),      //  upper face
+        new THREE.MeshBasicMaterial({ map: texture_bottom }),   // lower face
+        new THREE.MeshBasicMaterial({ map: texture_side }),     // front face
+        new THREE.MeshBasicMaterial({ map: texture_side })      // opposite face
+        ];
+    }
 
     return materials;
 }
@@ -116,24 +163,39 @@ function load_texture_pg(bodyPart) {
     var path5 = './textures/character/' + String(pg_textType[bodyPart][4]) + ".png";  // front
     var path6 = './textures/character/' + String(pg_textType[bodyPart][5]) + ".png";  // back
 
-    var temp = load_texture_cube(path1, path2, path3);
+
+    var path_nor_1 = './textures/normals/' + String(pg_textType[bodyPart][0]) + ".png";  // right
+    var path_nor_2 = './textures/normals/' + String(pg_textType[bodyPart][1]) + ".png";  // left 
+    var path_nor_3 = './textures/normals/' + String(pg_textType[bodyPart][2]) + ".png";  // upper 
+    var path_nor_4 = './textures/normals/' + String(pg_textType[bodyPart][3]) + ".png";  // lower
+    var path_nor_5 = './textures/normals/' + String(pg_textType[bodyPart][4]) + ".png";  // front
+    var path_nor_6 = './textures/normals/' + String(pg_textType[bodyPart][5]) + ".png";  // back
+
 
     const textureLoader = new THREE.TextureLoader();
 
-    var texture_right      =     textureLoader.load(path1);
-    var texture_left       =     textureLoader.load(path2);
-    var texture_up         =     textureLoader.load(path3);
-    var texture_down       =     textureLoader.load(path4);
-    var texture_front      =     textureLoader.load(path5);
-    var texture_back       =     textureLoader.load(path6);
+    var texture_right          =     textureLoader.load(path1);
+    var texture_left           =     textureLoader.load(path2);
+    var texture_up             =     textureLoader.load(path3);
+    var texture_down           =     textureLoader.load(path4);
+    var texture_front          =     textureLoader.load(path5);
+    var texture_back           =     textureLoader.load(path6);
+
+
+    var texture_nor_right      =     textureLoader.load(path_nor_1);
+    var texture_nor_left       =     textureLoader.load(path_nor_2);
+    var texture_nor_up         =     textureLoader.load(path_nor_3);
+    var texture_nor_down       =     textureLoader.load(path_nor_4);
+    var texture_nor_front      =     textureLoader.load(path_nor_5);
+    var texture_nor_back       =     textureLoader.load(path_nor_6);
 
     var materials = [
-        new THREE.MeshBasicMaterial({ map: texture_right}),     // right face
-        new THREE.MeshBasicMaterial({ map: texture_left}),     // left face
-        new THREE.MeshBasicMaterial({ map: texture_up}),      //  upper face
-        new THREE.MeshBasicMaterial({ map: texture_down}),   // lower face
-        new THREE.MeshBasicMaterial({ map: texture_front}),     // front face
-        new THREE.MeshBasicMaterial({ map: texture_back})      // opposite face
+        new THREE.MeshPhongMaterial({ map: texture_right , normalMap:texture_nor_right }),     // right face
+        new THREE.MeshPhongMaterial({ map: texture_left  , normalMap:texture_nor_left }),     // left face
+        new THREE.MeshPhongMaterial({ map: texture_up    , normalMap:texture_nor_up }),      //  upper face
+        new THREE.MeshPhongMaterial({ map: texture_down  , normalMap:texture_nor_down }),   // lower face
+        new THREE.MeshPhongMaterial({ map: texture_front , normalMap:texture_nor_front }),     // front face
+        new THREE.MeshPhongMaterial({ map: texture_back  , normalMap:texture_nor_back })      // opposite face
     ];
 
     return materials;
@@ -186,12 +248,12 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
     if(name == null){
         texture = textureLoader.load('./textures/blocks/test_wall.png');
         materials = [
-            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 }),
-            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 }),
-            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 }),
-            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 }),
-            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 }),
-            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.5 })
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 1.0 }),
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 1.0 }),
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 1.0 }),
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 1.0 }),
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 1.0 }),
+            new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 1.0 })
         ];
     }
     else{
@@ -245,18 +307,21 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
         plane_box.name = "plane_box" + String(prog_planes);
     }
     prog_planes++;
+    plane_box.castShadow = true;
+    plane_box.receiveShadow = true;
     if (is_bound) {
         plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
 
-            // if (other_object.name == ("Hitbox_pg")){   //the hit_box of the pg
-            //     life = life -1;
-            //     console.log("lives left: " + String(life));
-            //     life_tag.innerHTML = life;
-            //     if(life=="0"){
-            //         console.log("Game over!!");
-            //         gameOver = true;
-            //         resetAll(scene,20);
-            //     }
+            if (other_object.name == ("Hitbox_pg")){   //the hit_box of the pg
+                life ++; 
+                // life = life -1;
+                console.log("lives left: " + String(life));
+                life_tag.innerHTML = life;
+                // if(life=="0"){
+                //     console.log("Game over!!");
+                //     gameOver = true;
+                //     resetAll(scene,20);
+                }
             //     else{
             //         console.log("the hit box of the pg has hit the floor")  // choose the respawn/reposition or remove from the scene
             //         scene.remove(other_object)
@@ -286,6 +351,8 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
     }
     else objects_group.push(plane_box)
     scene.add(plane_box);
+
+    return plane_box;
 }
 
 export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_visible, effective_dim = null, is_pg) {
@@ -338,9 +405,15 @@ export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_v
     prog_hit_box++;
     }
 
+    //todo
+
     // box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
     //     if(other_object.name == "mainSphere"){
+
     //         console.log("la main palla ha colpito l'hitbox")
+
+
+
     //     }
     // });
 
@@ -360,6 +433,11 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= fals
         var path1 = './textures/blocks/' + String(cubes_type[type][0]) + ".png";  // top
         var path2 = './textures/blocks/' + String(cubes_type[type][1]) + ".png";  // side
         var path3 = './textures/blocks/' + String(cubes_type[type][2]) + ".png";  // base
+
+
+        // var path4 = './textures/normals/' + String(cubes_type[type][0]) + ".png";  // top
+        // var path5 = './textures/normals/' + String(cubes_type[type][1]) + ".png";  // side
+        // var path6 = './textures/normals/' + String(cubes_type[type][2]) + ".png";  // base
 
         temp = load_texture_cube(path1, path2, path3);
     }
@@ -437,6 +515,8 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= fals
         // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
     // });
 
+    box.castShadow = true;
+    box.receiveShadow = true;
     box.setCcdMotionThreshold(0.1);
     cubes_group.push(box);
     scene.add(box);
@@ -492,11 +572,17 @@ export function move(box, angle){
 
 export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     var path;
+    var normal_path;
+    var specular_path;
     if(cubes_type[type] != undefined ){
         path = "./textures/blocks/" + String(type.toLowerCase()) + ".png";
+        normal_path = "./textures/normals/" + String(type) + ".png";
+        specular_path = "./textures/specular/" + String(type) + ".png";
     }
     else{
         path = "./textures/character/" + String(type) + ".png";
+        normal_path = "./textures/normals/" + String(type) + ".png";
+        specular_path = "./textures/specular/" + String(type) + ".png";
     }
 
     var tex = new THREE.TextureLoader().load(path);
@@ -504,11 +590,25 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     tex.wrapT = THREE.RepeatWrapping;
     tex.repeat.set(5, 5);
 
-    var sphereMat = new THREE.MeshBasicMaterial({
+    var nor_tex = new THREE.TextureLoader().load(normal_path);
+    nor_tex.wrapS = THREE.RepeatWrapping;
+    nor_tex.wrapT = THREE.RepeatWrapping;
+    nor_tex.repeat.set(5, 5);
+
+    var spec_tex = new THREE.TextureLoader().load(specular_path);
+    nor_tex.wrapS = THREE.RepeatWrapping;
+    nor_tex.wrapT = THREE.RepeatWrapping;
+    nor_tex.repeat.set(5, 5);
+
+
+    // varType
+    var sphereMat = new THREE.MeshPhongMaterial({
         map: tex,
+        normalMap : nor_tex,
+        specularMap : spec_tex,
         color: color,
-        // transparent: true,
-        // opacity: 0.8
+        specular: 0xADD8E6,
+        shininess: 0
     });
 
     var sphereMat_phy = Physijs.createMaterial(
@@ -532,6 +632,7 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     if(is_main){
         sphere.name = "mainSphere";
         sphere.canJump = true;
+        sphere.isFallen = false;
     }
     else  sphere.name = "sphere_" + String(prog_spheres);
     prog_spheres++;
@@ -553,10 +654,12 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
                 // else{
                     sphere.__dirtyPosition = true;
                     sphere.__dirtyRotation = true;
-                    sphere.position.set(pos[0],pos[1],pos[2])
+                    sphere.position.set(sphere.initial_pos[0],sphere.initial_pos[1],sphere.initial_pos[2])
 
                     sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
                     sphere.setAngularVelocity(new THREE.Vector3(0,0,0));
+
+                    sphere.isFallen = true;
 
                     scene.simulate()
                 // }
@@ -591,6 +694,8 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     //     sphere.add(arrowHelper)
     //     // scene.add( arrowHelper );
     // }
+    sphere.castShadow = true;
+    sphere.receiveShadow = true;
     objects_group.push(sphere);
     scene.add(sphere);
     return sphere;
@@ -624,11 +729,13 @@ export function create_teleport(pos, scene) {
     tex.wrapT = THREE.RepeatWrapping;
     tex.repeat.set(2, 2);
 
+    // varType
     var material_tel = new THREE.MeshBasicMaterial({
         map: tex,
         color: 0x15B7FF,
         transparent: true,
-        opacity: 0.8
+        opacity: 0.8,
+        // emissive:0x333366
 
         // specular: 0x6C00FF,
         // emissive: 0x6C00FF,
@@ -660,7 +767,7 @@ export function create_teleport(pos, scene) {
     return teleport
 }
 
-export function create_button(scene, pos){
+export function create_button(scene, pos, group){
     var button;
     var radius = 3;
     var subdivs = 64;
@@ -686,27 +793,43 @@ export function create_button(scene, pos){
     button.__dirtyPosition = true;
     button.__dirtyRotation = true;
     button.position.set(pos[0], pos[1], pos[2]);
+    button.pushed = false;
     button.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-        console.log(" button hitten, should happen something !")
-        var new_prop_mat = new THREE.MeshPhongMaterial({
-            color: 0x00ff00,
-    
-            specular: 0x00ff00,
-            emissive: 0x00ff00,
-            shininess: 50
-        });
+        // console.log(" button hitten, should happen something !")
+        if (!button.pushed){
+            var new_prop_mat = new THREE.MeshPhongMaterial({
+                color: 0x00ff00,
+        
+                specular: 0x00ff00,
+                emissive: 0x00ff00,
+                shininess: 50
+            });
 
-        var new_mat = Physijs.createMaterial(
-            new_prop_mat,
-            0,
-            0
-        );
-        button.material = new_mat
+            var new_mat = Physijs.createMaterial(
+                new_prop_mat,
+                0,
+                0
+            );
+            button.material = new_mat
+
+            var mainSphere = scene.getObjectByName("mainSphere");
+            mainSphere.initial_pos = [pos[0],pos[1]+5,pos[2]];
+            mainSphere.setLinearVelocity(new THREE.Vector3(0,0,0));  
+            mainSphere.setAngularVelocity(new THREE.Vector3(0,0,0));
+
+            removeByGroup(group,scene);
+            scene.simulate()
+            button.pushed = true;
+            // resetAll(scene,50)
+            // remove
+        }
+
     });
     buttons_group.push(button);
 
 
     scene.add(button)
+    return button
 }
 
 
@@ -767,10 +890,25 @@ export function create_pg(scene, loc = undefined){
 
 /******************************************************* LIGHTS [start] ***********************************************************/
 
-export function create_pointLIght(pos, color, scene) {
+export function create_pointLight(pos, color, scene) {
     const light = new THREE.PointLight(color, 1, 0);
     light.position.set(pos[0], pos[1], pos[2]);
     scene.add(light);
+    return light
+}
+
+export function create_directionalLight(color,scene, direction){
+    const light = new THREE.DirectionalLight(color,1.0)
+    light.position.set(direction[0],direction[1],direction[2])
+    light.castShadow = true
+
+    light.shadow.mapSize.width = 512; // default
+    light.shadow.mapSize.height = 512; // default
+    light.shadow.camera.near = 0.5; // default
+    light.shadow.camera.far = 500; // default
+
+    scene.add(light)
+    return light
 }
 
 /******************************************************* LIGHTS [end] *************************************************************/
@@ -781,6 +919,7 @@ export function createFlatLand(n_width, n_depth, type, left_top_pos, scene) {
     var hit_box_width = n_width * dim_cube;
     var hit_box_depth = n_depth * dim_cube;
     var hit_box_height = dim_cube;
+    var epsilon = 0
 
 
 
@@ -795,7 +934,7 @@ export function createFlatLand(n_width, n_depth, type, left_top_pos, scene) {
     var box;
     for (var i = 0; i < n_width; i++) {
         for (var j = 0; j < n_depth; j++) {
-            box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1], left_top_pos[2] + j * dim_cube], 0, scene);
+            box = create_Box(type, [left_top_pos[0] + i * (dim_cube -epsilon), left_top_pos[1], left_top_pos[2] + j * (dim_cube-epsilon)], 0, scene);
             // box = create_Box(type, [i * dim_cube, 0, j * dim_cube], 0, scene);
             // hit_box.add(box);
             flat_land_group.push(box);
@@ -816,7 +955,7 @@ export function createUphillLand(n_width, n_depth, height_desired, type, left_to
     for (var i = 0; i < n_width; i++) {
         for (var j = 0; j < n_depth; j++) {
 
-            box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1] + Math.floor(height_desired * Math.sin(degrees_to_radians((step * i)))), left_top_pos[2] + j * dim_cube], false, scene);
+            box = create_Box(type, [left_top_pos[0] + i * (dim_cube+epsilon), left_top_pos[1] + Math.floor(height_desired * Math.sin(degrees_to_radians((step * i)))), left_top_pos[2] + j * (dim_cube+epsilon)], false, scene);
             uphill_group.push(box);
         }
     }
@@ -824,32 +963,55 @@ export function createUphillLand(n_width, n_depth, height_desired, type, left_to
 }
 
 
-export function createAscentGround(n_width, n_depth, height_desired, type, left_top_pos, scene) {
+export function createAscentGround(n_width, n_depth, height_desired, type, left_top_pos, scene, direction = "+x") {
     var ascent_group = [];
     var box;
     var step = Math.floor(height_desired / (n_width));
 
-    for (var i = 0; i < n_width; i++) {
-        for (var j = 0; j < n_depth; j++) {
+    if (direction == "+x"){
+        for (var i = 0; i < n_width; i++) {
+            for (var j = 0; j < n_depth; j++) {
 
-            box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1] + Math.floor(step * (i + 1)), left_top_pos[2] + j * dim_cube], false, scene);
-            ascent_group.push(box);
+                box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1] + Math.floor(step * (i + 1)), left_top_pos[2] + j * dim_cube], false, scene);
+                ascent_group.push(box);
+            }
         }
+    }
+    else if (direction == "+z"){
+        for (var i = 0; i < n_width; i++) {
+            for (var j = 0; j < n_depth; j++) {
+
+                box = create_Box(type, [left_top_pos[0] + j * dim_cube, left_top_pos[1] + Math.floor(step * (i + 1)), left_top_pos[2] - i * dim_cube], false, scene);
+                ascent_group.push(box);
+            }
+        }
+
     }
     return ascent_group;
 }
 
 
-export function createDescentGround(n_width, n_depth, actual_height, type, left_top_pos, scene) {
+export function createDescentGround(n_width, n_depth, actual_height, type, left_top_pos, scene, direction = "+x") {
     var descent_group = [];
     var box;
     var step = Math.floor(actual_height / n_width);
 
-    for (var i = 0; i < n_width; i++) {
-        for (var j = 0; j < n_depth; j++) {
+    if (direction == "+x"){
+        for (var i = 0; i < n_width; i++) {
+            for (var j = 0; j < n_depth; j++) {
 
-            box = create_Box(type, [left_top_pos[0] + i * dim_cube, actual_height - Math.floor(step * (i)), left_top_pos[2] + j * dim_cube], false, scene);
-            descent_group.push(box);
+                box = create_Box(type, [left_top_pos[0] + i * dim_cube, left_top_pos[1] - Math.floor(step * (i)), left_top_pos[2] + j * dim_cube], false, scene);
+                descent_group.push(box);
+            }
+        }
+    }
+    else if(direction == "+z"){
+        for (var i = 0; i < n_width; i++) {
+            for (var j = 0; j < n_depth; j++) {
+
+                box = create_Box(type, [left_top_pos[0] + j * dim_cube, left_top_pos[1] - Math.floor(step * (i)), left_top_pos[2] - i * dim_cube], false, scene);
+                descent_group.push(box);
+            }
         }
     }
     return descent_group;
@@ -1191,7 +1353,7 @@ export function concatenateAnimationsGroup(animations) {
 }
 
 
-export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit_box) {
+export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit_box, sphere) {
 
     // tremble anim
     var tremble_anims = [];
@@ -1206,19 +1368,28 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
     var hb_notRemoved = true;
 
     platform.forEach(cube_plat => {
-        var animation = new TWEEN.Tween(initial_value).to({ pos: - distance_bound}, 6000);
+        var animation = new TWEEN.Tween(initial_value).to({ pos: - 400}, 3000);
 
         animation.easing(TWEEN.Easing.Cubic.In)
         animation.onUpdate(function () {
         cube_plat.position.y = initial_value.pos
         hit_box.position.y = cube_plat.position.y;
 
+        // if (hb_notRemoved){
+        //     hb_notRemoved = false;
+        //     scene.remove(hit_box);
+        // }
+
         }).onComplete(function () {
             scene.remove(cube_plat);
-            if (hb_notRemoved){
-            hb_notRemoved = false;
-            scene.remove(hit_box);
-            }
+            // if (hb_notRemoved){
+            //     hb_notRemoved = false;
+            //     try {
+            //         scene.remove(hit_box);
+            //     } catch (error) {
+            //         console.log(error);
+            //     }
+            // }
         });
         goingDown_anims.push(animation);
     })
@@ -1256,9 +1427,34 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
 
 
     setTimeout(function () {
+
+        if (hb_notRemoved){
+            try {
+                scene.remove(hit_box);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         tremble_anims.forEach(anims => anims.forEach(anim => anim.pause()));
 
         goingDown_anims.forEach(anim => { anim.start();
+            
+
+            // setTimeout(function () {
+            //     var force_vector = new THREE.Vector3( 0,- 200,0)
+            //     sphere.applyCentralImpulse(force_vector)
+
+            //     // scene.simulate()
+            // }, 10);
+
+
+
+            // setTimeout(function () {
+                
+            // scene.remove(hitbox)
+            // scene.simulate();
+            // }, 10);
 
             // cube_plat._physijs.mass  = true;
 
@@ -1290,7 +1486,7 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
             // fix this
             // one possible solution (not optimum) delete and recreate the object making it not static
         })
-    }, 10000)
+    }, 5000)
 
 }
 
@@ -1390,7 +1586,8 @@ export function check_in_teleport(scene, pos_main_pg){
             console.log("Level completed!! ");
             curr_level++;
             level_completed = true;
-            //resetAll(scene,10);
+            //resetAll(scene,1000);
+
         }
     }
 }
@@ -1457,6 +1654,12 @@ export function remove_hit_boxes(scene) {
 
 export function remove_buttons(scene) {
     buttons_group.forEach(Element => scene.remove(Element));
+}
+
+
+export function removeByGroup(group, scene){
+    group.forEach(Element => scene.remove(Element));
+    scene.simulate();
 }
 
 export function resetAll(scene, time) {

@@ -56,6 +56,79 @@
             margin-top: 20px;
         }
 
+
+        .btn-retro {
+            background: #7C7C7C;
+            border-bottom: 6px inset rgba(0, 0, 0, .5);
+            border-left: 6px inset rgba(0, 0, 0, .5);
+            border-right: 6px inset rgba(255, 255, 255, .5);
+            border-top: 6px inset rgba(255, 255, 255, .5);
+            box-sizing: border-box;
+            color: white;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 1.2rem;
+            margin: 1rem;
+            min-width: 200px;
+            padding: .5rem;
+            text-transform: uppercase;
+            width: auto;
+        }
+
+        .btn-retro:focus{
+            background: #BCBCBC;
+        }
+        .btn-retro:hover {
+            background: #BCBCBC;
+        }
+
+        .btn-retro-primary {
+            background: #881400;
+        }
+
+        .btn-retro-primary:focus{
+            background: #b91c00;
+        }
+        .btn-retro-primary:hover {
+            background: #b91c00;
+        }
+
+        .btn-retro-secondary {
+            background: #005800;
+        }
+
+        .btn-retro-secondary:focus{
+            background: #008300;
+        }
+        .btn-retro-secondary:hover {
+            background: #008300;
+        }
+
+        .btn-retro-tertiary {
+            background: #0000BC;
+        }
+
+        .btn-retro-tertiary:focus{
+            background: #0000FC;
+        }
+        .btn-retro-tertiary:hover {
+            background: #0000FC;
+        }
+
+        .btn-retro-gray {
+            background: #77777a;
+        }
+
+        .btn-retro-gray:focus{
+            background: #656566;
+        }
+        .btn-retro-gray:hover {
+            background: #434344;
+        }
+        .sliderValue{
+            min-width: 64px;
+        }
+
         .scale-up-center {
 	        -webkit-animation: scale-up-center 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) backwards;
 	        animation: scale-up-center 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) backwards;
@@ -93,7 +166,7 @@
                 <span class="subTextGame text-shadow-pop-top"></span>
                 <br>
                 <br>
-        <button id="game_win_button"type="button" class="textButton scale-up-center">RESTART...</button>
+        <button id="game_win_button"type="button" class="textButton btn-retro btn-retro-gray text-flicker-in-glow">RESTART...</button>
     </div>
 
     <script src="./game_win.js" type="module"></script>

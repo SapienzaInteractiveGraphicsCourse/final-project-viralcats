@@ -20,17 +20,41 @@
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@600&display=swap" rel="stylesheet"> 
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
   </head>
 
 <style>
+p{
+  font-size: 1.00rem!important;
+}
+.sphere_img{
+    
+    width: 10%;
+    position: absolute;
+}
 
-.imgbox {
+
+.slide-in-bottom {
+	-webkit-animation: slide-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+	        animation: slide-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+@-webkit-keyframes slide-in-bottom{0%{-webkit-transform:translateY(1000px);transform:translateY(1000px);opacity:0}100%{-webkit-transform:translateY(0px);transform:translateY(0);opacity:1}}@keyframes slide-in-bottom{0%{-webkit-transform:translateY(1000px);transform:translateY(1000px);opacity:0}100%{-webkit-transform:translateY(0);transform:translateY(0);opacity:1}}
+
+
+.slide-out-bl{-webkit-animation:slide-out-bl .5s cubic-bezier(.55,.085,.68,.53) both;animation:slide-out-bl .5s cubic-bezier(.55,.085,.68,.53) both}
+@-webkit-keyframes slide-out-bl{0%{-webkit-transform:translateY(0) translateX(0);transform:translateY(0) translateX(0);opacity:1}100%{-webkit-transform:translateY(1000px) translateX(-1000px);transform:translateY(1000px) translateX(-1000px);opacity:0}}@keyframes slide-out-bl{0%{-webkit-transform:translateY(0) translateX(0);transform:translateY(0) translateX(0);opacity:1}100%{-webkit-transform:translateY(1000px) translateX(-1000px);transform:translateY(1000px) translateX(-1000px);opacity:0}}
+
+
+ .img {
     display: grid;
-    height: 100%;
+    width: 35%;
     vertical-align: middle;
+    margin-left: auto;
+    margin-right: auto;
 }
 .center-fit {
     max-width: 100%;
@@ -55,6 +79,7 @@
 html, body {
   margin: 0;
   height: 100%;
+  font-family: 'Press Start 2P', cursive;
 }
 
 .header_obj { grid-area: header; }
@@ -89,16 +114,196 @@ html, body {
   /* display: block; */
 }
 
+#footer{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 25px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: rgb(170, 4, 4);
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: rgb(170, 4, 4);
+            cursor: pointer;
+        }
+
+        .btn-retro {
+            background: #7C7C7C;
+            border-bottom: 6px inset rgba(0, 0, 0, .5);
+            border-left: 6px inset rgba(0, 0, 0, .5);
+            border-right: 6px inset rgba(255, 255, 255, .5);
+            border-top: 6px inset rgba(255, 255, 255, .5);
+            box-sizing: border-box;
+            color: white;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 1.2rem;
+            margin: 1rem;
+            min-width: 200px;
+            padding: .5rem;
+            text-transform: uppercase;
+            width: auto;
+        }
+
+        .btn-retro:focus{
+            background: #BCBCBC;
+        }
+        .btn-retro:hover {
+            background: #BCBCBC;
+        }
+
+        .btn-retro-primary {
+            background: #881400;
+        }
+
+        .btn-retro-primary:focus{
+            background: #b91c00;
+        }
+        .btn-retro-primary:hover {
+            background: #b91c00;
+        }
+
+        .btn-retro-secondary {
+            background: #005800;
+        }
+
+        .btn-retro-secondary:focus{
+            background: #008300;
+        }
+        .btn-retro-secondary:hover {
+            background: #008300;
+        }
+
+        .btn-retro-tertiary {
+            background: #0000BC;
+        }
+
+        .btn-retro-tertiary:focus{
+            background: #0000FC;
+        }
+        .btn-retro-tertiary:hover {
+            background: #0000FC;
+        }
+
+        .btn-retro-gray {
+            background: #77777a;
+        }
+
+        .btn-retro-gray:focus{
+            background: #656566;
+        }
+        .btn-retro-gray:hover {
+            background: #434344;
+        }
+        .sliderValue{
+            min-width: 64px;
+        }
+
 </style>
   
-<body id="body"class="d-flex h-100 text-center text-white bg-dark ">
+<body id="body"class="d-flex h-100 text-white bg-dark ">
+
+  <div id="settingsModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-body  bg-dark">
+          <div class="d-flex justify-content-center ">
+            <div class="mt-3 mb-3 bg-dark rounded">
+                <div class="p-3">
+                    <h2>Settings</h2>
+                </div>
+                <div class="m-2 p-3 ">
+                    <div>
+                        <p>Fov:</p>
+                        <div class="d-flex flex-row">
+                            <input id="fovInputSlider"type="range" min="1" max="100" value="20" oninput="changeRange('fov','fovValue')"
+                                class="slider mr-2" id="fov">
+                            <p class="sliderValue"><span id="fovValue">20</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <p>Far:</p>
+                        <div class="d-flex flex-row">
+                            <input id="farInputSlider"type="range" min="200" max="20000" value="10000" oninput="changeRange('far','farValue')"
+                                class="slider mr-2" id="far">
+                            <p class="sliderValue"><span id="farValue">10000</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <p>Near:</p>
+                        <div class="d-flex flex-row">
+                            <input id="nearInputSlider"type="range" min="0.1" max="500" value="0.1" step="0.1" oninput="changeRange('near','nearValue')"
+                                class="slider mr-2" id="near">
+                            <p class="sliderValue"><span id="nearValue">0.1</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <p>Volume:</p>
+                        <div class="d-flex flex-row">
+                            <input id="volumeInputSlider" type="range" min="1" max="100" value="100" oninput="changeRange('volume','volumeValue')"
+                                class="slider mr-2" id="volume">
+                            <p class="sliderValue"><span id="volumeValue">100</span>%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-2 p-3 rounded border border-dark">
+                    <div>
+                        <h4>Game difficulty</h4>
+                    </div>
+                    <div>
+                        <p>Life:<span id="lifePoint">3</span></p>
+        
+                    </div>
+                    <div>
+                        <p>Zombie:<span id="zombiePoint">5</span></p>
+                    </div>
+                    <div>
+                        <button id="easy" class="btn-retro btn-retro-secondary">Easy</button>
+                        <button id="normal" class="btn-retro btn-retro-tertiary">Normal</button>
+                        <button id="hard" class="btn-retro btn-retro-primary">Hard</button>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+        </div>
+        <div class="modal-footer bg-dark d-flex justify-content-center ">
+          <button id="apply"type="button" data-dismiss="modal" class="btn-retro btn-retro-gray">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
     <div id="grid_container" class="grid-container" style="display: none;">
-      <div class="header_obj d-flex flex-row">
+      <div class="header_obj d-flex flex-row ">
 
         
         <div id="life_counter"class="toast show ml-2" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-body">
+          <div class="toast-body text-center">
             <img src="asserts/game/heart-16.png" class="rounded mr-2" alt="">
             <strong class="mr-auto">Current Life: </strong>
               <h2 id="curr_life">3</h2>
@@ -106,7 +311,7 @@ html, body {
         </div>
         
         <div id="zombie_counter"class="toast show ml-2" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-body">
+          <div class="toast-body text-center">
             <img src="asserts/game/zombie.png" class="rounded mr-2" alt="">
             <strong class="mr-auto">Current Zombie: </strong>
               <h2 id="curr_zombie">5</h2>
@@ -114,7 +319,7 @@ html, body {
         </div>
 
         <div id="level_info"class="toast show ml-2" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-body">
+          <div class="toast-body text-center">
             <img src="asserts/game/levels.png" class="rounded mr-2" alt="">
             <strong class="mr-auto">Current Level: </strong>
               <h2 id="curr_level_info">0</h2>
@@ -148,59 +353,62 @@ html, body {
 
     <!-- #######################      INTRO PAGE      ####################################################################################################################### -->
     <div id="intro_page" class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column hidden">
-      <header class="mb-auto">
+      <header class="mx-auto">
         <div>
           <h3 class="float-md-start mb-0">Final Project Of Interactive Graphics Course</h3>
         </div>
       </header>
     
-      <main class="px-3">
-        <h1>NOME DEL GIOCO CHE ORA NON SAPPIAMO</h1>
-        <p class="lead">This game is a simple and easy game that everyone can play and have fun!</p>
-        <br>
-        <p class="lead">These are the simple information that you need to know: <br>- You can move the sphere with A S D W <br>- You can change the camera view using the mouse <br>- The game has 3 levels and you've only 3 life for complete all the levels</p>
-        <br>
+      <main> 
+        <div class="mt-5">
+          <img src="asserts/imgs/title.png" class="img-fluid img-responsive img" alt="Responsive image">
+        </div>
+        <div class="text-center">
+          <p class="lead mb-3">This game is a simple and easy game that everyone can play and have fun!</p>
+          
+          <p class="lead">These are the simple information that you need to know: <br>- You can move the sphere with A S D W <br>- You can change the camera view using the mouse <br>- The game has 3 levels and you've only 3 life for complete all the levels</p>
+          
+        </div>
+        
 
 
-        <div class="header_obj d-flex flex-row">
+        <div class="header_obj d-flex justify-content-center">
 
         
-          <div id="life_counter_info"class="toast show mx-auto" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-body">
-              <img src="asserts/game/heart-16.png" class="rounded mr-2" alt="">
-              <strong class="mr-auto">Current Life: </strong>
+          <div id="life_counter_info"class="toast show mb-0 text-dark" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body text-center">
+              
+              <p><img src="asserts/game/heart-16.png" class="rounded mr-2" alt="">Current Life:</p>
                 <h2 id="curr_life_info">3</h2>
             </div>
           </div>
           
-          <div id="zombie_counter_info"class="toast show " role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-body">
-              <img src="asserts/game/zombie.png" class="rounded mr-2" alt="">
-              <strong class="mr-auto">Current Zombie: </strong>
+          <div id="zombie_counter_info"class="toast show ml-2 mb-0 text-dark" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body text-center">
+             
+              <p> <img src="asserts/game/zombie.png" class="rounded mr-2" alt="">Current Zombie:</p>
                 <h2 id="curr_zombie_info">5</h2>
-            </div>
-          </div>
-  
-          <div id="none_info"class="toast ml-2" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-body">
-              <img src="asserts/game/heart-16.png" class="rounded mr-2" alt="">
-              <strong class="mr-auto"> </strong>
-                <h2 id="_info">0</h2>
             </div>
           </div>
   
   
         </div>
         
-        <p class="lead"><br><br><br>Choose the difficult of the game:</p>
+        <!-- <p class="lead"><br><br><br>Choose the difficult of the game:</p>
         <button id="game_easy"type="button" class="btn btn-success" onclick="easy_level()">EASY</button>
         <button id="game_medium"type="button" class="btn btn-warning"onclick="medium_level()">MEDIUM</button>
         <button id="game_hard"type="button" class="btn btn-danger"onclick="hard_level()">HARD</button>
-        <br>
-        <br>
-        <br>
+        <br> -->
+        
+        <div class="text-center mt-4">
+          <button id="game_settings" type="button" class="btn-retro btn-retro-tertiary" onclick="javascript: $('#settingsModal').modal();">Settings</button>
+        </div>
+        
+        <img id="sphere" class="sphere_img slide-out-bl"src="asserts/imgs/sphere.png">
 
-        <button id="game_start"type="button" class="btn btn-light">Let's start the game!</button>
+        <div class="text-center mt-4">
+          <button id="game_start"type="button" class="btn-retro ">Let's start the game!</button>
+        </div> 
 
 
       </main>
@@ -219,18 +427,12 @@ html, body {
               document.getElementById("curr_zombie_info").innerText  = 8; 
           }
       </script>
-
-      <!-- <div class="modal-body">
-        <h5>Popover in a modal</h5>
-        <p>This <a href="#" role="button" class="btn btn-secondary popover-test" title="Popover title" data-content="Popover body content is set in this attribute.">button</a> triggers a popover on click.</p>
-        <hr>
-        <h5>Tooltips in a modal</h5>
-        <p><a href="#" class="tooltip-test" title="Tooltip">This link</a> and <a href="#" class="tooltip-test" title="Tooltip">that link</a> have tooltips on hover.</p>
-      </div> -->
-    
-      <footer class="mt-auto text-white-50">
-        <p>This game was made by <a href="https://www.linkedin.com/in/edoardo-papa-74b7b814b" class="text-white">Edoardo Papa</a> and <a href="indirizzo di fabrizio" class="text-white">Fabrizio Casadei</a>.</p>
-      </footer>
+      <br>
+      <div>
+        <footer class="text-center  text-white-50">
+          <p>This game was made by <a href="https://www.linkedin.com/in/edoardo-papa-74b7b814b" class="text-white">Edoardo Papa</a> and <a href="indirizzo di fabrizio" class="text-white">Fabrizio Casadei</a>.</p>
+        </footer>
+      </div>
     </div>
 
       
@@ -251,18 +453,22 @@ html, body {
             <p class="center">Center this text!</p>
     </div>
 
+    <script>
+        function changeRange(idVal,idText){
+            $('#'+idText).text($('#'+idVal).val())
+        }
+
+        
+        document.getElementById('game_start').addEventListener("mouseover", function(){document.getElementById('sphere').classList.remove('slide-out-bl');document.getElementById('sphere').classList.add('slide-in-bottom')}, false);
+        document.getElementById('game_start').addEventListener("mouseout", function(){document.getElementById('sphere').classList.remove('slide-in-bottom');document.getElementById('sphere').classList.add('slide-out-bl')}, false);
 
 
 
-    <!-- <script src="https://code.createjs.com/1.0.0/tweenjs.min.js"></script>  -->
+    </script>
 
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js" integrity="sha512-lIKG1kC5TMb1Zx32vdz1n31YJMZRknVY20U9MJ28hD3y2c0OKN0Ce5NhJji78v8zX5UOSsm+MTBOcJt7yMBnSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-    <!-- <script src="./animations.js" type="text/javascript"></script> -->
-    <!-- <script src="./index.js" type="module"></script> -->
-    
 
-    <!-- <script src="./physics_test.js" type="module"></script> -->
-    <script src="./levels/level_01.js" type="module"></script>
+    <script src="./settings.js" type="module"></script>
+    <script src="./levels_manager.js" type="module"></script>
 
 <!-- Bootstrap stuff -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
