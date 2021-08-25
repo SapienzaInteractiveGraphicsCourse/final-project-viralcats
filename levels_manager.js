@@ -7,6 +7,7 @@ import TWEEN from '../libs/tween.esm.js';
 import * as THREE_AUDIO from '../libs/threejs/build/three.module.js';
 import * as level_1 from './levels/level_01.js';
 import * as level_2 from './levels/level_02.js';
+import * as level_3 from './levels/level_03.js';
 import * as settings from './settings.js';
 import { curr_level } from './utils.js';
 
@@ -189,6 +190,11 @@ function getNextLevel(curr_level){
         stopSound(sounds.background.sound);
         playSound(sounds.level_1.sound,true);
         return level_2.level_2;
+    }
+    if(curr_level == 2){
+        stopSound(sounds.background.sound);
+        playSound(sounds.level_1.sound,true);
+        return level_3.level_3;
     }
 }
 
@@ -401,10 +407,9 @@ var it_arm_4;
 
 var walk_end = false;
 
-
 var step = 0;
 var step_arms = 0;
-function walk_around(who){
+function walk_around(who, scene){
     var start_rotate_pos = 0;
 
     switch(step_arms){
@@ -417,7 +422,8 @@ function walk_around(who){
             utils.rotateArmsLegs(who[5],    -   4);
             utils.rotateArmsLegs(who[6],        4);
             
-
+            // who[3].__dirtyPosition = false;
+            // who[3].__dirtyRotation = false;
             if(who[3].rotation.x <= start_rotate_pos - 1)
                 step_arms++;
 
@@ -430,6 +436,8 @@ function walk_around(who){
             utils.rotateArmsLegs(who[4],    -   4);
             utils.rotateArmsLegs(who[5],        4);
             utils.rotateArmsLegs(who[6],    -   4);
+            // who[3].__dirtyPosition = false;
+            // who[3].__dirtyRotation = false;
             if(who[3].rotation.x >= start_rotate_pos + 1)
                 step_arms = 0;
 
@@ -551,7 +559,7 @@ function main() {
     });
 
 
-    //level_0();
+    // level_1();
     playSound(sounds.background.sound,true);
     var level = utils.curr_level;
     utils.changeLevel(scene,getNextLevel(level));
@@ -582,8 +590,8 @@ function main() {
     var counter = 0;
 
     if(utils.curr_level == 1){
-        start_x_pos = level_2.list_of_pgs[0][0].position.x;
-        start_z_pos = level_2.list_of_pgs[0][0].position.z;
+        // start_x_pos = level_2.list_of_pgs[0][0].position.x;
+        // start_z_pos = level_2.list_of_pgs[0][0].position.z;
     }
 
 
@@ -616,12 +624,21 @@ function main() {
                 document.getElementById("curr_level_info").innerText = level;
                 if(level == 0){
                     sphere = level_1.getSphere();
+                    // start_x_pos = level_1.pg.position.x;
+                    // start_z_pos = level_1.pg.position.z;
                 }
                 if(level == 1){
                     sphere = level_2.getSphere();
 
-                    start_x_pos = level_2.list_of_pgs[0][0].position.x;
-                    start_z_pos = level_2.list_of_pgs[0][0].position.z;
+                    start_x_pos = level_2.pg[0].position.x;
+                    start_z_pos = level_2.pg[0].position.z;
+
+                }
+                if(level == 2){
+                    sphere = level_3.getSphere();
+
+                    // start_x_pos = level_3.list_of_pgs[0][0].position.x;
+                    // start_z_pos = level_3.list_of_pgs[0][0].position.z;
 
                 }
                 scene.simulate();
@@ -636,11 +653,29 @@ function main() {
             game_win();
         }
 
+        // if(utils.curr_level == 0){
+        //     counter++;
+        //     if(counter % 2 == 0){
+        //         walk_around(level_1.pg);
+        //     }
+        // }
+
         if(utils.curr_level == 1){
             counter++;
-            if(counter % 2 == 0)
-                walk_around(level_2.list_of_pgs[0]);
+            if(counter % 2 == 0){
+                
+            }
         }
+
+        if(utils.curr_level == 1 && !utils.start_animation && utils.button_pressed){
+            // utils.setStartAnimation(true);
+            walk_around(level_2.pg,scene);
+            // setInterval(function(){
+            //     walk_around(level_2.pg,scene);
+            // },5);
+        }
+
+        
 
         
 
@@ -651,7 +686,12 @@ function main() {
                 if(utils.curr_level == 0){
                     level_1.cleanAndRebuildPlatforms(scene);
                 }
-
+                if(utils.curr_level == 1){
+                    level_2.cleanAndRebuildPlatforms(scene);
+                }
+                // if(utils.curr_level == 2){
+                //     level_3.cleanAndRebuildPlatforms(scene);
+                // }
             }
 
 
@@ -833,8 +873,9 @@ function main() {
             camera.updateProjectionMatrix();
 
         }
-        TWEEN.update();
         scene.simulate();
+        TWEEN.update();
+        // scene.simulate();
         
         controls.update();
 

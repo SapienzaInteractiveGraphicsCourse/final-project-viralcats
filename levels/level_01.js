@@ -1,5 +1,8 @@
 import * as utils from '../utils.js';
 
+
+utils.setLevel(1);
+
 //groups for the checkpoints
 var group_1 = [];
 var group_2 = [];
@@ -14,9 +17,8 @@ var fallingLand2;
 var fallingLand3;
 var fallingLand4;
 var group_fallen_lands = [];
-var pg;
+export var pg;
 var sphere;
-
 
 export function cleanAndRebuildPlatforms(scene){
 
@@ -144,13 +146,13 @@ export function level_1(scene){
 
         // tutorial on commands
 
-        temp = utils.create_Box_Plane([90, 20, 330], [0, 30, 90], 40, scene, false, './textures/bgs/mouse.jpg',2);
+        temp = utils.create_Box_Plane([90, 20, 330], [0, 30, 90], 40, scene, false, './textures/bgs/spacebar.PNG',2);
         group_1.push(temp);
 
         temp = utils.create_Box_Plane([-90, 20, 330], [0, -30, 90], 40, scene, false, './textures/bgs/wasd.jpg',3 );
         group_1.push(temp);
         
-        temp =utils.create_Box_Plane([20,20, 240], [90, 0, 0], 40, scene, false, './textures/bgs/spacebar.PNG',2);
+        temp =utils.create_Box_Plane([20,20, 240], [90, 0, 0], 40, scene, false, './textures/bgs/mouse.jpg',2);
         group_1.push(temp);
 
 
@@ -313,9 +315,7 @@ export function level_1(scene){
 
 
     {
-        utils.create_pg(scene)
-
-        pg = utils.pg
+        pg = utils.create_pg(scene);
 
         pg[0].__dirtyPosition = true;
         pg[0].__dirtyRotation = true;
@@ -354,8 +354,8 @@ export function level_1(scene){
 
         
     /* ************************* MAiN SPHERE ***********************************/
-    sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,400], true); // [0,5,400][20, 120, -125]
-    // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [10, 0, -500], true); // [0,5,400][20, 120, -125]
+    // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,400], true); // [0,5,400][20, 120, -125]
+    sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [10, 0, -500], true); // [0,5,400][20, 120, -125]
     
     
 }
