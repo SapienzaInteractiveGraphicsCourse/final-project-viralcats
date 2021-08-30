@@ -168,7 +168,8 @@ export function level_2(scene){
     
         scene.simulate(); //update the new position for physijs
 
-        temp = utils.createPhysicWall("Terracotta",scene,7,19,[-20, 1.6, 170],false)
+        // temp = utils.createPhysicWall("Terracotta",scene,7,19,[-20, 1.6, 170],false)
+        temp = utils.createPhysicWall("Terracotta",scene,7,8,[-20, 1.6, 205],false)
 
         temp = utils.createFlatLand(6,6, "Amethyst", [-45, 0, 150], scene)
 

@@ -11,14 +11,19 @@ export var current_volume   = 8    ;
 
 
 const LIFE_EASY_MODE        = 3;
-const ZOMBIE_EASY_MODE      = 2;
+const ZOMBIE_EASY_MODE      = 3;
 
 const LIFE_NORMAL_MODE      = 2;
-const ZOMBIE_NORMAL_MODE    = 4;
+const ZOMBIE_NORMAL_MODE    = 2;
 
 const LIFE_HARD_MODE        = 1;
-const ZOMBIE_HARD_MODE      = 5;
+const ZOMBIE_HARD_MODE      = 1;
 
+
+var function_for_jump_level = undefined;
+export function setFunctionForJumpLevel(function_jump){
+    function_for_jump_level = function_jump;
+}
 
 document.getElementById('easy').addEventListener('click', function () {
     changeEasyDifficulty();
@@ -39,6 +44,20 @@ document.getElementById('volumeInputSlider').addEventListener('input', function 
     changeRange('volumeValue',document.getElementById('volumeInputSlider').value);
 });
 
+document.getElementById('select_level_1').addEventListener('click', function(){
+    function_for_jump_level(0);
+    $('#settingsModal').modal('hide');
+});
+
+document.getElementById('select_level_2').addEventListener('click', function(){
+    function_for_jump_level(1);
+    $('#settingsModal').modal('hide');
+});
+
+document.getElementById('select_level_3').addEventListener('click', function(){
+    function_for_jump_level(2);
+    $('#settingsModal').modal('hide');
+});
 
 
 
@@ -132,7 +151,7 @@ function getLifeInEasyMode(){
 }
 
 function getZombieInEasyMode(){
-    return ZOMBIE_EASY_MODE;
+    return String("+" + ZOMBIE_EASY_MODE);
 }
 
 function getLifeInNormalMode(){
@@ -140,7 +159,7 @@ function getLifeInNormalMode(){
 }
 
 function getZombieInNormalMode(){
-    return ZOMBIE_NORMAL_MODE;
+    return String("+" + ZOMBIE_NORMAL_MODE);
 }
 
 function getLifeInHardMode(){
@@ -148,7 +167,7 @@ function getLifeInHardMode(){
 }
 
 function getZombieInHardMode(){
-    return ZOMBIE_HARD_MODE;
+    return String("+" + ZOMBIE_HARD_MODE);
 }
 
 function getVolume(){

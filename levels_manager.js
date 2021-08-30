@@ -25,6 +25,8 @@ var curr_sounds = new Map([]);
 
 var max_num_of_levels = 2;
 
+var start_walk_level_0 = false;
+
 const canvas = document.querySelector('#c');
 
 
@@ -172,7 +174,39 @@ function initializate_page(){
         
         utils.setLife(document.getElementById("curr_life").innerText);
         main();
+        document.getElementById('settingsModal').modal();
     };
+
+    settings.setFunctionForJumpLevel(function(curr_lev){
+        console.log( "VALUE: " + (document.getElementById("curr_life_info").innerText))
+
+        document.getElementById("curr_life").innerText = (document.getElementById("curr_life_info").innerText);
+        document.getElementById("curr_zombie").innerText = (document.getElementById("curr_zombie_info").innerText);
+        
+    
+        document.getElementById("grid_container").style = ("");
+        canvas.setAttribute("hidden", true);
+        // document.getElementById('intro_page').classList.add("invisible");
+        document.getElementById('intro_page').remove();
+        document.getElementById('life_counter').removeAttribute("hidden");
+        canvas.removeAttribute("hidden");
+        // toggle_html_element_visibility("game_over");
+        // toggle_html_element_visibility("grid_container");
+        
+        utils.setLife(document.getElementById("curr_life").innerText);
+        utils.setCurrentLevel(curr_lev);
+        if(curr_lev == 0){
+            sphere = level_1.getSphere();
+        }
+        if(curr_lev == 1){
+            sphere = level_2.getSphere();
+        }
+        if(curr_lev == 2){
+            sphere = level_3.getSphere();
+        }
+        
+        main();
+    });
     
 }
 
@@ -409,9 +443,10 @@ var walk_end = false;
 
 var step = 0;
 var step_arms = 0;
-function walk_around(who, scene){
+function walk_around(who, scene, rotate,forward_move_max_value){
     var start_rotate_pos = 0;
-
+    var z_value = 0.35;
+    var forward_move_max = forward_move_max_value;
     switch(step_arms){
 
         case 0:
@@ -450,57 +485,85 @@ function walk_around(who, scene){
         case 0:
             who[0].__dirtyPosition = true;
             who[0].__dirtyRotation = true;
-            who[0].translateZ(0.1);
+            who[0].translateZ(z_value);
     
             scene.simulate();
     
             // who[0].__dirtyPosition = false;
             // who[0].__dirtyRotation = false;
-            
-            if(who[0].position.z >= start_z_pos + 15){
-                step = 1;
+            if(rotate == true){
+                if(who[0].position.x >= start_x_pos + forward_move_max){
+                    step = 1;
+                }
+            }else{
+                if(who[0].position.z >= start_z_pos + forward_move_max){
+                    step = 1;
+                }
             }
+
         break;
         case 1:
             who[0].__dirtyPosition = true;
             who[0].__dirtyRotation = true;
-            who[0].translateX(-0.1);
+            who[0].translateX(-z_value);
     
             scene.simulate();
     
             // who[0].__dirtyPosition = false;
             // who[0].__dirtyRotation = false;
-            if(who[0].position.x < start_x_pos - 8){
-                step = 2;
+
+            if(rotate == true){
+                if(who[0].position.z >= start_z_pos){
+                    step = 2;
+                }
+            }else{
+                if(who[0].position.x < start_x_pos - 8){
+                    step = 2;
+                }
             }
         break;
         case 2:
             who[0].__dirtyPosition = true;
             who[0].__dirtyRotation = true;
-            who[0].translateZ(-0.1);
+            who[0].translateZ(-z_value);
 
             scene.simulate();
 
             // who[0].__dirtyPosition = false;
             // who[0].__dirtyRotation = false;
-            if(who[0].position.z <= start_z_pos){
-                step = 3;
+
+            if(rotate == true){
+                if(who[0].position.x <= start_x_pos){
+                    step = 3;
+                }
+            }else{
+                if(who[0].position.z <= start_z_pos){
+                    step = 3;
+                }
             }
         break;
         case 3:
             who[0].__dirtyPosition = true;
             who[0].__dirtyRotation = true;
-            who[0].translateX(0.1);
+            who[0].translateX(z_value);
 
             scene.simulate();
 
             // who[0].__dirtyPosition = false;
             // who[0].__dirtyRotation = false;
-            if(who[0].position.x >= start_x_pos){
-                step = 0;
+
+            if(rotate == true){
+                if(who[0].position.z < start_z_pos - 8){
+                    step = 0;
+                }
+            }else{
+                if(who[0].position.x >= start_x_pos){
+                    step = 0;
+                }
             }
         break;
     }
+    // utils.setStartAnimation(false);
 }
 
 function main() {
@@ -559,12 +622,28 @@ function main() {
     });
 
 
-    // level_1();
-    playSound(sounds.background.sound,true);
-    var level = utils.curr_level;
-    utils.changeLevel(scene,getNextLevel(level));
-    document.getElementById("curr_level_info").innerText = level;
-    sphere = level_1.getSphere();
+    //todo cambiare musica sotto per livelli 2-3
+    if(utils.curr_level == 0){
+        playSound(sounds.background.sound,true);
+        var level = utils.curr_level;
+        utils.changeLevel(scene,getNextLevel(level));
+        document.getElementById("curr_level_info").innerText = level;
+        sphere = level_1.getSphere();
+    }
+    if(utils.curr_level == 1){
+        playSound(sounds.level_1.sound,true);
+        var level = utils.curr_level;
+        utils.changeLevel(scene,getNextLevel(level));
+        document.getElementById("curr_level_info").innerText = level;
+        sphere = level_2.getSphere();
+    }
+    if(utils.curr_level == 2){
+        playSound(sounds.level_1.sound,true);
+        var level = utils.curr_level;
+        utils.changeLevel(scene,getNextLevel(level));
+        document.getElementById("curr_level_info").innerText = level;
+        sphere = level_3.getSphere();
+    }
 
 
     /* ****************************** PG ***********************************/
@@ -599,6 +678,29 @@ function main() {
     controls.minDistance = 139;
     controls.maxDistance = 140;
 
+
+        
+
+
+
+    if(utils.curr_level == 0){
+        if(utils.curr_level == 0){
+            setTimeout(() => {
+                start_walk_level_0 = true;
+            }, 6000);
+        }
+    
+        start_x_pos = level_1.pg[0].position.x;
+        start_z_pos = level_1.pg[0].position.z;
+    }
+
+    if(utils.curr_level == 1){
+    
+        start_x_pos = level_2.pg[0].position.x;
+        start_z_pos = level_2.pg[0].position.z;
+    }
+
+
     function render() {
 
 
@@ -624,6 +726,8 @@ function main() {
                 document.getElementById("curr_level_info").innerText = level;
                 if(level == 0){
                     sphere = level_1.getSphere();
+                    start_x_pos = level_1.pg[0].position.x;
+                    start_z_pos = level_1.pg[0].position.z;
                     // start_x_pos = level_1.pg.position.x;
                     // start_z_pos = level_1.pg.position.z;
                 }
@@ -667,12 +771,20 @@ function main() {
             }
         }
 
+        if(utils.curr_level == 0 && !utils.start_animation && start_walk_level_0){
+            utils.setStartAnimation(true);
+            // walk_around(level_2.pg,scene);
+            setInterval(function(){
+                walk_around(level_1.pg,scene, false, 10);
+            },50);
+        }
+
         if(utils.curr_level == 1 && !utils.start_animation && utils.button_pressed){
-            // utils.setStartAnimation(true);
-            walk_around(level_2.pg,scene);
-            // setInterval(function(){
-            //     walk_around(level_2.pg,scene);
-            // },5);
+            utils.setStartAnimation(true);
+            // walk_around(level_2.pg,scene);
+            setInterval(function(){
+                walk_around(level_2.pg,scene, true, 65);
+            },50);
         }
 
         

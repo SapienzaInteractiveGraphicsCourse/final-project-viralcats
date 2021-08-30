@@ -169,6 +169,24 @@ html, body {
             width: auto;
         }
 
+        .btn-retro-levels {
+            background: #7C7C7C;
+            border-bottom: 6px inset rgba(0, 0, 0, .5);
+            border-left: 6px inset rgba(0, 0, 0, .5);
+            border-right: 6px inset rgba(255, 255, 255, .5);
+            border-top: 6px inset rgba(255, 255, 255, .5);
+            box-sizing: border-box;
+            color: white;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 1.0rem;
+            margin: 1rem;
+            min-width: 100px;
+            padding: .5rem;
+            text-transform: uppercase;
+            width: auto;
+        }
+
         .btn-retro:focus{
             background: #BCBCBC;
         }
@@ -208,6 +226,40 @@ html, body {
         .btn-retro-tertiary:hover {
             background: #0000FC;
         }
+
+        .btn-retro-level_1 {
+            background: #041f79;
+        }
+
+        .btn-retro-level_1:focus{
+            background: #041b64;
+        }
+        .btn-retro-level_1:hover {
+            background: #041b64;
+        }
+
+        .btn-retro-level_2 {
+            background: #975d05;
+        }
+
+        .btn-retro-level_2:focus{
+            background: #865305;
+        }
+        .btn-retro-level_2:hover {
+            background: #865305;
+        }
+
+        .btn-retro-level_3 {
+            background: #c53105;
+        }
+
+        .btn-retro-level_3:focus{
+            background: #af2d05;
+        }
+        .btn-retro-level_3:hover {
+            background: #af2d05;
+        }
+        
 
         .btn-retro-gray {
             background: #77777a;
@@ -272,14 +324,14 @@ html, body {
                 </div>
                 <div class="m-2 p-3 rounded border border-dark">
                     <div>
-                        <h4>Game difficulty</h4>
+                        <h3>Game difficulty</h3>
                     </div>
                     <div>
                         <p>Life:<span id="lifePoint">3</span></p>
         
                     </div>
                     <div>
-                        <p>Zombie:<span id="zombiePoint">5</span></p>
+                        <p>Life add for each Zombie:<span id="zombiePoint">+3</span></p>
                     </div>
                     <div>
                         <button id="easy" class="btn-retro btn-retro-secondary">Easy</button>
@@ -287,6 +339,14 @@ html, body {
                         <button id="hard" class="btn-retro btn-retro-primary">Hard</button>
                     </div>
                 </div>
+                <div class="m-2 p-3 rounded border border-dark">
+                      Go to Level:
+                  <div>
+                    <button id="select_level_1" class="btn-retro-levels btn-retro-level_1">Level 1</button>
+                    <button id="select_level_2" class="btn-retro-levels btn-retro-level_2">Level 2</button>
+                    <button id="select_level_3" class="btn-retro-levels btn-retro-level_3">Level 3</button>
+                </div>
+              </div>
             </div>
         
         </div>
@@ -313,8 +373,8 @@ html, body {
         <div id="zombie_counter"class="toast show ml-2" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="toast-body text-center">
             <img src="asserts/game/zombie.png" class="rounded mr-2" alt="">
-            <strong class="mr-auto">Current Zombie: </strong>
-              <h2 id="curr_zombie">5</h2>
+            <strong class="mr-auto">Life add for each Zombie: </strong>
+              <h2 id="curr_zombie">+3</h2>
           </div>
         </div>
 
@@ -386,8 +446,8 @@ html, body {
           <div id="zombie_counter_info"class="toast show ml-2 mb-0 text-dark" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-body text-center">
              
-              <p> <img src="asserts/game/zombie.png" class="rounded mr-2" alt="">Current Zombie:</p>
-                <h2 id="curr_zombie_info">5</h2>
+              <p> <img src="asserts/game/zombie.png" class="rounded mr-2" alt="">Life add for each Zombie:</p>
+                <h2 id="curr_zombie_info">+3</h2>
             </div>
           </div>
   
@@ -412,8 +472,8 @@ html, body {
 
 
       </main>
-
-      <script>
+      
+      <!-- <script>
           function easy_level(){
               document.getElementById("curr_life_info").innerText    = 3;
               document.getElementById("curr_zombie_info").innerText  = 5; 
@@ -426,11 +486,11 @@ html, body {
               document.getElementById("curr_life_info").innerText    = 1;
               document.getElementById("curr_zombie_info").innerText  = 8; 
           }
-      </script>
+      </script> -->
       <br>
       <div>
         <footer class="text-center  text-white-50">
-          <p>This game was made by <a href="https://www.linkedin.com/in/edoardo-papa-74b7b814b" class="text-white">Edoardo Papa</a> and <a href="indirizzo di fabrizio" class="text-white">Fabrizio Casadei</a>.</p>
+          <p>This game was made by <a href="https://www.linkedin.com/in/edoardo-papa-74b7b814b" class="text-white">Edoardo Papa</a> and <a href="https://www.linkedin.com/in/fabrizio-casadei-056778179" class="text-white">Fabrizio Casadei</a>.</p>
         </footer>
       </div>
     </div>

@@ -350,7 +350,7 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
         plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
 
             if (other_object.name == ("Hitbox_pg")){   //the hit_box of the pg
-                life ++; 
+                life = parseInt(life) + parseInt(document.getElementById("curr_zombie").innerHTML); 
                 // life = life -1;
                 console.log("lives left: " + String(life));
                 life_tag.innerHTML = life;
@@ -1637,7 +1637,9 @@ export function check_in_teleport(scene, pos_main_pg){
     }
 }
 
-
+export function setCurrentLevel(value){
+    curr_level = value;
+}
 /****************************************************** gameplay  [end] *******************************************************/
 
 /****************************************************** Rendering  [start] ********************************************************/

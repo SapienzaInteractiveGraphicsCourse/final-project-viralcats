@@ -352,10 +352,20 @@ export function level_1(scene){
     }
 
 
+    pg = utils.create_pg(scene)
+    
+    pg[0].__dirtyPosition = true;
+    pg[0].__dirtyRotation = true;
+    scene.simulate();
+
+
+    pg[0].position.set(10, 15, 300);
+
+    scene.simulate(); //update the new position for physijs
         
     /* ************************* MAiN SPHERE ***********************************/
-    // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,400], true); // [0,5,400][20, 120, -125]
-    sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [10, 0, -500], true); // [0,5,400][20, 120, -125]
+    sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,400], true); // [0,5,400][20, 120, -125]
+    // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [10, 0, -500], true); // [0,5,400][20, 120, -125]
     
     
 }
