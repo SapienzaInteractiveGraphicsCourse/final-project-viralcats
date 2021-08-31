@@ -35,7 +35,8 @@ var aspect = 2;  // the canvas default
 var near = 0.1;
 var far = 10000;
 
-
+var walk_level_1;
+var walk_level_2;
 // Loading assets
 var areSoundsLoaded = false;
 
@@ -133,6 +134,23 @@ function toggle_html_element_visibility(who){
         catdiv.style.display = "";  
     } 
 }
+var percent = 0;
+function startTimer(duration, bar) {
+    duration = duration*10;
+    document.getElementById("loading-levels-bar").style = ("width:0%;");
+    percent = 0;
+    var timer_loading = setInterval(function () {
+        percent = percent + 1;
+        document.getElementById("loading-levels-bar").style = ("width:" + parseInt(percent) + '%;');
+        document.getElementById("loading-levels-bar").innerText = (parseInt(percent) + '%');
+        // $('.loading-levels-bar').css("width", percent + '%;');
+        if (--duration < 0) {
+            $('#loadingModal').modal('hide');
+            document.getElementById("loading-levels-bar").style = ("width:0%;");
+            clearInterval(timer_loading);
+        }
+    }, 100);
+  }
 
 function initializate_page(){
     
@@ -173,8 +191,13 @@ function initializate_page(){
         // toggle_html_element_visibility("grid_container");
         
         utils.setLife(document.getElementById("curr_life").innerText);
+        
+        $('#loadingModal').modal({backdrop: 'static', keyboard: false});
+        var seconds = 10,
+        bar = document.querySelector('#loadingModal');
+        startTimer(seconds, bar);
         main();
-        document.getElementById('settingsModal').modal();
+        
     };
 
     settings.setFunctionForJumpLevel(function(curr_lev){
@@ -634,6 +657,10 @@ function main() {
         playSound(sounds.level_1.sound,true);
         var level = utils.curr_level;
         utils.changeLevel(scene,getNextLevel(level));
+        $('#loadingModal').modal({backdrop: 'static', keyboard: false});
+        var seconds = 10,
+        bar = document.querySelector('#loadingModal');
+        startTimer(seconds, bar);
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_2.getSphere();
     }
@@ -641,6 +668,10 @@ function main() {
         playSound(sounds.level_1.sound,true);
         var level = utils.curr_level;
         utils.changeLevel(scene,getNextLevel(level));
+        $('#loadingModal').modal({backdrop: 'static', keyboard: false});
+        var seconds = 10,
+        bar = document.querySelector('#loadingModal');
+        startTimer(seconds, bar);
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_3.getSphere();
     }
@@ -725,20 +756,37 @@ function main() {
                 utils.changeLevel(scene,getNextLevel(level));
                 document.getElementById("curr_level_info").innerText = level;
                 if(level == 0){
+                    utils.setStartAnimation(false);
                     sphere = level_1.getSphere();
+                    $('#loadingModal').modal({backdrop: 'static', keyboard: false});
+                    var seconds = 10,
+                    bar = document.querySelector('#loadingModal');
+                    startTimer(seconds, bar);
                     start_x_pos = level_1.pg[0].position.x;
                     start_z_pos = level_1.pg[0].position.z;
                     // start_x_pos = level_1.pg.position.x;
                     // start_z_pos = level_1.pg.position.z;
                 }
                 if(level == 1){
+                    utils.setStartAnimation(false);
+                    clearInterval(walk_level_1);
                     sphere = level_2.getSphere();
+                    $('#loadingModal').modal({backdrop: 'static', keyboard: false});
+                    var seconds = 10,
+                    bar = document.querySelector('#loadingModal');
+                    startTimer(seconds, bar);
 
                     start_x_pos = level_2.pg[0].position.x;
                     start_z_pos = level_2.pg[0].position.z;
 
                 }
                 if(level == 2){
+                    utils.setStartAnimation(false);
+                    $('#loadingModal').modal({backdrop: 'static', keyboard: false});
+                    var seconds = 10,
+                    bar = document.querySelector('#loadingModal');
+                    startTimer(seconds, bar);
+                    clearInterval(walk_level_2);
                     sphere = level_3.getSphere();
 
                     // start_x_pos = level_3.list_of_pgs[0][0].position.x;
@@ -774,15 +822,19 @@ function main() {
         if(utils.curr_level == 0 && !utils.start_animation && start_walk_level_0){
             utils.setStartAnimation(true);
             // walk_around(level_2.pg,scene);
-            setInterval(function(){
+            step = 0;
+            step_arms = 0;
+            walk_level_1 = setInterval(function(){
                 walk_around(level_1.pg,scene, false, 10);
             },50);
         }
 
         if(utils.curr_level == 1 && !utils.start_animation && utils.button_pressed){
             utils.setStartAnimation(true);
+            step = 0;
+            step_arms = 0;
             // walk_around(level_2.pg,scene);
-            setInterval(function(){
+            walk_level_2 = setInterval(function(){
                 walk_around(level_2.pg,scene, true, 65);
             },50);
         }
