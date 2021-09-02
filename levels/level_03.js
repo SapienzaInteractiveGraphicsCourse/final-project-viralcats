@@ -435,20 +435,8 @@ export function level_3(scene){
 
         
         /* ************************* MAiN SPHERE ***********************************/
-        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [-48, 10, -120], true); // -48, 10, -120 [0,5,600]
-        // set the start position of the camera (will change)
-        // camera.position.z = sphere.position.z + utils.camera_z_pos;
-        // // camera.position.y = sphere.position.y + utils.camera_y_pos;
-        // camera.position.y = sphere.position.y + 20;
-        // camera.position.x = sphere.position.x;
-        // camera.lookAt(sphere.position);
+        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,600], true); // -48, 10, -120 [0,5,600]
 
-        // controls = new OrbitControls(camera, canvas);
-        // controls.update();
-
-
-
-        // scene.add(camera);
 }
 
 export function getSphere(){

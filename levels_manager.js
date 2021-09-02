@@ -14,6 +14,7 @@ import { curr_level } from './utils.js';
 var controls;
 var scene;
 var sphere;
+var load_new_level = true;
 
 var keys;
 
@@ -234,7 +235,7 @@ function initializate_page(){
         bar = document.querySelector('#loadingModal');
         startTimer(seconds, bar);
         main();
-        
+
     };
 
     settings.setFunctionForJumpLevel(function(curr_lev){
@@ -690,6 +691,8 @@ function main() {
         utils.changeLevel(scene,getNextLevel(level));
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_1.getSphere();
+        // camera.position.z = sphere.position.z + 150;
+        
     }
     if(utils.curr_level == 1){
         // playSound(sounds.level_2.sound,true);
@@ -701,6 +704,7 @@ function main() {
         startTimer(seconds, bar);
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_2.getSphere();
+        // camera.position.z = sphere.position.z + 150;
     }
     if(utils.curr_level == 2){
         // playSound(sounds.level_3.sound,true);
@@ -712,6 +716,7 @@ function main() {
         startTimer(seconds, bar);
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_3.getSphere();
+        // camera.position.z = sphere.position.z + 150;
     }
 
 
@@ -741,6 +746,9 @@ function main() {
         // start_x_pos = level_2.list_of_pgs[0][0].position.x;
         // start_z_pos = level_2.list_of_pgs[0][0].position.z;
     }
+    // camera.position.z = sphere.position.z + 150;
+
+
 
 
     controls.maxPolarAngle = Math.PI / 2
@@ -772,8 +780,13 @@ function main() {
 
     function render() {
 
+        if(load_new_level){
+            //reset the camera position behind the ball
+            camera.position.z = sphere.position.z + 150;
+            load_new_level = false;
+        }
 
-        controls.target.set(sphere.position.x,sphere.position.y,sphere.position.z)
+        controls.target.set(sphere.position.x,sphere.position.y,sphere.position.z);
         
         
         var pos_sphere = sphere.position.clone();
@@ -782,10 +795,17 @@ function main() {
         dir.y = 0;
         dir.normalize();
 
+
         utils.animateTeleport(scene);
         if (! utils.level_completed && ! utils.gameOver){
             utils.check_in_teleport(scene, [sphere.position.x,sphere.position.y,sphere.position.z])
-        } 
+        }
+
+        if(utils.level_completed){
+            // controls.object.position.z = sphere.position.z + 200;
+            camera.position.z = sphere.position.z + 150;
+            console.log("provaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        }
 
         var isShown = $('#loadingModal').hasClass('show');
 
@@ -798,7 +818,10 @@ function main() {
 
         if(utils.level_completed & !wait_and_toggle_level){
             utils.toggle_level_completed();
+
             wait_and_toggle_level = true;
+            load_new_level = true;
+
             var level = utils.curr_level;
             if(utils.curr_level <= max_num_of_levels){
                 utils.changeLevel(scene,getNextLevel(level));
@@ -812,8 +835,16 @@ function main() {
                     startTimer(seconds, bar);
                     start_x_pos = level_1.pg[0].position.x;
                     start_z_pos = level_1.pg[0].position.z;
+
+                    camera.position.z = sphere.position.z + 150;
+
                     // start_x_pos = level_1.pg.position.x;
                     // start_z_pos = level_1.pg.position.z;
+
+                    // camera.position.z = sphere.position.z + utils.camera_z_pos;
+                    // camera.position.y = sphere.position.y;
+                    // camera.position.x = sphere.position.x;
+                    // camera.lookAt(sphere.position);
                 }
                 if(level == 1){
                     utils.setStartAnimation(false);
@@ -827,6 +858,13 @@ function main() {
                     start_x_pos = level_2.pg[0].position.x;
                     start_z_pos = level_2.pg[0].position.z;
 
+                    camera.position.z = sphere.position.z + 150;
+                    
+                    // camera.position.z = sphere.position.z + utils.camera_z_pos;
+                    // camera.position.y = sphere.position.y;
+                    // camera.position.x = sphere.position.x;
+                    // camera.lookAt(sphere.position);
+
                 }
                 if(level == 2){
                     utils.setStartAnimation(false);
@@ -836,6 +874,13 @@ function main() {
                     startTimer(seconds, bar);
                     clearInterval(walk_level_2);
                     sphere = level_3.getSphere();
+
+                    camera.position.z = sphere.position.z + 150;
+
+                    // camera.position.z = sphere.position.z + utils.camera_z_pos;
+                    // camera.position.y = sphere.position.y;
+                    // camera.position.x = sphere.position.x;
+                    // camera.lookAt(sphere.position);
 
                     // start_x_pos = level_3.list_of_pgs[0][0].position.x;
                     // start_z_pos = level_3.list_of_pgs[0][0].position.z;
@@ -894,6 +939,8 @@ function main() {
         if (! utils.level_completed && ! utils.gameOver){
 
             if(sphere.isFallen){  //if the ball is dropped
+                camera.position.z = sphere.position.z + 150;
+
                 sphere.isFallen = false;
                 if(utils.curr_level == 0){
                     level_1.cleanAndRebuildPlatforms(scene);

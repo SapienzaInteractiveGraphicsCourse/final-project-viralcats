@@ -333,12 +333,7 @@ export function level_1(scene){
     
     /* ************************* LIGHT ***********************************/
     {
-        // utils.create_pointLight([0,10,400],0xffffff,scene);
-        // utils.create_directionalLight(0xffffff,scene,[0,1,0])
         utils.create_directionalLight(0xffffff,scene,[0,1,1])
-        // utils.create_directionalLight(0xffffff,scene,[0,0,1])
-        // utils.create_directionalLight(0xffffff,scene,[1,1,0])
-        // utils.create_directionalLight(0xffffff,scene,[-1,1,0])
     }
 
     /* ************************* BOUNDS ***********************************/
@@ -364,8 +359,10 @@ export function level_1(scene){
     scene.simulate(); //update the new position for physijs
         
     /* ************************* MAiN SPHERE ***********************************/
+
     // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,400], true); // [0,5,400][20, 120, -125]
     sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [10, 0, -500], true); // [0,5,400][20, 120, -125]
+
     
     
 }
