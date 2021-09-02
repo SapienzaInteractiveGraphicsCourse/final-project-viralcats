@@ -18,6 +18,7 @@ var fallingLand3;
 var fallingLand4;
 var group_fallen_lands = [];
 export var pg;
+export var pg2;
 var sphere;
 
 export function cleanAndRebuildPlatforms(scene){
@@ -315,19 +316,19 @@ export function level_1(scene){
 
 
     {
-        pg = utils.create_pg(scene);
+        pg2 = utils.create_pg(scene);
 
-        pg[0].__dirtyPosition = true;
-        pg[0].__dirtyRotation = true;
+        pg2[0].__dirtyPosition = true;
+        pg2[0].__dirtyRotation = true;
 
 
-        pg[0].position.set(-85,115,-105)
-        pg[0].rotation.set(0,utils.degrees_to_radians(45),0)
+        pg2[0].position.set(-85,115,-105)
+        pg2[0].rotation.set(0,utils.degrees_to_radians(45),0)
 
         scene.simulate(); //update the new position for physijs
 
-        pg[0].__dirtyPosition = false;
-        pg[0].__dirtyRotation = false;
+        pg2[0].__dirtyPosition = false;
+        pg2[0].__dirtyRotation = false;
     }
 
     
@@ -360,8 +361,8 @@ export function level_1(scene){
         
     /* ************************* MAiN SPHERE ***********************************/
 
-    // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,400], true); // [0,5,400][20, 120, -125]
-    sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [10, 0, -500], true); // [0,5,400][20, 120, -125]
+    sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,400], true); // [0,5,400][20, 120, -125]
+    // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [10, 0, -500], true); // [0,5,400][20, 120, -125]
 
     
     

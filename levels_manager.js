@@ -24,6 +24,7 @@ var wait_and_toggle_level = false;
 
 var start_x_pos;
 var start_z_pos;
+var start_y_pos;
 
 var listener;
 var curr_sounds = new Map([]);
@@ -44,7 +45,9 @@ var near = 0.1;
 var far = 10000;
 
 var walk_level_1;
+var jump_level_1;
 var walk_level_2;
+var jump_level_2;
 // Loading assets
 var areSoundsLoaded = false;
 
@@ -229,7 +232,6 @@ function initializate_page(){
         // toggle_html_element_visibility("grid_container");
         
         utils.setLife(document.getElementById("curr_life").innerText);
-        
         $('#loadingModal').modal({backdrop: 'static', keyboard: false});
         var seconds = 10,
         bar = document.querySelector('#loadingModal');
@@ -504,7 +506,9 @@ var it_arm_4;
 var walk_end = false;
 
 var step = 0;
+var step_jump = 0;
 var step_arms = 0;
+
 function walk_around(who, scene, rotate,forward_move_max_value){
     var start_rotate_pos = 0;
     var z_value = 0.35;
@@ -567,18 +571,24 @@ function walk_around(who, scene, rotate,forward_move_max_value){
         case 1:
             who[0].__dirtyPosition = true;
             who[0].__dirtyRotation = true;
-            who[0].translateX(-z_value);
+            who[0].translateZ(z_value);
+           
     
             scene.simulate();
     
             // who[0].__dirtyPosition = false;
             // who[0].__dirtyRotation = false;
 
+
             if(rotate == true){
-                if(who[0].position.z >= start_z_pos){
+                who[0].rotation.set(0,utils.degrees_to_radians(-180),0);
+                if(who[0].position.z <= start_z_pos - 8){
                     step = 2;
                 }
             }else{
+                
+                who[0].rotation.set(0,utils.degrees_to_radians(-90),0);
+                // if(who[0].position.x < start_x_pos - 8){
                 if(who[0].position.x < start_x_pos - 8){
                     step = 2;
                 }
@@ -587,7 +597,8 @@ function walk_around(who, scene, rotate,forward_move_max_value){
         case 2:
             who[0].__dirtyPosition = true;
             who[0].__dirtyRotation = true;
-            who[0].translateZ(-z_value);
+            who[0].translateZ(z_value);
+            
 
             scene.simulate();
 
@@ -595,10 +606,12 @@ function walk_around(who, scene, rotate,forward_move_max_value){
             // who[0].__dirtyRotation = false;
 
             if(rotate == true){
+                who[0].rotation.set(0,utils.degrees_to_radians(-90),0);
                 if(who[0].position.x <= start_x_pos){
                     step = 3;
                 }
             }else{
+                who[0].rotation.set(0,utils.degrees_to_radians(-180),0);
                 if(who[0].position.z <= start_z_pos){
                     step = 3;
                 }
@@ -607,7 +620,9 @@ function walk_around(who, scene, rotate,forward_move_max_value){
         case 3:
             who[0].__dirtyPosition = true;
             who[0].__dirtyRotation = true;
-            who[0].translateX(z_value);
+            who[0].translateZ(z_value);
+            
+            
 
             scene.simulate();
 
@@ -615,17 +630,55 @@ function walk_around(who, scene, rotate,forward_move_max_value){
             // who[0].__dirtyRotation = false;
 
             if(rotate == true){
-                if(who[0].position.z < start_z_pos - 8){
+                who[0].rotation.set(0,utils.degrees_to_radians(-0),0);
+                if(who[0].position.z >= start_z_pos){
                     step = 0;
+                    who[0].rotation.set(0,utils.degrees_to_radians(90),0);
                 }
             }else{
+                who[0].rotation.set(0,utils.degrees_to_radians(-270),0);
                 if(who[0].position.x >= start_x_pos){
                     step = 0;
+                    who[0].rotation.set(0,utils.degrees_to_radians(-360),0);
                 }
             }
         break;
     }
     // utils.setStartAnimation(false);
+}
+
+
+function jump(who, scene, rotate,forward_move_max_value){
+    var start_rotate_pos = 0;
+    var z_value = 1;
+    var forward_move_max = forward_move_max_value;
+
+    finire di vedere il jump
+    
+
+    switch(step_jump){
+        case 0:
+            who[0].__dirtyPosition = true;
+            who[0].__dirtyRotation = true;
+            who[0].translateY(z_value);
+    
+            scene.simulate();
+    
+            // who[0].__dirtyPosition = false;
+            // who[0].__dirtyRotation = false;
+ 
+            if(who[0].position.y >= start_y_pos + forward_move_max){
+                step_jump = 1;
+            }
+        
+
+        break;
+        case 1:
+            if(who[0].position.z <= start_y_pos){
+                step_jump = 0;
+            }
+        break;
+    }
 }
 
 function main() {
@@ -769,12 +822,14 @@ function main() {
     
         start_x_pos = level_1.pg[0].position.x;
         start_z_pos = level_1.pg[0].position.z;
+        start_y_pos = level_1.pg[0].position.y;
     }
 
     if(utils.curr_level == 1){
     
         start_x_pos = level_2.pg[0].position.x;
         start_z_pos = level_2.pg[0].position.z;
+        start_y_pos = level_2.pg[0].position.y;
     }
 
 
@@ -835,6 +890,7 @@ function main() {
                     startTimer(seconds, bar);
                     start_x_pos = level_1.pg[0].position.x;
                     start_z_pos = level_1.pg[0].position.z;
+                    start_y_pos = level_1.pg[0].position.y;
 
                     camera.position.z = sphere.position.z + 150;
 
@@ -849,6 +905,7 @@ function main() {
                 if(level == 1){
                     utils.setStartAnimation(false);
                     clearInterval(walk_level_1);
+                    clearInterval(jump_level_1);
                     sphere = level_2.getSphere();
                     $('#loadingModal').modal({backdrop: 'static', keyboard: false});
                     var seconds = 10,
@@ -857,6 +914,7 @@ function main() {
 
                     start_x_pos = level_2.pg[0].position.x;
                     start_z_pos = level_2.pg[0].position.z;
+                    start_y_pos = level_2.pg[0].position.y;
 
                     camera.position.z = sphere.position.z + 150;
                     
@@ -871,10 +929,10 @@ function main() {
                     $('#loadingModal').modal({backdrop: 'static', keyboard: false});
                     var seconds = 10,
                     bar = document.querySelector('#loadingModal');
-                    startTimer(seconds, bar);
                     clearInterval(walk_level_2);
+                    clearInterval(jump_level_2);
                     sphere = level_3.getSphere();
-
+                    startTimer(seconds, bar);
                     camera.position.z = sphere.position.z + 150;
 
                     // camera.position.z = sphere.position.z + utils.camera_z_pos;
@@ -920,6 +978,10 @@ function main() {
             walk_level_1 = setInterval(function(){
                 walk_around(level_1.pg,scene, false, 10);
             },50);
+
+            jump_level_1 = setInterval(function(){
+                jump(level_1.pg2,scene, false, 25);
+            },50);
         }
 
         if(utils.curr_level == 1 && !utils.start_animation && utils.button_pressed){
@@ -930,6 +992,10 @@ function main() {
             walk_level_2 = setInterval(function(){
                 walk_around(level_2.pg,scene, true, 65);
             },50);
+
+            // jump_level_2 = setInterval(function(){
+            //     jump(level_2.pg,scene, false, 10);
+            // },50);
         }
 
         
