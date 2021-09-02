@@ -333,12 +333,7 @@ export function level_1(scene){
     
     /* ************************* LIGHT ***********************************/
     {
-        // utils.create_pointLight([0,10,400],0xffffff,scene);
-        // utils.create_directionalLight(0xffffff,scene,[0,1,0])
         utils.create_directionalLight(0xffffff,scene,[0,1,1])
-        // utils.create_directionalLight(0xffffff,scene,[0,0,1])
-        // utils.create_directionalLight(0xffffff,scene,[1,1,0])
-        // utils.create_directionalLight(0xffffff,scene,[-1,1,0])
     }
 
     /* ************************* BOUNDS ***********************************/
