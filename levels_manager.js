@@ -17,6 +17,10 @@ var sphere;
 
 var keys;
 
+var loading = false;
+var percent = 0;
+var wait_and_toggle_level = false;
+
 var start_x_pos;
 var start_z_pos;
 
@@ -29,6 +33,9 @@ var start_walk_level_0 = false;
 
 const canvas = document.querySelector('#c');
 
+
+var key_down_evt;
+var key_up_evt;
 
 var fov = 20;
 var aspect = 2;  // the canvas default
@@ -45,7 +52,8 @@ const sounds = {
 	ambient     :  { url: './asserts/sounds/ambient.flac' },
 	adventure   :  { url: './asserts/sounds/adventure.wav' },
     jump        :  { url: './asserts/sounds/jump.wav' },
-    level_1     :  { url: './asserts/sounds/level_1.wav' }
+    level_2     :  { url: './asserts/sounds/level_2.wav' },
+    level_3     :  { url: './asserts/sounds/level_3.wav' }
 }
 
 function game_over(){
@@ -95,8 +103,35 @@ function loadSounds() {
 	} 
 }
 
-function playSound(sound,loop = false){
+function playJumpSound(sound,loop = false){
+    
+    const iterator = curr_sounds[Symbol.iterator]();
+    if(curr_sounds.has(sound)){
+        for (const item of iterator){
+            if(item[0] == sound){
+                if(item[1].isPlaying)
+                    return;
+            }
+        }
+    }
+    
+    var volume = settings.current_volume;
 
+    if(volume == -1)
+        volume = 100;
+
+    var sound_to_play = new THREE_AUDIO.Audio(listener);
+    sound_to_play.isPlaying = false;
+    sound_to_play.setBuffer( sound );
+	sound_to_play.setLoop( loop );
+	sound_to_play.setVolume( volume/100 );    
+	sound_to_play.play();
+
+    curr_sounds.set(sound,sound_to_play);
+}
+
+function playSound(sound,loop = false){
+    
     var volume = settings.current_volume;
 
     if(volume == -1)
@@ -134,7 +169,7 @@ function toggle_html_element_visibility(who){
         catdiv.style.display = "";  
     } 
 }
-var percent = 0;
+
 function startTimer(duration, bar) {
     duration = duration*10;
     document.getElementById("loading-levels-bar").style = ("width:0%;");
@@ -148,6 +183,8 @@ function startTimer(duration, bar) {
             $('#loadingModal').modal('hide');
             document.getElementById("loading-levels-bar").style = ("width:0%;");
             clearInterval(timer_loading);
+            wait_and_toggle_level = false;
+            utils.toggle_level_completed();
         }
     }, 100);
   }
@@ -241,16 +278,17 @@ loadSounds();
 
 function getNextLevel(curr_level){
     if(curr_level == 0){
+        playSound(sounds.background.sound,true);
         return level_1.level_1;
     }
     if(curr_level == 1){
         stopSound(sounds.background.sound);
-        playSound(sounds.level_1.sound,true);
+        playSound(sounds.level_2.sound,true);
         return level_2.level_2;
-    }
+    } 
     if(curr_level == 2){
-        stopSound(sounds.background.sound);
-        playSound(sounds.level_1.sound,true);
+        stopSound(sounds.level_2.sound);
+        playSound(sounds.level_3.sound,true);
         return level_3.level_3;
     }
 }
@@ -630,14 +668,14 @@ function main() {
         space:false
     };
 
-    document.body.addEventListener('keydown', function(e) {
+    key_down_evt = document.body.addEventListener('keydown', function(e) {
         var key = e.code.replace('Key', '').toLowerCase();
         if(keys[key] !== undefined)
             keys[key] = true;
     });
 
 
-    document.body.addEventListener('keyup', function(e) {
+    key_up_evt = document.body.addEventListener('keyup', function(e) {
         var key = e.code.replace('Key', '').toLowerCase();
         if (keys[key] !== undefined ){
             keys[key] = false;
@@ -647,14 +685,14 @@ function main() {
 
     //todo cambiare musica sotto per livelli 2-3
     if(utils.curr_level == 0){
-        playSound(sounds.background.sound,true);
+        // playSound(sounds.background.sound,true);
         var level = utils.curr_level;
         utils.changeLevel(scene,getNextLevel(level));
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_1.getSphere();
     }
     if(utils.curr_level == 1){
-        playSound(sounds.level_1.sound,true);
+        // playSound(sounds.level_2.sound,true);
         var level = utils.curr_level;
         utils.changeLevel(scene,getNextLevel(level));
         $('#loadingModal').modal({backdrop: 'static', keyboard: false});
@@ -665,7 +703,7 @@ function main() {
         sphere = level_2.getSphere();
     }
     if(utils.curr_level == 2){
-        playSound(sounds.level_1.sound,true);
+        // playSound(sounds.level_3.sound,true);
         var level = utils.curr_level;
         utils.changeLevel(scene,getNextLevel(level));
         $('#loadingModal').modal({backdrop: 'static', keyboard: false});
@@ -749,8 +787,18 @@ function main() {
             utils.check_in_teleport(scene, [sphere.position.x,sphere.position.y,sphere.position.z])
         } 
 
-        if(utils.level_completed){
+        var isShown = $('#loadingModal').hasClass('show');
+
+        if(isShown == true){
+            loading = true;
+        }else{
+            loading = false;
+        }
+
+
+        if(utils.level_completed & !wait_and_toggle_level){
             utils.toggle_level_completed();
+            wait_and_toggle_level = true;
             var level = utils.curr_level;
             if(utils.curr_level <= max_num_of_levels){
                 utils.changeLevel(scene,getNextLevel(level));
@@ -861,7 +909,7 @@ function main() {
 
             var VELOCITY_w = 40;
     
-            if ( keys.w){  
+            if ( keys.w && !loading){  
 
                 var force_vector = dir.clone().multiplyScalar(VELOCITY_w*10);
                 sphere.applyCentralImpulse(force_vector);
@@ -893,7 +941,7 @@ function main() {
                 }
 
             }
-            if ( keys.s ){
+            if ( keys.s && !loading){
 
                 var force_vector =  dir.clone().multiplyScalar(-VELOCITY_w*10);
                 sphere.applyCentralImpulse(force_vector);
@@ -925,7 +973,7 @@ function main() {
             }
 
 
-            if ( keys.a ){
+            if ( keys.a && !loading){
                 var ang_vel = sphere.getAngularVelocity();
 
 
@@ -963,7 +1011,7 @@ function main() {
 
 
             }
-            if ( keys.d ){
+            if ( keys.d && !loading){
 
                 var axis = new THREE.Vector3(0,1,0);
                 var angle = utils.degrees_to_radians(-90);
@@ -999,24 +1047,23 @@ function main() {
 
             }
 
-            if ( keys.space ){
+            if ( keys.space && !loading){
 
                 if(sphere.canJump){
+                    console.log("canJump")
+                    // stopSound(sounds.jump.sound);
                     sphere.canJump = false;
                     var force_vector = new THREE.Vector3( 0,VELOCITY_w*500,0)
                     sphere.applyCentralImpulse(force_vector)
-                    playSound(sounds.jump.sound);
+                    playJumpSound(sounds.jump.sound);
                 }
 
             }
 
             // remove arrow if no input has been detected
-            if(!(keys.w | keys.s | keys.d | keys.a | keys.space)){
+            if(!(keys.w | keys.s | keys.d | keys.a | keys.space && !loading)){
                 var sphere_direction = scene.getObjectByName("sphere_direction");
                 if(sphere_direction) scene.remove(sphere_direction);
-
-
-
             }
 
             // increase gravity effect simulation

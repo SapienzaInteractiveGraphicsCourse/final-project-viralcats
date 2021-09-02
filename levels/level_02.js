@@ -249,7 +249,8 @@ export function level_2(scene){
         
         /* ************************* MAiN SPHERE ***********************************/
         // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,600], true); // [0,5,600]
-        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [-10,15,185], true); // [0,5,600]
+        // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [-10,15,185], true); // [0,5,600]
+        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0, 5, -240], true); // [0,5,600]
 
         // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,600], true); // [0,5,600]
         // // set the start position of the camera (will change)
