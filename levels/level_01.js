@@ -316,7 +316,7 @@ export function level_1(scene){
 
 
     {
-        pg2 = utils.create_pg(scene);
+        pg2 = utils.create_pg(scene,0);
 
         pg2[0].__dirtyPosition = true;
         pg2[0].__dirtyRotation = true;
@@ -348,7 +348,7 @@ export function level_1(scene){
     }
 
 
-    pg = utils.create_pg(scene)
+    pg = utils.create_pg(scene,1)
     
     pg[0].__dirtyPosition = true;
     pg[0].__dirtyRotation = true;

@@ -653,7 +653,7 @@ function jump(who, scene, rotate,forward_move_max_value){
     var z_value = 1;
     var forward_move_max = forward_move_max_value;
 
-    finire di vedere il jump
+    // finire di vedere il jump
     
 
     switch(step_jump){
@@ -984,7 +984,8 @@ function main() {
             },50);
         }
 
-        if(utils.curr_level == 1 && !utils.start_animation && utils.button_pressed){
+        // if(utils.curr_level == 1 && !utils.start_animation && utils.button_pressed){
+        if(utils.curr_level == 1 && !utils.start_animation){
             utils.setStartAnimation(true);
             step = 0;
             step_arms = 0;
@@ -998,7 +999,19 @@ function main() {
             // },50);
         }
 
-        
+
+        //clear animations
+
+        if(utils.hitboxes_hit[1] == true) clearInterval(walk_level_1);
+        else if (utils.hitboxes_hit[0] == true) clearInterval(jump_level_1);
+
+        // check the correct hitbox number of the pgs in level files 
+        else if (utils.hitboxes_hit[2] == true) console.log("todo");  //jump animation
+        else if (utils.hitboxes_hit[3] == true) clearInterval(walk_level_2);
+        else if (utils.hitboxes_hit[4] == true) console.log("todo");  //jump animation
+        else if (utils.hitboxes_hit[5] == true) console.log("todo");  //jump animation
+
+
 
         
 

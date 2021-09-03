@@ -79,7 +79,7 @@ export function level_2(scene){
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-        pg = utils.create_pg(scene)
+        pg = utils.create_pg(scene,2)
     
     
         pg[0].__dirtyPosition = true;
@@ -156,7 +156,7 @@ export function level_2(scene){
             temp = utils.create_button(scene , [0,2.5,185], group_1);
         }
 
-        pg = utils.create_pg(scene)
+        pg = utils.create_pg(scene,3)
     
         pg[0].__dirtyPosition = true;
         pg[0].__dirtyRotation = true;

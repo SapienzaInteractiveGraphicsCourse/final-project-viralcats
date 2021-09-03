@@ -9,12 +9,16 @@ export var curr_level = 0;
 export var start_animation = false;
 export var button_pressed = false;
 
+
+export var hitboxes_hit = [false, false, false, false, false, false];
+
+
 // progressives objects
 var prog_cubes = 0;
 var prog_planes = 0;
 var prog_spheres = 0;
 var prog_hit_box = 0;
-var prog_buttons = 0 ;
+var prog_buttons = 0;
 
 // time
 var curr_time = 0;
@@ -44,7 +48,7 @@ export var is_pg_sphere = true;
 
 //stats game
 export var level;
-export var life = document.getElementById("curr_life").innerText; 
+export var life = document.getElementById("curr_life").innerText;
 export var gameOver = false;
 export var level_completed = false;
 var life_tag = document.getElementById("curr_life");
@@ -52,14 +56,14 @@ life_tag.innerHTML = life;
 
 
 //starting positions
-export var start_level_1 = [0,5,400];
+export var start_level_1 = [0, 5, 400];
 
 
 export var camera_x_pos = 0;
 export var camera_y_pos = 70;
 export var camera_z_pos = 200;
 
-export function setLife(curr_life){
+export function setLife(curr_life) {
     life = curr_life;
 }
 
@@ -76,13 +80,13 @@ const cubes_type = {
 }
 
 const pg_textType = {
-    "Head":           [ "head_l"     ,"head_r"     ,  "head_u"     , "main_color", "head_f"         , "head_b"     ],
-    "Body":           [ "armsLegs_u" ,"armsLegs_u" ,  "armsLegs_u" , "armsLegs_d", "body_f"         , "body_b"     ],
-    "LeftArm"    :    [ "leftArm_l"  ,"main_color" ,  "armsLegs_u" , "armsLegs_d", "leftArm_f"      , "leftArm_b"  ],
-    "RightArm"   :    [ "main_color" ,"rightArm_r" ,  "armsLegs_u" , "armsLegs_d", "rightArm_f"     , "rightArm_b" ],
-    "LeftLeg"    :    [ "leftLeg_l"  ,"main_color" ,  "armsLegs_u" , "armsLegs_d", "leftLeg_f"      , "leftLeg_b"  ],
-    "RightLeg"   :    [ "main_color" ,"rightLeg_r" ,  "armsLegs_u" , "armsLegs_d", "rightLeg_f"     , "rightLeg_b" ],
-    "HeadControl":    [ "head_l"     ,"head_r"     ,  "head_u"     , "main_color", "headControl_f"  , "head_b"     ],
+    "Head": ["head_l", "head_r", "head_u", "main_color", "head_f", "head_b"],
+    "Body": ["armsLegs_u", "armsLegs_u", "armsLegs_u", "armsLegs_d", "body_f", "body_b"],
+    "LeftArm": ["leftArm_l", "main_color", "armsLegs_u", "armsLegs_d", "leftArm_f", "leftArm_b"],
+    "RightArm": ["main_color", "rightArm_r", "armsLegs_u", "armsLegs_d", "rightArm_f", "rightArm_b"],
+    "LeftLeg": ["leftLeg_l", "main_color", "armsLegs_u", "armsLegs_d", "leftLeg_f", "leftLeg_b"],
+    "RightLeg": ["main_color", "rightLeg_r", "armsLegs_u", "armsLegs_d", "rightLeg_f", "rightLeg_b"],
+    "HeadControl": ["head_l", "head_r", "head_u", "main_color", "headControl_f", "head_b"],
 }
 
 
@@ -98,7 +102,7 @@ function load_texture_cube(tex_top_name, tex_side_name, tex_bottom_name, normal_
     var texture_bottom = textureLoader.load(tex_bottom_name);
 
     var normals_present = false
-    if(normal_top != undefined){
+    if (normal_top != undefined) {
         var tex_nor_top = textureLoader.load(normal_top);
         var tex_nor_side = textureLoader.load(normal_side);
         var tex_nor_bottom = textureLoader.load(normal_bottom);
@@ -106,50 +110,50 @@ function load_texture_cube(tex_top_name, tex_side_name, tex_bottom_name, normal_
     }
 
     //varType 
-    if (normals_present){
+    if (normals_present) {
         // console.log("no normals")
-    var materials = [
-        // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side }),     // right face
-        // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side }),     // left face
-        // new THREE.MeshPhongMaterial({ map: texture_top   }),      //  upper face
-        // new THREE.MeshPhongMaterial({ map: texture_bottom , normalMap:tex_nor_bottom }),   // lower face
-        // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side }),     // front face
-        // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side })      // opposite face
-
-        // new THREE.MeshPhongMaterial({ map: texture_side  }),     // right face
-        // new THREE.MeshPhongMaterial({ map: texture_side }),     // left face
-        // new THREE.MeshPhongMaterial({ map: texture_top }),      //  upper face
-        // new THREE.MeshPhongMaterial({ map: texture_bottom }),   // lower face
-        // new THREE.MeshPhongMaterial({ map: texture_side }),     // front face
-        // new THREE.MeshPhongMaterial({ map: texture_side })      // opposite face
-
-
-        
-        new THREE.MeshBasicMaterial({ map: texture_side  }),     // right face
-        new THREE.MeshBasicMaterial({ map: texture_side }),     // left face
-        new THREE.MeshBasicMaterial({ map: texture_top }),      //  upper face
-        new THREE.MeshBasicMaterial({ map: texture_bottom }),   // lower face
-        new THREE.MeshBasicMaterial({ map: texture_side }),     // front face
-        new THREE.MeshBasicMaterial({ map: texture_side })      // opposite face
-    ];
-    }
-    else{
         var materials = [
-        new THREE.MeshPhongMaterial({ map: texture_side  }),     // right face
-        new THREE.MeshPhongMaterial({ map: texture_side }),     // left face
-        new THREE.MeshPhongMaterial({ map: texture_top }),      //  upper face
-        new THREE.MeshPhongMaterial({ map: texture_bottom }),   // lower face
-        new THREE.MeshPhongMaterial({ map: texture_side }),     // front face
-        new THREE.MeshPhongMaterial({ map: texture_side })      // opposite face
+            // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side }),     // right face
+            // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side }),     // left face
+            // new THREE.MeshPhongMaterial({ map: texture_top   }),      //  upper face
+            // new THREE.MeshPhongMaterial({ map: texture_bottom , normalMap:tex_nor_bottom }),   // lower face
+            // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side }),     // front face
+            // new THREE.MeshPhongMaterial({ map: texture_side   , normalMap:tex_nor_side })      // opposite face
+
+            // new THREE.MeshPhongMaterial({ map: texture_side  }),     // right face
+            // new THREE.MeshPhongMaterial({ map: texture_side }),     // left face
+            // new THREE.MeshPhongMaterial({ map: texture_top }),      //  upper face
+            // new THREE.MeshPhongMaterial({ map: texture_bottom }),   // lower face
+            // new THREE.MeshPhongMaterial({ map: texture_side }),     // front face
+            // new THREE.MeshPhongMaterial({ map: texture_side })      // opposite face
 
 
-        
-        // new THREE.MeshBasicMaterial({ map: texture_side  }),     // right face
-        // new THREE.MeshBasicMaterial({ map: texture_side }),     // left face
-        // new THREE.MeshBasicMaterial({ map: texture_top }),      //  upper face
-        // new THREE.MeshBasicMaterial({ map: texture_bottom }),   // lower face
-        // new THREE.MeshBasicMaterial({ map: texture_side }),     // front face
-        // new THREE.MeshBasicMaterial({ map: texture_side })      // opposite face
+
+            new THREE.MeshBasicMaterial({ map: texture_side }),     // right face
+            new THREE.MeshBasicMaterial({ map: texture_side }),     // left face
+            new THREE.MeshBasicMaterial({ map: texture_top }),      //  upper face
+            new THREE.MeshBasicMaterial({ map: texture_bottom }),   // lower face
+            new THREE.MeshBasicMaterial({ map: texture_side }),     // front face
+            new THREE.MeshBasicMaterial({ map: texture_side })      // opposite face
+        ];
+    }
+    else {
+        var materials = [
+            new THREE.MeshPhongMaterial({ map: texture_side }),     // right face
+            new THREE.MeshPhongMaterial({ map: texture_side }),     // left face
+            new THREE.MeshPhongMaterial({ map: texture_top }),      //  upper face
+            new THREE.MeshPhongMaterial({ map: texture_bottom }),   // lower face
+            new THREE.MeshPhongMaterial({ map: texture_side }),     // front face
+            new THREE.MeshPhongMaterial({ map: texture_side })      // opposite face
+
+
+
+            // new THREE.MeshBasicMaterial({ map: texture_side  }),     // right face
+            // new THREE.MeshBasicMaterial({ map: texture_side }),     // left face
+            // new THREE.MeshBasicMaterial({ map: texture_top }),      //  upper face
+            // new THREE.MeshBasicMaterial({ map: texture_bottom }),   // lower face
+            // new THREE.MeshBasicMaterial({ map: texture_side }),     // front face
+            // new THREE.MeshBasicMaterial({ map: texture_side })      // opposite face
         ];
     }
 
@@ -176,34 +180,34 @@ function load_texture_pg(bodyPart) {
 
     const textureLoader = new THREE.TextureLoader();
 
-    var texture_right          =     textureLoader.load(path1);
-    var texture_left           =     textureLoader.load(path2);
-    var texture_up             =     textureLoader.load(path3);
-    var texture_down           =     textureLoader.load(path4);
-    var texture_front          =     textureLoader.load(path5);
-    var texture_back           =     textureLoader.load(path6);
+    var texture_right = textureLoader.load(path1);
+    var texture_left = textureLoader.load(path2);
+    var texture_up = textureLoader.load(path3);
+    var texture_down = textureLoader.load(path4);
+    var texture_front = textureLoader.load(path5);
+    var texture_back = textureLoader.load(path6);
 
 
-    var texture_nor_right      =     textureLoader.load(path_nor_1);
-    var texture_nor_left       =     textureLoader.load(path_nor_2);
-    var texture_nor_up         =     textureLoader.load(path_nor_3);
-    var texture_nor_down       =     textureLoader.load(path_nor_4);
-    var texture_nor_front      =     textureLoader.load(path_nor_5);
-    var texture_nor_back       =     textureLoader.load(path_nor_6);
+    var texture_nor_right = textureLoader.load(path_nor_1);
+    var texture_nor_left = textureLoader.load(path_nor_2);
+    var texture_nor_up = textureLoader.load(path_nor_3);
+    var texture_nor_down = textureLoader.load(path_nor_4);
+    var texture_nor_front = textureLoader.load(path_nor_5);
+    var texture_nor_back = textureLoader.load(path_nor_6);
 
     var materials = [
-        new THREE.MeshPhongMaterial({ map: texture_right , normalMap:texture_nor_right }),     // right face
-        new THREE.MeshPhongMaterial({ map: texture_left  , normalMap:texture_nor_left }),     // left face
-        new THREE.MeshPhongMaterial({ map: texture_up    , normalMap:texture_nor_up }),      //  upper face
-        new THREE.MeshPhongMaterial({ map: texture_down  , normalMap:texture_nor_down }),   // lower face
-        new THREE.MeshPhongMaterial({ map: texture_front , normalMap:texture_nor_front }),     // front face
-        new THREE.MeshPhongMaterial({ map: texture_back  , normalMap:texture_nor_back })      // opposite face
+        new THREE.MeshPhongMaterial({ map: texture_right, normalMap: texture_nor_right }),     // right face
+        new THREE.MeshPhongMaterial({ map: texture_left, normalMap: texture_nor_left }),     // left face
+        new THREE.MeshPhongMaterial({ map: texture_up, normalMap: texture_nor_up }),      //  upper face
+        new THREE.MeshPhongMaterial({ map: texture_down, normalMap: texture_nor_down }),   // lower face
+        new THREE.MeshPhongMaterial({ map: texture_front, normalMap: texture_nor_front }),     // front face
+        new THREE.MeshPhongMaterial({ map: texture_back, normalMap: texture_nor_back })      // opposite face
     ];
 
     return materials;
 }
 
-export function setStartAnimation(value){
+export function setStartAnimation(value) {
     start_animation = value;
 }
 
@@ -212,9 +216,9 @@ export function degrees_to_radians(degrees) {
     return degrees * (pi / 180);
 }
 
-export function radians_to_degrees(radians){
+export function radians_to_degrees(radians) {
     var pi = Math.PI;
-    return radians*180/pi;
+    return radians * 180 / pi;
 }
 
 
@@ -233,18 +237,18 @@ function diff_time(recent_time, old_time) {
 function degtorad(degrees) {
     var pi = Math.PI;
     return degrees * (pi / 180);
-  }
-  
-  function radtodeg(rad){
+}
+
+function radtodeg(rad) {
     var pi = Math.PI;
-    return rad*180/pi;
-  }
+    return rad * 180 / pi;
+}
 
 
 /* ************************************* external functions ************************************* */
 
 
-export function setLevel(n){
+export function setLevel(n) {
     level = n;
 }
 
@@ -252,12 +256,12 @@ export function setLevel(n){
 
 /************************************************ OBJECTS CREATION  [start] ***************************************************/
 
-export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, num= null) {
+export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, num = null) {
 
     var texture;
-    var materials; 
+    var materials;
     const textureLoader = new THREE.TextureLoader();
-    if(name == null){
+    if (name == null) {
         // if (level == 1){
 
         texture = textureLoader.load('./textures/blocks/test_wall.png');
@@ -293,23 +297,23 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
 
 
     }
-    else{
+    else {
         texture = textureLoader.load(name);
 
         materials = [
-        new THREE.MeshBasicMaterial({ color: 0xffffff}),
-        new THREE.MeshBasicMaterial({ color: 0xffffff}),
-        new THREE.MeshBasicMaterial({ color: 0xffffff}),
-        new THREE.MeshBasicMaterial({ color: 0xffffff}),
-        new THREE.MeshBasicMaterial({ color: 0xffffff}),
-        new THREE.MeshBasicMaterial({ color: 0xffffff})
-    ];
+            new THREE.MeshBasicMaterial({ color: 0xffffff }),
+            new THREE.MeshBasicMaterial({ color: 0xffffff }),
+            new THREE.MeshBasicMaterial({ color: 0xffffff }),
+            new THREE.MeshBasicMaterial({ color: 0xffffff }),
+            new THREE.MeshBasicMaterial({ color: 0xffffff }),
+            new THREE.MeshBasicMaterial({ color: 0xffffff })
+        ];
 
-        materials[num] =  new THREE.MeshBasicMaterial({ map: texture});
+        materials[num] = new THREE.MeshBasicMaterial({ map: texture });
 
     }
 
-    
+
 
 
 
@@ -337,10 +341,10 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
     // plane_box.rotation.set(, degrees_to_radians(rot[1]) , degrees_to_radians(rot[2]));
 
     plane_box.setCcdMotionThreshold(1);
-    if (is_bound){
+    if (is_bound) {
         plane_box.name = "bound_" + String(prog_planes);
     }
-    else{
+    else {
         plane_box.name = "plane_box" + String(prog_planes);
     }
     prog_planes++;
@@ -349,8 +353,8 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
     if (is_bound) {
         plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
 
-            if (other_object.name == ("Hitbox_pg")){   //the hit_box of the pg
-                life = parseInt(life) + parseInt(document.getElementById("curr_zombie").innerHTML); 
+            if (other_object.name == ("Hitbox_pg")) {   //the hit_box of the pg
+                life = parseInt(life) + parseInt(document.getElementById("curr_zombie").innerHTML);
                 // life = life -1;
                 console.log("lives left: " + String(life));
                 life_tag.innerHTML = life;
@@ -358,26 +362,26 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
                 //     console.log("Game over!!");
                 //     gameOver = true;
                 //     resetAll(scene,20);
-                }
+            }
             //     else{
             //         console.log("the hit box of the pg has hit the floor")  // choose the respawn/reposition or remove from the scene
             //         scene.remove(other_object)
             //         create_pg(scene);
             //     }
-          
+
             // }
-            if (other_object.name == ("mainSphere")){
-                life = life -1;
+            if (other_object.name == ("mainSphere")) {
+                life = life - 1;
                 console.log("lives left: " + String(life));
                 life_tag.innerHTML = life;
-                if(life=="0"){
+                if (life == "0") {
                     console.log("Game over!!");
                     gameOver = true;
-                    resetAll(scene,20);
+                    resetAll(scene, 20);
                 }
             }
-            
-            else{   //other objects 
+
+            else {   //other objects 
                 scene.remove(other_object)
                 console.log("the object: " + String(other_object.name) + " has been removed, map limit exceeded.\nHitten the bound: " + String(plane_box.name));
             }
@@ -392,25 +396,27 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
     return plane_box;
 }
 
-export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_visible, effective_dim = null, is_pg) {
+export function create_hitbox(dim_multiplier, pos, is_dynamic, scene, alpha, is_visible, effective_dim = null, is_pg, num_pg = undefined) {
     var box;
 
     var materials = [
-        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}),
-        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}),
-        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}),
-        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}),
-        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}),
-        new THREE.MeshBasicMaterial({ color:0x00ff00, transparent: true , opacity : alpha, visible: is_visible}) 
+        new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: alpha, visible: is_visible }),
+        new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: alpha, visible: is_visible }),
+        new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: alpha, visible: is_visible }),
+        new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: alpha, visible: is_visible }),
+        new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: alpha, visible: is_visible }),
+        new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: alpha, visible: is_visible })
     ];
 
     var mat_box = new THREE.MeshFaceMaterial(materials);
-    if (dim_multiplier == null){
-        var geometry_cube = new THREE.CubeGeometry(effective_dim[0],effective_dim[1],effective_dim[2]);
+    if (dim_multiplier == null) {
+        var geometry_cube = new THREE.CubeGeometry(effective_dim[0], effective_dim[1], effective_dim[2]);
     }
-    else{
-        var geometry_cube = new THREE.CubeGeometry(dim_cube * dim_multiplier[0], dim_cube* dim_multiplier[1], dim_cube* dim_multiplier[2]);
+    else {
+        var geometry_cube = new THREE.CubeGeometry(dim_cube * dim_multiplier[0], dim_cube * dim_multiplier[1], dim_cube * dim_multiplier[2]);
     }
+
+    // geometry_cube.position.set(pos[0], pos[1], pos[2]);
 
     var mat_box_phy = Physijs.createMaterial(
         mat_box,
@@ -437,22 +443,21 @@ export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_v
 
     box.position.set(pos[0], pos[1], pos[2]);
     if (is_pg) box.name = "Hitbox_pg";
-    else{
-    box.name = "Hitbox_" + String(prog_hit_box);
-    prog_hit_box++;
+    else {
+        box.name = "Hitbox_" + String(prog_hit_box);
+        prog_hit_box++;
     }
 
-    //todo
 
-    // box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-    //     if(other_object.name == "mainSphere"){
-
-    //         console.log("la main palla ha colpito l'hitbox")
-
-
-
-    //     }
-    // });
+    // setTimeout(function () {
+        // console.log("ready!");
+        box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
+            if (other_object.name == "mainSphere" && is_pg) {
+                hitboxes_hit[num_pg] = true;
+                // console.log("colpita l'hitboxxxxxxxxxxxxxxxxxxxxxxxx" + String(num_pg));
+            }
+        });
+    // }, 10000)
 
     box.setCcdMotionThreshold(0.1);
     hit_boxes_group.push(box);
@@ -463,10 +468,10 @@ export function create_hitbox(dim_multiplier,pos, is_dynamic, scene, alpha, is_v
 }
 
 
-export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= false, mult_dim) {
+export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg = false, mult_dim) {
     var box;
     var temp
-    if(cubes_type[type] != undefined ){
+    if (cubes_type[type] != undefined) {
         var path1 = './textures/blocks/' + String(cubes_type[type][0]) + ".png";  // top
         var path2 = './textures/blocks/' + String(cubes_type[type][1]) + ".png";  // side
         var path3 = './textures/blocks/' + String(cubes_type[type][2]) + ".png";  // base
@@ -478,7 +483,7 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= fals
 
         temp = load_texture_cube(path1, path2, path3);
     }
-    else{ // so it's a pg 
+    else { // so it's a pg 
         temp = load_texture_pg(type);
     }
 
@@ -490,9 +495,9 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= fals
         geometry_cube = new THREE.CubeGeometry(dim_cube, dim_cube, dim_cube)
         dim_Box = [dim_cube, dim_cube, dim_cube]
     }
-    else{
-        geometry_cube = new THREE.CubeGeometry(dim_cube * mult_dim[0], dim_cube* mult_dim[1], dim_cube* mult_dim[2])
-        dim_Box = [dim_cube * mult_dim[0], dim_cube* mult_dim[1], dim_cube* mult_dim[2]]
+    else {
+        geometry_cube = new THREE.CubeGeometry(dim_cube * mult_dim[0], dim_cube * mult_dim[1], dim_cube * mult_dim[2])
+        dim_Box = [dim_cube * mult_dim[0], dim_cube * mult_dim[1], dim_cube * mult_dim[2]]
     }
 
     var mat_box_phy = Physijs.createMaterial(
@@ -535,7 +540,7 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= fals
     box.position.set(pos[0], pos[1], pos[2]);
 
 
-    if (rot){
+    if (rot) {
         box.rotation.set(degrees_to_radians(rot[0]), degrees_to_radians(rot[1]), degrees_to_radians(rot[2]));
     }
 
@@ -547,9 +552,9 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= fals
     //     if(other_object.name == "mainSphere"){
     //         console.log("la main palla ha colpito un box")
     //     }
-        // console.log("Che botta!");
-        // box.setAngularVelocity(new THREE.Vector3(20, 0, 0));
-        // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+    // console.log("Che botta!");
+    // box.setAngularVelocity(new THREE.Vector3(20, 0, 0));
+    // box.setLinearVelocity(new THREE.Vector3(0, 0, 0));
     // });
 
     box.castShadow = true;
@@ -561,9 +566,9 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg= fals
 }
 
 
-export function rotateArmsLegs(box, angle){
+export function rotateArmsLegs(box, angle) {
 
-    var anchorPoint = new THREE.Vector3(box.position.x, box.position.y + (box.dimensions[1]/2 - 1), box.position.z);
+    var anchorPoint = new THREE.Vector3(box.position.x, box.position.y + (box.dimensions[1] / 2 - 1), box.position.z);
     // console.log(anchorPoint);
 
     let moveDir = new THREE.Vector3(
@@ -574,7 +579,7 @@ export function rotateArmsLegs(box, angle){
 
     moveDir.normalize();
     let moveDist = box.position.distanceTo(anchorPoint);
-    
+
     box.translateOnAxis(moveDir, moveDist);
 
     box.rotateX(degrees_to_radians(angle));
@@ -584,9 +589,9 @@ export function rotateArmsLegs(box, angle){
 }
 
 
-export function move(box, angle){
+export function move(box, angle) {
 
-    var anchorPoint = new THREE.Vector3(box.position.x, box.position.y + (box.dimensions[1]/2 - 1), box.position.z);
+    var anchorPoint = new THREE.Vector3(box.position.x, box.position.y + (box.dimensions[1] / 2 - 1), box.position.z);
     // console.log(anchorPoint);
 
     let moveDir = new THREE.Vector3(
@@ -597,7 +602,7 @@ export function move(box, angle){
 
     moveDir.normalize();
     let moveDist = box.position.distanceTo(anchorPoint);
-    
+
     box.translateOnAxis(moveDir, moveDist);
 
     box.translateZ(degrees_to_radians(angle));
@@ -611,12 +616,12 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     var path;
     var normal_path;
     var specular_path;
-    if(cubes_type[type] != undefined ){
+    if (cubes_type[type] != undefined) {
         path = "./textures/blocks/" + String(type.toLowerCase()) + ".png";
         normal_path = "./textures/normals/" + String(type) + ".png";
         specular_path = "./textures/specular/" + String(type) + ".png";
     }
-    else{
+    else {
         path = "./textures/character/" + String(type) + ".png";
         normal_path = "./textures/normals/" + String(type) + ".png";
         specular_path = "./textures/specular/" + String(type) + ".png";
@@ -641,8 +646,8 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     // varType
     var sphereMat = new THREE.MeshPhongMaterial({
         map: tex,
-        normalMap : nor_tex,
-        specularMap : spec_tex,
+        normalMap: nor_tex,
+        specularMap: spec_tex,
         color: color,
         specular: 0xADD8E6,
         shininess: 0
@@ -659,25 +664,25 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     const sphereHeightDivisions = 32;
     var sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
     // var sphereMat = new THREE.MeshBasicMaterial({ color: color })
-    var sphere = new Physijs.SphereMesh(sphereGeo, sphereMat_phy,1000);
-    if(pos){
+    var sphere = new Physijs.SphereMesh(sphereGeo, sphereMat_phy, 1000);
+    if (pos) {
         sphere.position.set(pos[0], pos[1], pos[2]);
         sphere.initial_pos = pos
-    }else{
+    } else {
         sphere.position.set(-sphereRadius - 1 - 25, sphereRadius + 20, 0);
     }
-    if(is_main){
+    if (is_main) {
         sphere.name = "mainSphere";
         sphere.canJump = true;
         sphere.isFallen = false;
     }
-    else  sphere.name = "sphere_" + String(prog_spheres);
+    else sphere.name = "sphere_" + String(prog_spheres);
     prog_spheres++;
     sphere.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-        if(is_main){
+        if (is_main) {
 
             sphere.canJump = true;   //will be false when the jump is used.
-            if(other_object.name.includes("bound_")){
+            if (other_object.name.includes("bound_")) {
                 // console.log("Urca la palla ha colpito il bound")
                 // life = life -1;
                 // console.log("lives left: " + String(life));
@@ -689,16 +694,16 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
                 // }
                 // if(life==0) resetAll(scene,20);
                 // else{
-                    sphere.__dirtyPosition = true;
-                    sphere.__dirtyRotation = true;
-                    sphere.position.set(sphere.initial_pos[0],sphere.initial_pos[1],sphere.initial_pos[2])
+                sphere.__dirtyPosition = true;
+                sphere.__dirtyRotation = true;
+                sphere.position.set(sphere.initial_pos[0], sphere.initial_pos[1], sphere.initial_pos[2])
 
-                    sphere.setLinearVelocity(new THREE.Vector3(0,0,0));
-                    sphere.setAngularVelocity(new THREE.Vector3(0,0,0));
+                sphere.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+                sphere.setAngularVelocity(new THREE.Vector3(0, 0, 0));
 
-                    sphere.isFallen = true;
+                sphere.isFallen = true;
 
-                    scene.simulate()
+                scene.simulate()
                 // }
             }
         }
@@ -716,7 +721,7 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     //     //normalize the direction vector (convert to vector of length 1)
     //     dir.normalize();
 
-        
+
     //     const length = 20;
     //     const hex = 0x00ff00;
 
@@ -788,7 +793,7 @@ export function create_teleport(pos, scene) {
     );
     // var teleport = new Physijs.CylinderMesh(telGeo, myBoxMaterial);
     var teleport = new THREE.Mesh(telGeo, material_tel);
-    
+
 
     teleport.name = "teleport";
     // teleport.__dirtyPosition = true;
@@ -804,13 +809,13 @@ export function create_teleport(pos, scene) {
     return teleport
 }
 
-export function create_button(scene, pos, group){
+export function create_button(scene, pos, group) {
     var button;
     var radius = 3;
     var subdivs = 64;
-    var buttonGeo = new THREE.CylinderGeometry(radius, radius, radius/2, subdivs, 1, false)
+    var buttonGeo = new THREE.CylinderGeometry(radius, radius, radius / 2, subdivs, 1, false)
     button_pressed = false;
-    var material_button  = new THREE.MeshPhongMaterial({
+    var material_button = new THREE.MeshPhongMaterial({
         color: 0xff0000,
 
         specular: 0xff0000,
@@ -824,19 +829,19 @@ export function create_button(scene, pos, group){
         0 // restitution/bounciness
     );
 
-    button = new Physijs.CylinderMesh(buttonGeo,buttonMaterial,0)// static
+    button = new Physijs.CylinderMesh(buttonGeo, buttonMaterial, 0)// static
     prog_buttons++;
-    button.name = "button_"+String(prog_buttons);
+    button.name = "button_" + String(prog_buttons);
     button.__dirtyPosition = true;
     button.__dirtyRotation = true;
     button.position.set(pos[0], pos[1], pos[2]);
     button.pushed = false;
     button.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
         // console.log(" button hitten, should happen something !")
-        if (!button.pushed){
+        if (!button.pushed) {
             var new_prop_mat = new THREE.MeshPhongMaterial({
                 color: 0x00ff00,
-        
+
                 specular: 0x00ff00,
                 emissive: 0x00ff00,
                 shininess: 50
@@ -850,11 +855,11 @@ export function create_button(scene, pos, group){
             button.material = new_mat
 
             var mainSphere = scene.getObjectByName("mainSphere");
-            mainSphere.initial_pos = [pos[0],pos[1]+5,pos[2]];
-            mainSphere.setLinearVelocity(new THREE.Vector3(0,0,0));  
-            mainSphere.setAngularVelocity(new THREE.Vector3(0,0,0));
+            mainSphere.initial_pos = [pos[0], pos[1] + 5, pos[2]];
+            mainSphere.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+            mainSphere.setAngularVelocity(new THREE.Vector3(0, 0, 0));
 
-            removeByGroup(group,scene);
+            removeByGroup(group, scene);
             button.pushed = true;
             button_pressed = true;
             // resetAll(scene,50)
@@ -870,45 +875,45 @@ export function create_button(scene, pos, group){
 }
 
 
-export function create_pg(scene, loc = undefined){
+export function create_pg(scene, num_pg, loc = undefined) {
     //the root: head
     var head
 
-    if (!is_pg_sphere){
-        head = create_Box("Head", [0, 6, 0],1, scene, null,true,null,);
+    if (!is_pg_sphere) {
+        head = create_Box("Head", [0, 6, 0], 1, scene, null, true, null,);
     }
-    else{
-        head = create_Box("HeadControl", [0, 6, 0],1, scene, null,true,null,);
+    else {
+        head = create_Box("HeadControl", [0, 6, 0], 1, scene, null, true, null,);
     }
 
     head.scale.set(1, 1, 1);
 
     // **************** the hitbox*********************
     var hit_box;
-    if (loc == undefined){
-    hit_box = create_hitbox([1.5,5,1], [0, 9.5, -10], 1, scene,0.3,false, undefined, true);
+    if (loc == undefined) {
+        hit_box = create_hitbox([1.5, 5, 1], [0, 9.5, -10], 1, scene, 0.3, false, undefined, true, num_pg);
     }
-    else{
-        hit_box = create_hitbox([1.5,5,1], [loc[0], loc[1], loc[2]], 1, scene,0.3,false, undefined, true);
+    else {
+        hit_box = create_hitbox([1.5, 5, 1], [loc[0], loc[1], loc[2]], 1, scene, 0.3, false, undefined, true, num_pg);
         // hit_box.initial_pos =  [loc[0], loc[1], loc[2]]; // no assign cause it's not the actual fist one.
     }
     hit_box.initial_pos = [0, 9.5, -10];
-    
 
 
-    var body = create_Box("Body", [0, -4.5, 0], 0, scene,null,false,[1.0, 2, 1.0]);
+
+    var body = create_Box("Body", [0, -4.5, 0], 0, scene, null, false, [1.0, 2, 1.0]);
     // body.scale.set(1.0, 2, 1.0);
 
-    var left_arm = create_Box("LeftArm", [2.25, 0, 0], 0, scene,null, false,[0.5, 2.0, 0.5]);  
+    var left_arm = create_Box("LeftArm", [2.25, 0, 0], 0, scene, null, false, [0.5, 2.0, 0.5]);
     // left_arm.scale.set(0.5, 2.0, 0.5);
 
-    var right_arm = create_Box("RightArm", [-2.25, 0, 0], 0, scene,null, false,[0.5, 2.0, 0.5]); 
+    var right_arm = create_Box("RightArm", [-2.25, 0, 0], 0, scene, null, false, [0.5, 2.0, 0.5]);
     // right_arm.scale.set(0.5, 2.0, 0.5);
 
-    var left_leg = create_Box("LeftLeg", [0.75,-5.5, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
+    var left_leg = create_Box("LeftLeg", [0.75, -5.5, 0], 0, scene, null, false, [0.45, 2.5, 0.5]);
     // left_leg.scale.set(0.5, 2.0, 1.0);
 
-    var right_leg = create_Box("RightLeg", [-0.75,-5.5, 0], 0, scene,null, false,[0.45, 2.5, 0.5]);
+    var right_leg = create_Box("RightLeg", [-0.75, -5.5, 0], 0, scene, null, false, [0.45, 2.5, 0.5]);
     // right_leg.scale.set(0.5, 2.0, 1.0);
 
     hit_box.add(head)
@@ -924,7 +929,7 @@ export function create_pg(scene, loc = undefined){
     // return pg;
 
     // var pg = [hit_box,head,body,left_arm,right_arm,left_leg,right_leg];
-    return [hit_box,head,body,left_arm,right_arm,left_leg,right_leg];
+    return [hit_box, head, body, left_arm, right_arm, left_leg, right_leg];
 }
 
 /**************************************************** OBJECTS CREATION  [end] ******************************************************/
@@ -938,9 +943,9 @@ export function create_pointLight(pos, color, scene) {
     return light
 }
 
-export function create_directionalLight(color,scene, direction){
-    const light = new THREE.DirectionalLight(color,1.0)
-    light.position.set(direction[0],direction[1],direction[2])
+export function create_directionalLight(color, scene, direction) {
+    const light = new THREE.DirectionalLight(color, 1.0)
+    light.position.set(direction[0], direction[1], direction[2])
     light.castShadow = true
 
     light.shadow.mapSize.width = 512; // default
@@ -964,8 +969,8 @@ export function createFlatLand(n_width, n_depth, type, left_top_pos, scene) {
 
 
 
-    var hit_box = create_hitbox(null, [left_top_pos[0] + hit_box_width/2 -dim_cube/2 , left_top_pos[1] , left_top_pos[2] + hit_box_depth/2 -dim_cube/2], 0, scene, 0.9 ,false, [hit_box_width,hit_box_height,hit_box_depth]);
-    hit_box.initial_pos = [left_top_pos[0] + hit_box_width/2, left_top_pos[1], left_top_pos[2] + hit_box_depth/2];
+    var hit_box = create_hitbox(null, [left_top_pos[0] + hit_box_width / 2 - dim_cube / 2, left_top_pos[1], left_top_pos[2] + hit_box_depth / 2 - dim_cube / 2], 0, scene, 0.9, false, [hit_box_width, hit_box_height, hit_box_depth]);
+    hit_box.initial_pos = [left_top_pos[0] + hit_box_width / 2, left_top_pos[1], left_top_pos[2] + hit_box_depth / 2];
 
 
     // var hit_box = create_hitbox(null, [left_top_pos[0], left_top_pos[1] , left_top_pos[2]], 0, scene, 0.9 ,true, [hit_box_width,hit_box_height,hit_box_depth]);
@@ -975,7 +980,7 @@ export function createFlatLand(n_width, n_depth, type, left_top_pos, scene) {
     var box;
     for (var i = 0; i < n_width; i++) {
         for (var j = 0; j < n_depth; j++) {
-            box = create_Box(type, [left_top_pos[0] + i * (dim_cube -epsilon), left_top_pos[1], left_top_pos[2] + j * (dim_cube-epsilon)], 0, scene);
+            box = create_Box(type, [left_top_pos[0] + i * (dim_cube - epsilon), left_top_pos[1], left_top_pos[2] + j * (dim_cube - epsilon)], 0, scene);
             // box = create_Box(type, [i * dim_cube, 0, j * dim_cube], 0, scene);
             // hit_box.add(box);
             flat_land_group.push(box);
@@ -984,7 +989,7 @@ export function createFlatLand(n_width, n_depth, type, left_top_pos, scene) {
     }
 
 
-    return {'group':flat_land_group , 'hitbox': hit_box};
+    return { 'group': flat_land_group, 'hitbox': hit_box };
 }
 
 
@@ -996,7 +1001,7 @@ export function createUphillLand(n_width, n_depth, height_desired, type, left_to
     for (var i = 0; i < n_width; i++) {
         for (var j = 0; j < n_depth; j++) {
 
-            box = create_Box(type, [left_top_pos[0] + i * (dim_cube+epsilon), left_top_pos[1] + Math.floor(height_desired * Math.sin(degrees_to_radians((step * i)))), left_top_pos[2] + j * (dim_cube+epsilon)], false, scene);
+            box = create_Box(type, [left_top_pos[0] + i * (dim_cube + epsilon), left_top_pos[1] + Math.floor(height_desired * Math.sin(degrees_to_radians((step * i)))), left_top_pos[2] + j * (dim_cube + epsilon)], false, scene);
             uphill_group.push(box);
         }
     }
@@ -1009,7 +1014,7 @@ export function createAscentGround(n_width, n_depth, height_desired, type, left_
     var box;
     var step = Math.floor(height_desired / (n_width));
 
-    if (direction == "+x"){
+    if (direction == "+x") {
         for (var i = 0; i < n_width; i++) {
             for (var j = 0; j < n_depth; j++) {
 
@@ -1018,7 +1023,7 @@ export function createAscentGround(n_width, n_depth, height_desired, type, left_
             }
         }
     }
-    else if (direction == "+z"){
+    else if (direction == "+z") {
         for (var i = 0; i < n_width; i++) {
             for (var j = 0; j < n_depth; j++) {
 
@@ -1037,7 +1042,7 @@ export function createDescentGround(n_width, n_depth, actual_height, type, left_
     var box;
     var step = Math.floor(actual_height / n_width);
 
-    if (direction == "+x"){
+    if (direction == "+x") {
         for (var i = 0; i < n_width; i++) {
             for (var j = 0; j < n_depth; j++) {
 
@@ -1046,7 +1051,7 @@ export function createDescentGround(n_width, n_depth, actual_height, type, left_
             }
         }
     }
-    else if(direction == "+z"){
+    else if (direction == "+z") {
         for (var i = 0; i < n_width; i++) {
             for (var j = 0; j < n_depth; j++) {
 
@@ -1059,17 +1064,17 @@ export function createDescentGround(n_width, n_depth, actual_height, type, left_
 }
 
 
-export function createPhysicWall(type, scene, row, columns, left_down_pos, on_x){
+export function createPhysicWall(type, scene, row, columns, left_down_pos, on_x) {
     var wall_group = [];
     var box;
 
-    for(var i =0; i<row; i++){
-        for(var j=0; j<columns; j++){
-            if(on_x)
-                box = create_Box(type, [(left_down_pos[0] + dim_cube/2) + j * dim_cube, (left_down_pos[1]+ dim_cube/2) + i * dim_cube, (left_down_pos[2]+ dim_cube/2)], 1.0, scene);
+    for (var i = 0; i < row; i++) {
+        for (var j = 0; j < columns; j++) {
+            if (on_x)
+                box = create_Box(type, [(left_down_pos[0] + dim_cube / 2) + j * dim_cube, (left_down_pos[1] + dim_cube / 2) + i * dim_cube, (left_down_pos[2] + dim_cube / 2)], 1.0, scene);
             else  //create along z axis 
-                box = create_Box(type, [(left_down_pos[0] + dim_cube/2), (left_down_pos[1]+ dim_cube/2) + i * dim_cube, (left_down_pos[2]+ dim_cube/2) + j * dim_cube], 1.0, scene);
-            
+                box = create_Box(type, [(left_down_pos[0] + dim_cube / 2), (left_down_pos[1] + dim_cube / 2) + i * dim_cube, (left_down_pos[2] + dim_cube / 2) + j * dim_cube], 1.0, scene);
+
             box.__dirtyPosition = false;
             box.__dirtyRotation = false;
             wall_group.push(box);
@@ -1241,45 +1246,47 @@ export function animatePlatformByGroupInstance(group, scene, axis, new_position_
 
             animation.easing(TWEEN.Easing.Linear.None)
             animation.onUpdate(function () {
-            if(hit_box != undefined || hit_box != null){ 
-                hit_box.__dirtyPosition = true;
-                var dispx,dispz,dispy;
-                if (typeof irregular_shape != 'undefined') {
-                    dispx = (irregular_shape[0]/2 * dim_cube) - dim_cube/2;
-                    dispz = (irregular_shape[1]/2 * dim_cube) - dim_cube/2;
-                    dispy = - dim_cube/2;
+                if (hit_box != undefined || hit_box != null) {
+                    hit_box.__dirtyPosition = true;
+                    var dispx, dispz, dispy;
+                    if (typeof irregular_shape != 'undefined') {
+                        dispx = (irregular_shape[0] / 2 * dim_cube) - dim_cube / 2;
+                        dispz = (irregular_shape[1] / 2 * dim_cube) - dim_cube / 2;
+                        dispy = - dim_cube / 2;
+                    }
+                    else {
+                        dispx = (max_length / 2 * dim_cube) - dim_cube / 2;
+                        dispz = dispx;
+                        dispy = - dim_cube / 2;
+                    }
+                    if (axis == "x") {
+                        // var disp = initial_value.pos - platform.position.x;
+                        platform.position.x = initial_value.pos;
+                        hit_box.position.x = platform.position.x - dispx;
+                        // if(only_fist) hit_box.position.x = platform.position.x;
+                        // if(only_fist) hit_box.position.x = hit_box.position.x + disp;
+                    }
+                    else if (axis == 'y') {
+                        platform.position.y = initial_value.pos;
+                        hit_box.position.y = platform.position.y - dispy;
+                    }
+                    else if (axis == 'z') {
+                        platform.position.z = initial_value.pos;
+                        hit_box.position.z = platform.position.z - dispz;
+                    }
+                    scene.simulate()
                 }
-                else{
-                    dispx = (max_length/2 * dim_cube) - dim_cube/2;
-                    dispz = dispx;
-                    dispy = - dim_cube/2;
+                else {
+                    if (axis == "x") {
+                        platform.position.x = initial_value.pos;
+                    }
+                    else if (axis == 'y') {
+                        platform.position.y = initial_value.pos;
+                    }
+                    else if (axis == 'z') {
+                        platform.position.z = initial_value.pos;
+                    }
                 }
-                if (axis == "x") {
-                    // var disp = initial_value.pos - platform.position.x;
-                    platform.position.x = initial_value.pos;
-                    hit_box.position.x = platform.position.x-dispx;
-                    // if(only_fist) hit_box.position.x = platform.position.x;
-                    // if(only_fist) hit_box.position.x = hit_box.position.x + disp;
-                }
-                else if (axis == 'y'){
-                    platform.position.y = initial_value.pos;
-                    hit_box.position.y = platform.position.y -dispy;
-                }
-                else if (axis == 'z'){
-                    platform.position.z = initial_value.pos;
-                    hit_box.position.z = platform.position.z -dispz;
-                }
-                scene.simulate()
-            }
-            else{
-                if (axis == "x") {
-                    platform.position.x = initial_value.pos;
-                }
-                else if (axis == 'y'){ platform.position.y = initial_value.pos;
-                }
-                else if (axis == 'z'){ platform.position.z = initial_value.pos;
-                }
-            }
 
             }).onComplete(function () {
                 platform.__dirtyPosition = true;
@@ -1326,17 +1333,17 @@ export function animateBackAndForwardInstance(instance, scene, axis, new_positio
 }
 
 
-export function animateBackAndForwardInstanceGroup(group, scene, axis, new_position_a, new_position_b, time,hit_box) {
+export function animateBackAndForwardInstanceGroup(group, scene, axis, new_position_a, new_position_b, time, hit_box) {
     var animations_a;
     var animations_b;
     var i;
     var length;
 
-    if(hit_box != undefined || hit_box != null){
+    if (hit_box != undefined || hit_box != null) {
         animations_a = animatePlatformByGroupInstance(group, scene, axis, new_position_a, time, undefined, undefined, hit_box);
         animations_b = animatePlatformByGroupInstance(group, scene, axis, new_position_b, time, new_position_a, undefined, hit_box);
     }
-    else{
+    else {
         animations_a = animatePlatformByGroupInstance(group, scene, axis, new_position_a, time, undefined, undefined);
         animations_b = animatePlatformByGroupInstance(group, scene, axis, new_position_b, time, new_position_a, undefined);
     }
@@ -1350,7 +1357,7 @@ export function animateBackAndForwardInstanceGroup(group, scene, axis, new_posit
 }
 
 function resetScene(scene) {
-    scene.children.forEach(function(object){
+    scene.children.forEach(function (object) {
         if (object) {
             scene.remove(object);
         }
@@ -1362,14 +1369,14 @@ function resetScene(scene) {
         }
     }
 
-    for( var i = scene.children.length - 1; i >= 0; i--) { 
+    for (var i = scene.children.length - 1; i >= 0; i--) {
         var obj = scene.children[i];
-        if(obj)
-            scene.remove(obj); 
-   }
+        if (obj)
+            scene.remove(obj);
+    }
 }
 
-export function changeLevel(scene,function_init_scene){
+export function changeLevel(scene, function_init_scene) {
     resetScene(scene);
     function_init_scene(scene);
 }
@@ -1410,21 +1417,21 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
 
     // going down anim
     var goingDown_anims = [];
-    var initial_value = { pos: platform[0].position.y}
+    var initial_value = { pos: platform[0].position.y }
     var hb_notRemoved = true;
 
     platform.forEach(cube_plat => {
-        var animation = new TWEEN.Tween(initial_value).to({ pos: - 400}, 3000);
+        var animation = new TWEEN.Tween(initial_value).to({ pos: - 400 }, 3000);
 
         animation.easing(TWEEN.Easing.Cubic.In)
         animation.onUpdate(function () {
-        cube_plat.position.y = initial_value.pos
-        hit_box.position.y = cube_plat.position.y;
+            cube_plat.position.y = initial_value.pos
+            hit_box.position.y = cube_plat.position.y;
 
-        // if (hb_notRemoved){
-        //     hb_notRemoved = false;
-        //     scene.remove(hit_box);
-        // }
+            // if (hb_notRemoved){
+            //     hb_notRemoved = false;
+            //     scene.remove(hit_box);
+            // }
 
         }).onComplete(function () {
             scene.remove(cube_plat);
@@ -1474,7 +1481,7 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
 
     setTimeout(function () {
 
-        if (hb_notRemoved){
+        if (hb_notRemoved) {
             try {
                 scene.remove(hit_box);
             } catch (error) {
@@ -1484,8 +1491,9 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
 
         tremble_anims.forEach(anims => anims.forEach(anim => anim.pause()));
 
-        goingDown_anims.forEach(anim => { anim.start();
-            
+        goingDown_anims.forEach(anim => {
+            anim.start();
+
 
             // setTimeout(function () {
             //     var force_vector = new THREE.Vector3( 0,- 200,0)
@@ -1497,7 +1505,7 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
 
 
             // setTimeout(function () {
-                
+
             // scene.remove(hitbox)
             // scene.simulate();
             // }, 10);
@@ -1540,40 +1548,40 @@ export function animateFallenPlatformGroup(platform, scene, irregular_shape, hit
 
 /****************************************************** gameplay  [start] *******************************************************/
 
-export function change_main(scene, camera){
+export function change_main(scene, camera) {
 
     var loc;
 
-    if(is_pg_sphere){  // now the controllable character will be the man
+    if (is_pg_sphere) {  // now the controllable character will be the man
         console.log("dfffd")
-        
+
         var temp = load_texture_pg("Head");
-        var mat_box = new THREE.MeshFaceMaterial(temp); 
+        var mat_box = new THREE.MeshFaceMaterial(temp);
         var mat_box_phy = Physijs.createMaterial(
             mat_box,
             friction_box,// friction
             restitution_box // restitution / bounciness
-         );
-         pg[1].material = mat_box_phy
+        );
+        pg[1].material = mat_box_phy
 
-         is_pg_sphere = false;
+        is_pg_sphere = false;
     }
-    else{  // now the controllable character will be the sphere
-        
+    else {  // now the controllable character will be the sphere
+
         var temp = load_texture_pg("HeadControl");
-        var mat_box = new THREE.MeshFaceMaterial(temp); 
+        var mat_box = new THREE.MeshFaceMaterial(temp);
         var mat_box_phy = Physijs.createMaterial(
             mat_box,
             friction_box,// friction
             restitution_box // restitution / bounciness
-         );
-         pg[1].material = mat_box_phy
+        );
+        pg[1].material = mat_box_phy
 
-         is_pg_sphere = true;
+        is_pg_sphere = true;
     }
 
     // loc = [pg[0].position.x , pg[0].position.y , pg[0].position.z];
-    
+
     // scene.remove(pg[0]);
     // create_pg(scene, loc);
 
@@ -1590,8 +1598,8 @@ export function change_main(scene, camera){
     // setTimeout(function(){
     //     create_pg(scene, loc);
     // }, 10);
-    
-    
+
+
     // pg[0].position.set(loc.x, loc.y, loc.z);
 
     // scene.simulate(); //update the new position for physijs
@@ -1605,9 +1613,9 @@ export function change_main(scene, camera){
     return is_pg_sphere == true ? undefined : pg[0];
 }
 
-export function update_arrow_sphere(scene){  //update with the direction of the sphere 
-    if(is_pg_sphere){
-        var sphere  = scene.getObjectByName("mainSphere");
+export function update_arrow_sphere(scene) {  //update with the direction of the sphere 
+    if (is_pg_sphere) {
+        var sphere = scene.getObjectByName("mainSphere");
         var sphere_direction = scene.getObjectByName("sphere_direction");
         var from = sphere.position
         var to = new THREE.Vector3(from.x, from.y, from.z + 10);
@@ -1615,20 +1623,20 @@ export function update_arrow_sphere(scene){  //update with the direction of the 
     }
 }
 
-export function toggle_level_completed(){
+export function toggle_level_completed() {
     level_completed = false;
 }
 
-export function check_in_teleport(scene, pos_main_pg){
+export function check_in_teleport(scene, pos_main_pg) {
     var teleport = scene.getObjectByName("teleport");
     if (teleport) {
         // console.log("check in teleport log: -> "+String(pos_main_pg[0]) + " " +String(pos_main_pg[1]) + " " +String(pos_main_pg[2]) )
         var radius_size_check = 5;
-        var height_size_check = 10; 
-        var conditionx =  (teleport.position.x - radius_size_check   < pos_main_pg[0])   &&  (pos_main_pg[0]<  teleport.position.x + radius_size_check);
-        var conditiony =  (teleport.position.y - height_size_check   < pos_main_pg[1])   &&  (pos_main_pg[1]<  teleport.position.y + height_size_check);
-        var conditionz =  (teleport.position.z - radius_size_check   < pos_main_pg[2])   &&  (pos_main_pg[2]<  teleport.position.z + radius_size_check);
-        if(conditionx && conditiony && conditionz){
+        var height_size_check = 10;
+        var conditionx = (teleport.position.x - radius_size_check < pos_main_pg[0]) && (pos_main_pg[0] < teleport.position.x + radius_size_check);
+        var conditiony = (teleport.position.y - height_size_check < pos_main_pg[1]) && (pos_main_pg[1] < teleport.position.y + height_size_check);
+        var conditionz = (teleport.position.z - radius_size_check < pos_main_pg[2]) && (pos_main_pg[2] < teleport.position.z + radius_size_check);
+        if (conditionx && conditiony && conditionz) {
             console.log("Level completed!! ");
             curr_level++;
             level_completed = true;
@@ -1637,7 +1645,7 @@ export function check_in_teleport(scene, pos_main_pg){
     }
 }
 
-export function setCurrentLevel(value){
+export function setCurrentLevel(value) {
     curr_level = value;
 }
 /****************************************************** gameplay  [end] *******************************************************/
@@ -1675,8 +1683,8 @@ export function reset_data() {
 
     last_time = 0;
     curr_time = 0;
+    hitboxes_hit = [false, false, false, false, false, false];
 
-    // pg = null;
     is_pg_sphere = true;
 
     life = document.getElementById("curr_life").innerText;
@@ -1704,7 +1712,7 @@ export function remove_buttons(scene) {
 }
 
 
-export function removeByGroup(group, scene){
+export function removeByGroup(group, scene) {
     group.forEach(Element => scene.remove(Element));
     scene.simulate();
 }
@@ -1717,8 +1725,8 @@ export function resetAll(scene, time) {
         // remove_hit_boxes(scene);
         // remove_buttons(scene);
         // scene.remove(scene.getObjectByName("sphere_direction"));
-        while(scene.children.length > 0){ 
-            scene.remove(scene.children[0]); 
+        while (scene.children.length > 0) {
+            scene.remove(scene.children[0]);
             // scene.simulate()
         }
 

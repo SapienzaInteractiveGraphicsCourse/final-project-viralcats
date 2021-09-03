@@ -114,7 +114,7 @@ export function level_3(scene){
          group_1.push(temp["hitbox"]);
 
         {
-            var pg = utils.create_pg(scene);
+            var pg = utils.create_pg(scene,4);
     
             pg[0].__dirtyPosition = true;
             pg[0].__dirtyRotation = true;
@@ -158,7 +158,7 @@ export function level_3(scene){
         group_1.push(temp["hitbox"]);
 
        {
-           var pg = utils.create_pg(scene);
+           var pg = utils.create_pg(scene,5);
    
            pg[0].__dirtyPosition = true;
            pg[0].__dirtyRotation = true;
