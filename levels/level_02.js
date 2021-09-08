@@ -17,6 +17,7 @@ var fallingLand3;
 var fallingLand4;
 var group_fallen_lands = [];
 export var pg;
+export var pg2;
 var sphere;
 
 
@@ -156,15 +157,15 @@ export function level_2(scene){
             temp = utils.create_button(scene , [0,2.5,185], group_1);
         }
 
-        pg = utils.create_pg(scene,3)
+        pg2 = utils.create_pg(scene,3)
     
-        pg[0].__dirtyPosition = true;
-        pg[0].__dirtyRotation = true;
+        pg2[0].__dirtyPosition = true;
+        pg2[0].__dirtyRotation = true;
         scene.simulate();
     
     
-        pg[0].position.set(-25, 10, 200);
-        pg[0].rotation.set(0,utils.degrees_to_radians(90),0);
+        pg2[0].position.set(-25, 10, 200);
+        pg2[0].rotation.set(0,utils.degrees_to_radians(90),0);
     
         scene.simulate(); //update the new position for physijs
 
