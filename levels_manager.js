@@ -48,6 +48,8 @@ var walk_level_1;
 var jump_level_1;
 var walk_level_2;
 var jump_level_2;
+var jump_level_3a;
+var jump_level_3b;
 // Loading assets
 var areSoundsLoaded = false;
 
@@ -654,31 +656,50 @@ function jump(who, scene, rotate,forward_move_max_value){
     var forward_move_max = forward_move_max_value;
 
     // finire di vedere il jump
+
+    who[0].__dirtyPosition = true;
+    who[0].__dirtyRotation = true;
+
+    var initial_value = { pos: start_y_pos }
+    var animation = new TWEEN.Tween(initial_value).to({ pos: start_y_pos+50 }, 1000);
+
+    animation.easing(TWEEN.Easing.Linear.None)
+    animation.onUpdate(function () {
+        who[0].__dirtyPosition = true;
+        who[0].__dirtyRotation = true;
+        who[0].position.y = initial_value.pos;
+        // console.log(initial_value.pos);
+
+    }).onComplete(function () {
+
+    });
+    animation.start()
+
     
 
-    switch(step_jump){
-        case 0:
-            who[0].__dirtyPosition = true;
-            who[0].__dirtyRotation = true;
-            who[0].translateY(z_value);
+    // switch(step_jump){
+    //     case 0:
+    //         who[0].__dirtyPosition = true;
+    //         who[0].__dirtyRotation = true;
+    //         who[0].translateY(z_value/10);
     
-            scene.simulate();
+    //         // scene.simulate();
     
-            // who[0].__dirtyPosition = false;
-            // who[0].__dirtyRotation = false;
+    //         // who[0].__dirtyPosition = false;
+    //         // who[0].__dirtyRotation = false;
  
-            if(who[0].position.y >= start_y_pos + forward_move_max){
-                step_jump = 1;
-            }
+    //         if(who[0].position.y >= start_y_pos + 2){ //forward_move_max
+    //             // step_jump = 1;
+    //         }
         
 
-        break;
-        case 1:
-            if(who[0].position.z <= start_y_pos){
-                step_jump = 0;
-            }
-        break;
-    }
+    //     break;
+    //     case 1:
+    //         if(who[0].position.z <= start_y_pos){
+    //             step_jump = 0;
+    //         }
+    //     break;
+    // }
 }
 
 function main() {
@@ -830,6 +851,13 @@ function main() {
         start_x_pos = level_2.pg[0].position.x;
         start_z_pos = level_2.pg[0].position.z;
         start_y_pos = level_2.pg[0].position.y;
+    }
+
+    if(utils.curr_level == 2){
+    
+        start_x_pos = level_3.pg[0].position.x;
+        start_z_pos = level_3.pg[0].position.z;
+        start_y_pos = level_3.pg[0].position.y;
     }
 
 
