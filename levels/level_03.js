@@ -15,7 +15,8 @@ var fallingLand2;
 var fallingLand3;
 var fallingLand4;
 var group_fallen_lands = [];
-var pg;
+export var pg;
+export var pg2;
 var sphere;
 
 
@@ -114,7 +115,7 @@ export function level_3(scene){
          group_1.push(temp["hitbox"]);
 
         {
-            var pg = utils.create_pg(scene,4);
+            pg = utils.create_pg(scene,4);
     
             pg[0].__dirtyPosition = true;
             pg[0].__dirtyRotation = true;
@@ -158,18 +159,18 @@ export function level_3(scene){
         group_1.push(temp["hitbox"]);
 
        {
-           var pg = utils.create_pg(scene,5);
+           pg2 = utils.create_pg(scene,5);
    
-           pg[0].__dirtyPosition = true;
-           pg[0].__dirtyRotation = true;
+           pg2[0].__dirtyPosition = true;
+           pg2[0].__dirtyRotation = true;
    
    
-           pg[0].position.set(147, 10, 250)
-           pg[0].rotation.set(0,utils.degrees_to_radians(-45),0)
+           pg2[0].position.set(147, 10, 250)
+           pg2[0].rotation.set(0,utils.degrees_to_radians(-45),0)
    
            scene.simulate(); //update the new position for physijs
 
-           group_1.push(pg[0]);
+           group_1.push(pg2[0]);
    
        }
 
