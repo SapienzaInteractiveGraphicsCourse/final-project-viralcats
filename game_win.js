@@ -1,4 +1,4 @@
-import * as THREE_AUDIO from '../libs/threejs/build/three.module.js';
+import * as THREE_AUDIO from './libs/threejs/build/three.module.js';
 
 
 var sound_to_play;  
