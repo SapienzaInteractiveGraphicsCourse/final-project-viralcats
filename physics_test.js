@@ -1,7 +1,7 @@
 // import * as THREE from './libs/threejs/build/three.module.js';
 
-Physijs.scripts.worker = '/libs/physijs_worker.js';
-Physijs.scripts.ammo = '/libs/ammo.js';
+Physijs.scripts.worker = './libs/physijs_worker.js';
+Physijs.scripts.ammo = './libs/ammo.js';
 import * as utils from './utils.js';
 import { OrbitControls } from './libs/threejs/examples/jsm/controls/OrbitControls.js';
 import TWEEN from './libs/tween.esm.js';
