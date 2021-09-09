@@ -9,7 +9,6 @@ import * as level_1 from './levels/level_01.js';
 import * as level_2 from './levels/level_02.js';
 import * as level_3 from './levels/level_03.js';
 import * as settings from './settings.js';
-import { curr_level } from './utils.js';
 
 var controls;
 var scene;
@@ -186,7 +185,6 @@ function startTimer(duration, bar) {
         percent = percent + 1;
         document.getElementById("loading-levels-bar").style = ("width:" + parseInt(percent) + '%;');
         document.getElementById("loading-levels-bar").innerText = (parseInt(percent) + '%');
-        // $('.loading-levels-bar').css("width", percent + '%;');
         if (--duration < 0) {
             $('#loadingModal').modal('hide');
             document.getElementById("loading-levels-bar").style = ("width:0%;");
@@ -228,18 +226,11 @@ function initializate_page(){
     
         document.getElementById("grid_container").style = ("");
         canvas.setAttribute("hidden", true);
-        // document.getElementById('intro_page').classList.add("invisible");
         document.getElementById('intro_page').remove();
         document.getElementById('life_counter').removeAttribute("hidden");
         canvas.removeAttribute("hidden");
-        // toggle_html_element_visibility("game_over");
-        // toggle_html_element_visibility("grid_container");
-        
+       
         utils.setLife(document.getElementById("curr_life").innerText);
-        // $('#loadingModal').modal({backdrop: 'static', keyboard: false});
-        // var seconds = 10,
-        // bar = document.querySelector('#loadingModal');
-        // startTimer(seconds, bar);
         main();
 
     };
@@ -253,12 +244,9 @@ function initializate_page(){
     
         document.getElementById("grid_container").style = ("");
         canvas.setAttribute("hidden", true);
-        // document.getElementById('intro_page').classList.add("invisible");
         document.getElementById('intro_page').remove();
         document.getElementById('life_counter').removeAttribute("hidden");
         canvas.removeAttribute("hidden");
-        // toggle_html_element_visibility("game_over");
-        // toggle_html_element_visibility("grid_container");
         
         utils.setLife(document.getElementById("curr_life").innerText);
         utils.setCurrentLevel(curr_lev);
@@ -305,210 +293,6 @@ function getNextLevel(curr_level){
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
-
-var left_end    = false;
-var right_end   = false;
-
-var left_leg_end    = false;
-var right_leg_end   = false;
-
-function move_arms(who){
-
-    var start_rotate_pos = 0;
-
-    var time = 15;
-
-    it_arm_1 = setInterval(() => {
-        who[3].__dirtyPosition = true;
-        who[3].__dirtyRotation = true;
-        utils.rotateArmsLegs(who[3],1);
-
-        scene.simulate();
-        if(who[3].rotation.x >= start_rotate_pos + 1){
-            clearInterval(it_arm_1);
-            it_arm_2 = setInterval(() => {
-                who[3].__dirtyPosition = true;
-                who[3].__dirtyRotation = true;
-                utils.rotateArmsLegs(who[3],-1);
-        
-                scene.simulate();
-                if(who[3].rotation.x <= start_rotate_pos - 1){
-                    clearInterval(it_arm_2);
-                    right_end = true;
-                    if(left_end && right_end){
-                        left_end = false;
-                        right_end = false;
-                        clearInterval(it_arm_1);
-                        clearInterval(it_arm_2);
-                        clearInterval(it_arm_3);
-                        clearInterval(it_arm_4);
-                        move_arms(who);
-                    }
-                }
-        
-            }, 10);
-        }
-
-    }, 10);
-
-
-    it_arm_3 = setInterval(() => {
-        who[4].__dirtyPosition = true;
-        who[4].__dirtyRotation = true;
-        utils.rotateArmsLegs(who[4],-1);
-
-        scene.simulate();
-        if(who[4].rotation.x <= start_rotate_pos - 1){
-            clearInterval(it_arm_3);
-            it_arm_4 = setInterval(() => {
-                who[4].__dirtyPosition = true;
-                who[4].__dirtyRotation = true;
-                utils.rotateArmsLegs(who[4],1);
-        
-                scene.simulate();
-                if(who[4].rotation.x >= start_rotate_pos + 1){
-                    clearInterval(it_arm_4);
-                    left_end = true;
-                    if(left_end && right_end){
-                        left_end = false;
-                        right_end = false;
-                        clearInterval(it_arm_1);
-                        clearInterval(it_arm_2);
-                        clearInterval(it_arm_3);
-                        clearInterval(it_arm_4);
-                        move_arms(who);
-                    }
-                }
-        
-            }, 10);
-        }
-
-    }, 10);
-
-
-
-    if(left_end && right_end){
-        left_end = false;
-        right_end = false;
-        clearInterval(it_arm_1);
-        clearInterval(it_arm_2);
-        clearInterval(it_arm_3);
-        clearInterval(it_arm_4);
-        move_arms(who);
-    }
-
-
-
-}
-
-
-function move_legs(who){
-
-    var start_rotate_pos = 0;
-
-    var time = 15;
-
-    it_leg_1 = setInterval(() => {
-        who[6].__dirtyPosition = true;
-        who[6].__dirtyRotation = true;
-        utils.rotateArmsLegs(who[6],1);
-
-        scene.simulate();
-        if(who[6].rotation.x >= start_rotate_pos + 1){
-            clearInterval(it_leg_1);
-            it_leg_2 = setInterval(() => {
-                who[6].__dirtyPosition = true;
-                who[6].__dirtyRotation = true;
-                utils.rotateArmsLegs(who[6],-1);
-        
-                scene.simulate();
-                if(who[6].rotation.x <= start_rotate_pos - 1){
-                    clearInterval(it_leg_2);
-                    right_leg_end = true;
-                    if(left_leg_end && right_leg_end){
-                        left_leg_end = false;
-                        right_leg_end = false;
-                        clearInterval(it_leg_1);
-                        clearInterval(it_leg_2);
-                        clearInterval(it_leg_3);
-                        clearInterval(it_leg_4);
-                        //move_legs(who);
-                    }
-                }
-        
-            }, 10);
-        }
-
-    }, 10);
-
-
-    it_leg_3 = setInterval(() => {
-        who[5].__dirtyPosition = true;
-        who[5].__dirtyRotation = true;
-        utils.rotateArmsLegs(who[5],-1);
-
-        scene.simulate();
-        if(who[5].rotation.x <= start_rotate_pos - 1){
-            clearInterval(it_leg_3);
-            it_leg_4 = setInterval(() => {
-                who[5].__dirtyPosition = true;
-                who[5].__dirtyRotation = true;
-                utils.rotateArmsLegs(who[5],1);
-        
-                scene.simulate();
-                if(who[5].rotation.x >= start_rotate_pos + 1){
-                    clearInterval(it_leg_4);
-                    left_leg_end = true;
-                    if(left_leg_end && right_leg_end){
-                        left_leg_end = false;
-                        right_leg_end = false;
-                        clearInterval(it_leg_1);
-                        clearInterval(it_leg_2);
-                        clearInterval(it_leg_3);
-                        clearInterval(it_leg_4);
-                        //move_legs(who);
-                    }
-                }
-        
-            }, 10);
-        }
-
-    }, 10);
-
-
-
-    if(left_leg_end && right_leg_end){
-        left_leg_end = false;
-        right_leg_end = false;
-        clearInterval(it_leg_1);
-        clearInterval(it_leg_2);
-        clearInterval(it_leg_3);
-        clearInterval(it_leg_4);
-        move_legs(who);
-    }
-
-
-
-}
-
-
-var it_move_1;
-var it_move_2;
-var it_move_3;
-var it_move_4;
-
-var it_leg_1;
-var it_leg_2;
-var it_leg_3;
-var it_leg_4;
-
-var it_arm_1;
-var it_arm_2;
-var it_arm_3;
-var it_arm_4;
-
-var walk_end = false;
-
 var step = 0;
 var step_jump = 0;
 var step_arms = 0;
@@ -527,9 +311,6 @@ function walk_around(who, scene, rotate,forward_move_max_value){
             utils.rotateArmsLegs(who[4],        4);
             utils.rotateArmsLegs(who[5],    -   4);
             utils.rotateArmsLegs(who[6],        4);
-            
-            // who[3].__dirtyPosition = false;
-            // who[3].__dirtyRotation = false;
             if(who[3].rotation.x <= start_rotate_pos - 1)
                 step_arms++;
 
@@ -542,8 +323,6 @@ function walk_around(who, scene, rotate,forward_move_max_value){
             utils.rotateArmsLegs(who[4],    -   4);
             utils.rotateArmsLegs(who[5],        4);
             utils.rotateArmsLegs(who[6],    -   4);
-            // who[3].__dirtyPosition = false;
-            // who[3].__dirtyRotation = false;
             if(who[3].rotation.x >= start_rotate_pos + 1)
                 step_arms = 0;
 
@@ -559,9 +338,7 @@ function walk_around(who, scene, rotate,forward_move_max_value){
             who[0].translateZ(z_value);
     
             scene.simulate();
-    
-            // who[0].__dirtyPosition = false;
-            // who[0].__dirtyRotation = false;
+
             if(rotate == true){
                 if(who[0].position.x >= start_x_pos + forward_move_max){
                     step = 1;
@@ -581,10 +358,6 @@ function walk_around(who, scene, rotate,forward_move_max_value){
     
             scene.simulate();
     
-            // who[0].__dirtyPosition = false;
-            // who[0].__dirtyRotation = false;
-
-
             if(rotate == true){
                 who[0].rotation.set(0,utils.degrees_to_radians(-180),0);
                 if(who[0].position.z <= start_z_pos - 8){
@@ -593,7 +366,6 @@ function walk_around(who, scene, rotate,forward_move_max_value){
             }else{
                 
                 who[0].rotation.set(0,utils.degrees_to_radians(-90),0);
-                // if(who[0].position.x < start_x_pos - 8){
                 if(who[0].position.x < start_x_pos - 8){
                     step = 2;
                 }
@@ -606,9 +378,6 @@ function walk_around(who, scene, rotate,forward_move_max_value){
             
 
             scene.simulate();
-
-            // who[0].__dirtyPosition = false;
-            // who[0].__dirtyRotation = false;
 
             if(rotate == true){
                 who[0].rotation.set(0,utils.degrees_to_radians(-90),0);
@@ -631,9 +400,6 @@ function walk_around(who, scene, rotate,forward_move_max_value){
 
             scene.simulate();
 
-            // who[0].__dirtyPosition = false;
-            // who[0].__dirtyRotation = false;
-
             if(rotate == true){
                 who[0].rotation.set(0,utils.degrees_to_radians(-0),0);
                 if(who[0].position.z >= start_z_pos){
@@ -649,7 +415,6 @@ function walk_around(who, scene, rotate,forward_move_max_value){
             }
         break;
     }
-    // utils.setStartAnimation(false);
 }
 
 var time_counter = 0;
@@ -657,8 +422,6 @@ function jump(who, scene, rotate,forward_move_max_value, time_stop,who2 = undefi
     var start_rotate_pos = 0;
     var z_value = 0.35;
     var forward_move_max = forward_move_max_value;
-
-    // finire di vedere il jump
 
     switch(step_arms_jump){
 
@@ -719,11 +482,7 @@ function jump(who, scene, rotate,forward_move_max_value, time_stop,who2 = undefi
     
             scene.simulate();
                  
-            // console.log("who[0].position.y: " + who[0].position.y );
-            // console.log("parseInt(start_y_pos + forward_move_max):  " + parseInt(start_y_pos + forward_move_max) );
-            
              if(who[0].position.y >= parseInt(start_y_pos + forward_move_max)){
-                console.log("salto fase 1 ");
                 step_jump = 1;
             }
         
@@ -734,14 +493,12 @@ function jump(who, scene, rotate,forward_move_max_value, time_stop,who2 = undefi
             who[0].__dirtyRotation = true;
             
 
-            console.log("salto fase 2");
             if(who[0].position.y <= parseInt(start_y_pos)){
                 step_jump = 2;
             }
         break;
         case 2:
 
-            console.log("salto fase 3");
             time_counter++
             if(time_counter > time_stop*2){
                 time_counter = 0;
@@ -750,6 +507,9 @@ function jump(who, scene, rotate,forward_move_max_value, time_stop,who2 = undefi
         break;
     }
 }
+
+
+
 
 function main() {
     
@@ -868,16 +628,7 @@ function main() {
 
 
 
-    walk_end = true;
     var counter = 0;
-
-    if(utils.curr_level == 1){
-        // start_x_pos = level_2.list_of_pgs[0][0].position.x;
-        // start_z_pos = level_2.list_of_pgs[0][0].position.z;
-    }
-    // camera.position.z = sphere.position.z + 150;
-
-
 
 
     controls.maxPolarAngle = Math.PI / 2
@@ -943,7 +694,6 @@ function main() {
         if(utils.level_completed){
             // controls.object.position.z = sphere.position.z + 200;
             camera.position.z = sphere.position.z + 150;
-            // console.log("provaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         }
 
         var isShown = $('#loadingModal').hasClass('show');
@@ -1041,13 +791,6 @@ function main() {
             game_win();
         }
 
-        // if(utils.curr_level == 0){
-        //     counter++;
-        //     if(counter % 2 == 0){
-        //         walk_around(level_1.pg);
-        //     }
-        // }
-
         if(utils.curr_level == 1){
             counter++;
             if(counter % 2 == 0){
@@ -1057,7 +800,6 @@ function main() {
 
         if(utils.curr_level == 0 && !utils.start_animation && start_walk_level_0){
             utils.setStartAnimation(true);
-            // walk_around(level_2.pg,scene);
             step = 0;
             step_arms = 0;
             walk_level_1 = setInterval(function(){
@@ -1069,12 +811,10 @@ function main() {
             },50);
         }
 
-        // if(utils.curr_level == 1 && !utils.start_animation && utils.button_pressed){
         if(utils.curr_level == 1 && !utils.start_animation){
             utils.setStartAnimation(true);
             step = 0;
             step_arms = 0;
-            // walk_around(level_2.pg,scene);
             walk_level_2 = setInterval(function(){
                 walk_around(level_2.pg2,scene, true, 65);
             },50);
@@ -1091,10 +831,6 @@ function main() {
             jump_level_3_1 = setInterval(function(){
                 jump(level_3.pg2,scene, false, 0.75, 25, level_3.pg);
             },50);
-
-            // jump_level_3_2 = setInterval(function(){
-            //     jump(level_3.pg,scene, false, 0.75, 25, level_3.pg);
-            // },50);
         }
 
 
@@ -1149,9 +885,6 @@ function main() {
                 if(utils.curr_level == 1){
                     level_2.cleanAndRebuildPlatforms(scene);
                 }
-                // if(utils.curr_level == 2){
-                //     level_3.cleanAndRebuildPlatforms(scene);
-                // }
             }
 
 

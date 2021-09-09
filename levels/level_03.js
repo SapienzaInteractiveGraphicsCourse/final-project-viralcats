@@ -57,10 +57,6 @@ export function level_3(scene){
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-        // temp = utils.createFlatLand(2,20, "Lava", [-6, 0, 360], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-
         temp = utils.createFlatLand(2,20, "Lava", [6, 0, 360], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
@@ -70,14 +66,6 @@ export function level_3(scene){
         temp = utils.createFlatLand(2,20, "Namecc", [-24, 0, 290], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
-
-        // temp = utils.createFlatLand(2,20, "Namecc", [-12, 0, 290], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-
-        // temp = utils.createFlatLand(2,20, "Namecc", [0, 0, 290], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(2,20, "Namecc", [12, 0, 290], scene)
         temp["group"].forEach(Element => group_1.push(Element));
@@ -89,17 +77,9 @@ export function level_3(scene){
          temp["group"].forEach(Element => group_1.push(Element));
          group_1.push(temp["hitbox"]);
          
-        //  temp = utils.createFlatLand(2,15, "Lava", [-48, 0, 227.5], scene)
-        //  temp["group"].forEach(Element => group_1.push(Element));
-        //  group_1.push(temp["hitbox"]);
-
          temp = utils.createFlatLand(2,10, "Lava", [-60, 0, 235], scene)
          temp["group"].forEach(Element => group_1.push(Element));
          group_1.push(temp["hitbox"]);
-
-        //  temp = utils.createFlatLand(2,5, "Lava", [-72, 0, 242.5], scene)
-        //  temp["group"].forEach(Element => group_1.push(Element));
-        //  group_1.push(temp["hitbox"]);
 
          temp = utils.createFlatLand(2,2, "Lava", [-84, 0, 247], scene)
          temp["group"].forEach(Element => group_1.push(Element));
@@ -134,17 +114,9 @@ export function level_3(scene){
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
 
-        // temp = utils.createFlatLand(2,15, "Lava", [36, 0, 227.5], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-
         temp = utils.createFlatLand(2,10, "Lava", [48, 0, 235], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
-
-        // temp = utils.createFlatLand(2,5, "Lava", [60, 0, 242.5], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(2,2, "Lava", [72, 0, 247], scene)
         temp["group"].forEach(Element => group_1.push(Element));
@@ -179,15 +151,7 @@ export function level_3(scene){
         temp = utils.createFlatLand(1,20, "Namecc", [-22.5, 0, 150], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
-       
-        // temp = utils.createFlatLand(1,20, "Namecc", [-10.5, 0, 150], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-       
-        // temp = utils.createFlatLand(1,20, "Namecc", [1.5, 0, 150], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
-       
+              
         temp = utils.createFlatLand(1,20, "Namecc", [13.5, 0, 150], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
@@ -197,10 +161,6 @@ export function level_3(scene){
         temp = utils.createFlatLand(1,20, "Lava", [-16.5, 0, 80], scene)
         temp["group"].forEach(Element => group_1.push(Element));
         group_1.push(temp["hitbox"]);
-
-        // temp = utils.createFlatLand(1,20, "Lava", [-4.5, 0, 80], scene)
-        // temp["group"].forEach(Element => group_1.push(Element));
-        // group_1.push(temp["hitbox"]);
 
         temp = utils.createFlatLand(1,20, "Lava", [7.5, 0, 80], scene)
         temp["group"].forEach(Element => group_1.push(Element));

@@ -35,8 +35,6 @@ soundsLoaderManager.onProgress = (url, itemsLoaded, itemsTotal) => {
             sound_to_play.setBuffer( sounds.background.sound );
             sound_to_play.setLoop( false );
             sound_to_play.setVolume( 0.3 );
-
-            console.log("sound_to_play.play();");
             sound_to_play.play();
 
 
