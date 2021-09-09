@@ -349,7 +349,7 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
     }
     prog_planes++;
     // plane_box.castShadow = true;
-    plane_box.receiveShadow = true;
+    // plane_box.receiveShadow = true;
     if (is_bound) {
         plane_box.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
 
@@ -558,7 +558,7 @@ export function create_Box(type, pos, is_dynamic, scene, rot = null, is_pg = fal
     // });
 
     //box.castShadow = true;
-    box.receiveShadow = true;
+    // box.receiveShadow = true;
     box.setCcdMotionThreshold(0.1);
     cubes_group.push(box);
     scene.add(box);
@@ -665,7 +665,7 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     var sphereGeo = new THREE.SphereGeometry(sphereRadius, sphereWidthDivisions, sphereHeightDivisions);
     // var sphereMat = new THREE.MeshBasicMaterial({ color: color })
     var sphere = new Physijs.SphereMesh(sphereGeo, sphereMat_phy, 1000);
-    sphere.castShadow = true;
+    // sphere.castShadow = true;
     if (pos) {
         sphere.position.set(pos[0], pos[1], pos[2]);
         sphere.initial_pos = pos
@@ -737,8 +737,8 @@ export function create_Sphere(dim, color, type, scene, pos = null, is_main) {
     //     sphere.add(arrowHelper)
     //     // scene.add( arrowHelper );
     // }
-    sphere.castShadow = true;
-    sphere.receiveShadow = true;
+    // sphere.castShadow = true;
+    // sphere.receiveShadow = true;
     objects_group.push(sphere);
     scene.add(sphere);
     return sphere;
@@ -947,18 +947,18 @@ export function create_pointLight(pos, color, scene) {
 export function create_directionalLight(color, scene, direction) {
     const light = new THREE.DirectionalLight(color, 1.0)
     light.position.set(direction[0], direction[1], direction[2])
-    light.castShadow = true
+    // light.castShadow = true
 
-    light.shadow.mapSize.width = 512; // default
-    light.shadow.mapSize.height = 512; // default
-    light.shadow.camera.near = 0.5; // default
-    light.shadow.camera.far = 500; // default
-
-    light.shadowMapWidth = 512; 
-    light.shadowMapHeight = 512;  
-    light.shadowCameraNear = 0.5; 
-    light.shadowCameraFar = 500; 
-    light.shadowCameraFov = 20; 
+    // light.shadow.mapSize.width = 512; // default
+    // light.shadow.mapSize.height = 512; // default
+    // light.shadow.camera.near = 0.5; // default
+    // light.shadow.camera.far = 500; // default
+// 
+    // light.shadowMapWidth = 512; 
+    // light.shadowMapHeight = 512;  
+    // light.shadowCameraNear = 0.5; 
+    // light.shadowCameraFar = 500; 
+    // light.shadowCameraFov = 20; 
 
     scene.add(light)
     return light

@@ -436,8 +436,8 @@ export function level_3(scene){
 
         
         /* ************************* MAiN SPHERE ***********************************/
-        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,600], true); // -48, 10, -120 [0,5,600]
-        // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [-2, 90+200,  -465+150], true); // -48, 10, -120 [0,5,600]
+        // sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [0,5,600], true); // -48, 10, -120 [0,5,600]
+        sphere = utils.create_Sphere(3, 0xFFFFFF, "armsLegs_u", scene,  [-2, 90+200,  -465+150], true); // -48, 10, -120 [0,5,600]
 
 }
 
