@@ -383,6 +383,7 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
 
             else {   //other objects 
                 scene.remove(other_object)
+                
                 console.log("the object: " + String(other_object.name) + " has been removed, map limit exceeded.\nHitten the bound: " + String(plane_box.name));
             }
 
@@ -1718,9 +1719,17 @@ export function remove_buttons(scene) {
     buttons_group.forEach(Element => scene.remove(Element));
 }
 
-
 export function removeByGroup(group, scene) {
-    group.forEach(Element => scene.remove(Element));
+    
+    group.forEach(Element => {
+        //console.log("-----     removeByGroup : " + Element.name);
+        if(Element.name != "Hitbox_pg"){
+            scene.remove(Element)
+        }else{
+            //console.log("removeByGroup error: " + Element.name);
+        }
+    }); 
+    
     scene.simulate();
 }
 
