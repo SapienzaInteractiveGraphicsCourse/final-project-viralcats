@@ -1,10 +1,10 @@
 
-Physijs.scripts.worker = '../libs/physijs_worker.js';
-Physijs.scripts.ammo = '../libs/ammo.js';
-import * as utils from '../utils.js';
-import { OrbitControls } from '../libs/threejs/examples/jsm/controls/OrbitControls.js';
-import TWEEN from '../libs/tween.esm.js';
-import * as THREE_AUDIO from '../libs/threejs/build/three.module.js';
+Physijs.scripts.worker = './libs/physijs_worker.js';
+Physijs.scripts.ammo = './libs/ammo.js';
+import * as utils from './utils.js';
+import { OrbitControls } from './libs/threejs/examples/jsm/controls/OrbitControls.js';
+import TWEEN from './libs/tween.esm.js';
+import * as THREE_AUDIO from './libs/threejs/build/three.module.js';
 import * as level_1 from './levels/level_01.js';
 import * as level_2 from './levels/level_02.js';
 import * as level_3 from './levels/level_03.js';
@@ -236,10 +236,10 @@ function initializate_page(){
         // toggle_html_element_visibility("grid_container");
         
         utils.setLife(document.getElementById("curr_life").innerText);
-        $('#loadingModal').modal({backdrop: 'static', keyboard: false});
-        var seconds = 10,
-        bar = document.querySelector('#loadingModal');
-        startTimer(seconds, bar);
+        // $('#loadingModal').modal({backdrop: 'static', keyboard: false});
+        // var seconds = 10,
+        // bar = document.querySelector('#loadingModal');
+        // startTimer(seconds, bar);
         main();
 
     };
@@ -664,12 +664,12 @@ function jump(who, scene, rotate,forward_move_max_value, time_stop,who2 = undefi
 
         case 0:
 
-            // if(who2 != undefined){
-            //     who2[4].__dirtyRotation = true;
-            //     who2[3].__dirtyRotation = true;
-            //     utils.rotateArmsLegs(who2[3],    -   18);
-            //     utils.rotateArmsLegs(who2[4],    -   18);
-            // }
+            if(who2 != undefined){
+                who2[4].__dirtyRotation = true;
+                who2[3].__dirtyRotation = true;
+                utils.rotateArmsLegs(who2[3],    -   18);
+                utils.rotateArmsLegs(who2[4],    -   18);
+            }
 
             who[3].__dirtyPosition = true;
             who[4].__dirtyPosition = true;
@@ -710,11 +710,11 @@ function jump(who, scene, rotate,forward_move_max_value, time_stop,who2 = undefi
             step_arms_jump = 0;
             who[0].__dirtyPosition = true;
             who[0].__dirtyRotation = true;
-            // if(who2 != undefined){
-            //     who2[0].__dirtyPosition = true;
-            //     who2[0].__dirtyRotation = true;
-            //     who2[0].translateY(z_value);
-            // }
+            if(who2 != undefined){
+                who2[0].__dirtyPosition = true;
+                who2[0].__dirtyRotation = true;
+                who2[0].translateY(z_value);
+            }
             who[0].translateY(z_value);
     
             scene.simulate();
@@ -732,7 +732,7 @@ function jump(who, scene, rotate,forward_move_max_value, time_stop,who2 = undefi
         case 1:
             who[0].__dirtyPosition = true;
             who[0].__dirtyRotation = true;
-            // who[0].translateY(-z_value);
+            
 
             console.log("salto fase 2");
             if(who[0].position.y <= parseInt(start_y_pos)){
@@ -811,10 +811,10 @@ function main() {
         // playSound(sounds.background.sound,true);
         var level = utils.curr_level;
         utils.changeLevel(scene,getNextLevel(level));
-        // $('#loadingModal').modal({backdrop: 'static', keyboard: false});
-        // var seconds = 10,
-        // bar = document.querySelector('#loadingModal');
-        // startTimer(seconds, bar);
+        $('#loadingModal').modal({backdrop: 'static', keyboard: false});
+        var seconds = 10,
+        bar = document.querySelector('#loadingModal');
+        startTimer(seconds, bar);
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_1.getSphere();
         step_arms_jump = 2;
@@ -825,10 +825,10 @@ function main() {
         // playSound(sounds.level_2.sound,true);
         var level = utils.curr_level;
         utils.changeLevel(scene,getNextLevel(level));
-        // $('#loadingModal').modal({backdrop: 'static', keyboard: false});
-        // var seconds = 10,
-        // bar = document.querySelector('#loadingModal');
-        // startTimer(seconds, bar);
+        $('#loadingModal').modal({backdrop: 'static', keyboard: false});
+        var seconds = 10,
+        bar = document.querySelector('#loadingModal');
+        startTimer(seconds, bar);
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_2.getSphere();
         step_arms_jump = 2;
@@ -838,10 +838,10 @@ function main() {
         // playSound(sounds.level_3.sound,true);
         var level = utils.curr_level;
         utils.changeLevel(scene,getNextLevel(level));
-        // $('#loadingModal').modal({backdrop: 'static', keyboard: false});
-        // var seconds = 10,
-        // bar = document.querySelector('#loadingModal');
-        // startTimer(seconds, bar);
+        $('#loadingModal').modal({backdrop: 'static', keyboard: false});
+        var seconds = 10,
+        bar = document.querySelector('#loadingModal');
+        startTimer(seconds, bar);
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_3.getSphere();
         step_arms_jump = 2;
@@ -915,6 +915,7 @@ function main() {
         start_y_pos = level_3.pg[0].position.y;
     }
 
+    renderer.shadowMapEnabled = true;
 
     function render() {
 
@@ -1088,12 +1089,12 @@ function main() {
             step = 0;
             step_arms = 0;
             jump_level_3_1 = setInterval(function(){
-                jump(level_3.pg2,scene, false, 0.75, 25, level_3.pg2);
+                jump(level_3.pg2,scene, false, 0.75, 25, level_3.pg);
             },50);
 
-            jump_level_3_2 = setInterval(function(){
-                jump(level_3.pg,scene, false, 0.75, 25, level_3.pg);
-            },50);
+            // jump_level_3_2 = setInterval(function(){
+            //     jump(level_3.pg,scene, false, 0.75, 25, level_3.pg);
+            // },50);
         }
 
 
@@ -1123,7 +1124,7 @@ function main() {
         }
         else if (utils.hitboxes_hit[4] == true) {
             console.log("hitbox number 5");
-            clearInterval(jump_level_3_2);
+            clearInterval(jump_level_3_1);
             utils.hitboxes_hit[4] = false;
         }
         else if (utils.hitboxes_hit[5] == true) {
@@ -1337,6 +1338,7 @@ function main() {
         
         controls.update();
 
+        
         renderer.render(scene, camera);
         requestAnimationFrame(render);
     }
