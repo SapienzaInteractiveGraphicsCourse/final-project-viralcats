@@ -4,6 +4,7 @@ import * as THREE_AUDIO from '../libs/threejs/build/three.module.js';
 var sound_to_play;  
 document.getElementById('game_win_button').onclick = function(){
     window.location.href = window.location.href.replace("game_win.html","");
+    console.log(window.location.href);
 };
 
 
