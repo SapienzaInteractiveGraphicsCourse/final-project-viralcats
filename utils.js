@@ -16,6 +16,7 @@ var prog_planes = 0;
 var prog_spheres = 0;
 var prog_hit_box = 0;
 var prog_buttons = 0;
+var prog_pgs = 0;
 
 // time
 var curr_time = 0;
@@ -37,7 +38,7 @@ const distance_bound = 1000;
 const friction_box = 1.0; // high friction
 const restitution_box = 0.0; // low restitution (bouncing factor)
 
-
+var pg_to_delete = true;
 //pg variable
 // export var pg;
 export var is_pg_sphere = true;
@@ -59,6 +60,11 @@ export var start_level_1 = [0, 5, 400];
 export var camera_x_pos = 0;
 export var camera_y_pos = 70;
 export var camera_z_pos = 200;
+
+export function setPgToDelete(value){
+    pg_to_delete = value;
+    prog_pgs = 0;
+}
 
 export function setLife(curr_life) {
     life = curr_life;
@@ -317,7 +323,23 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
 
             else {   //other objects 
                 scene.remove(other_object)
-                
+
+                if(curr_level == 0){
+                    if(other_object.id_name == "Hitbox_pg_1"){
+                        pg_to_delete = false;
+                    }
+                }
+                if(curr_level == 1){
+                    if(other_object.id_name != "Hitbox_pg_0"){
+                        pg_to_delete = false;
+                    }
+                }
+                if(curr_level == 2){
+                    if(other_object.id_name.includes("Hitbox_pg_")){
+                        pg_to_delete = false;
+                    }
+                }
+
                 console.log("the object: " + String(other_object.name) + " has been removed, map limit exceeded.\nHitten the bound: " + String(plane_box.name));
             }
 
@@ -377,8 +399,12 @@ export function create_hitbox(dim_multiplier, pos, is_dynamic, scene, alpha, is_
     box.__dirtyRotation = true;
 
     box.position.set(pos[0], pos[1], pos[2]);
-    if (is_pg) box.name = "Hitbox_pg";
-    else {
+    if (is_pg){
+        box.name = "Hitbox_pg";
+        box.id_name = "Hitbox_pg_" + String(prog_pgs);
+        console.log("PG NAME: " + box.id_name);
+        prog_pgs++;
+    }else {
         box.name = "Hitbox_" + String(prog_hit_box);
         prog_hit_box++;
     }
@@ -1424,14 +1450,27 @@ export function remove_buttons(scene) {
 
 export function removeByGroup(group, scene) {
     
-    group.forEach(Element => {
-        if(Element.name != "Hitbox_pg"){
-            scene.remove(Element)
-        }else{
-            //console.log("removeByGroup error: " + Element.name);
-        }
-    }); 
-    
+    if(pg_to_delete){
+        group.forEach(Element => scene.remove(Element)); 
+    }else{
+        group.forEach(Element => {
+            if(curr_level == 0){
+                if(Element.id_name != "Hitbox_pg_1"){
+                    scene.remove(Element)
+                }
+            }
+            if(curr_level == 1){
+                if(Element.id_name != "Hitbox_pg_0"){
+                    scene.remove(Element)
+                }
+            }
+            if(curr_level == 2){
+                if(!Element.id_name.includes("Hitbox_pg_")){
+                    scene.remove(Element)
+                }
+            }
+        }); 
+    }
     scene.simulate();
 }
 

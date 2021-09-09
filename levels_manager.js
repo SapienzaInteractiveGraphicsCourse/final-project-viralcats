@@ -578,6 +578,7 @@ function main() {
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_1.getSphere();
         step_arms_jump = 2;
+        utils.setPgToDelete(true);
         // camera.position.z = sphere.position.z + 150;
         
     }
@@ -592,6 +593,7 @@ function main() {
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_2.getSphere();
         step_arms_jump = 2;
+        utils.setPgToDelete(true);
         // camera.position.z = sphere.position.z + 150;
     }
     if(utils.curr_level == 2){
@@ -605,6 +607,7 @@ function main() {
         document.getElementById("curr_level_info").innerText = level;
         sphere = level_3.getSphere();
         step_arms_jump = 2;
+        utils.setPgToDelete(true);
         // camera.position.z = sphere.position.z + 150;
     }
 
@@ -728,6 +731,7 @@ function main() {
 
                     camera.position.z = sphere.position.z + 150;
                     step_arms_jump = 2;
+                    utils.setPgToDelete(true);
                     // start_x_pos = level_1.pg.position.x;
                     // start_z_pos = level_1.pg.position.z;
 
@@ -752,6 +756,7 @@ function main() {
 
                     camera.position.z = sphere.position.z + 150;
                     step_arms_jump = 2;
+                    utils.setPgToDelete(true);
                     // camera.position.z = sphere.position.z + utils.camera_z_pos;
                     // camera.position.y = sphere.position.y;
                     // camera.position.x = sphere.position.x;
@@ -770,6 +775,7 @@ function main() {
                     camera.position.z = sphere.position.z + 150;
                     start_y_pos = level_3.pg[0].position.y;
                     step_arms_jump = 2;
+                    utils.setPgToDelete(true);
                     // camera.position.z = sphere.position.z + utils.camera_z_pos;
                     // camera.position.y = sphere.position.y;
                     // camera.position.x = sphere.position.x;
