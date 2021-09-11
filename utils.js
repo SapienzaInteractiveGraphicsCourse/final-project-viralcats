@@ -61,7 +61,7 @@ export var camera_x_pos = 0;
 export var camera_y_pos = 70;
 export var camera_z_pos = 200;
 
-export function setPgToDelete(value){
+export function setPgToDelete(value) {
     pg_to_delete = value;
     prog_pgs = 0;
 }
@@ -324,18 +324,18 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
             else {   //other objects 
                 scene.remove(other_object)
 
-                if(curr_level == 0){
-                    if(other_object.id_name == "Hitbox_pg_1"){
+                if (curr_level == 0) {
+                    if (other_object.id_name == "Hitbox_pg_1") {
                         pg_to_delete = false;
                     }
                 }
-                if(curr_level == 1){
-                    if(other_object.id_name != "Hitbox_pg_0"){
+                if (curr_level == 1) {
+                    if (other_object.id_name != "Hitbox_pg_0") {
                         pg_to_delete = false;
                     }
                 }
-                if(curr_level == 2){
-                    if(other_object.id_name.includes("Hitbox_pg_")){
+                if (curr_level == 2) {
+                    if (other_object.id_name.includes("Hitbox_pg_")) {
                         pg_to_delete = false;
                     }
                 }
@@ -399,12 +399,12 @@ export function create_hitbox(dim_multiplier, pos, is_dynamic, scene, alpha, is_
     box.__dirtyRotation = true;
 
     box.position.set(pos[0], pos[1], pos[2]);
-    if (is_pg){
+    if (is_pg) {
         box.name = "Hitbox_pg";
         box.id_name = "Hitbox_pg_" + String(prog_pgs);
         console.log("PG NAME: " + box.id_name);
         prog_pgs++;
-    }else {
+    } else {
         box.name = "Hitbox_" + String(prog_hit_box);
         prog_hit_box++;
     }
@@ -697,31 +697,31 @@ export function create_button(scene, pos, group) {
     button.position.set(pos[0], pos[1], pos[2]);
     button.pushed = false;
     button.addEventListener('collision', function (other_object, rel_velocity, rel_rotation, conctact_normal) {
-    if (!button.pushed) {
-        var new_prop_mat = new THREE.MeshPhongMaterial({
-            color: 0x00ff00,
+        if (!button.pushed && other_object.name == "mainSphere") {
+            var new_prop_mat = new THREE.MeshPhongMaterial({
+                color: 0x00ff00,
 
-            specular: 0x00ff00,
-            emissive: 0x00ff00,
-            shininess: 50
-        });
+                specular: 0x00ff00,
+                emissive: 0x00ff00,
+                shininess: 50
+            });
 
-        var new_mat = Physijs.createMaterial(
-            new_prop_mat,
-            0,
-            0
-        );
-        button.material = new_mat
+            var new_mat = Physijs.createMaterial(
+                new_prop_mat,
+                0,
+                0
+            );
+            button.material = new_mat
 
-        var mainSphere = scene.getObjectByName("mainSphere");
-        mainSphere.initial_pos = [pos[0], pos[1] + 5, pos[2]];
-        mainSphere.setLinearVelocity(new THREE.Vector3(0, 0, 0));
-        mainSphere.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+            var mainSphere = scene.getObjectByName("mainSphere");
+            mainSphere.initial_pos = [pos[0], pos[1] + 5, pos[2]];
+            mainSphere.setLinearVelocity(new THREE.Vector3(0, 0, 0));
+            mainSphere.setAngularVelocity(new THREE.Vector3(0, 0, 0));
 
-        removeByGroup(group, scene);
-        button.pushed = true;
-        button_pressed = true;
-    }
+            removeByGroup(group, scene);
+            button.pushed = true;
+            button_pressed = true;
+        }
 
     });
     buttons_group.push(button);
@@ -1449,27 +1449,29 @@ export function remove_buttons(scene) {
 }
 
 export function removeByGroup(group, scene) {
-    
-    if(pg_to_delete){
-        group.forEach(Element => scene.remove(Element)); 
-    }else{
+
+    if (pg_to_delete) {
+        group.forEach(Element => scene.remove(Element));
+    } else {
         group.forEach(Element => {
-            if(curr_level == 0){
-                if(Element.id_name != "Hitbox_pg_1"){
+            if (curr_level == 0) {
+                if (Element.id_name != "Hitbox_pg_1") {
                     scene.remove(Element)
                 }
             }
-            if(curr_level == 1){
-                if(Element.id_name != "Hitbox_pg_0"){
+            if (curr_level == 1) {
+                if (Element.id_name != "Hitbox_pg_0") {
                     scene.remove(Element)
                 }
             }
-            if(curr_level == 2){
-                if(!Element.id_name.includes("Hitbox_pg_")){
-                    scene.remove(Element)
+            if (curr_level == 2) {
+                if (Element.id_name != undefined) {
+                    if (!Element.id_name.includes("Hitbox_pg_")) {
+                        scene.remove(Element)
+                    }
                 }
             }
-        }); 
+        });
     }
     scene.simulate();
 }
