@@ -1,4 +1,7 @@
 /* utils functions */
+import * as level_1 from './levels/level_01.js';
+import * as level_2 from './levels/level_02.js';
+import * as level_3 from './levels/level_03.js';
 import { MathUtils } from './libs/threejs/build/three.module.js';
 import TWEEN from './libs/tween.esm.js';
 
@@ -324,19 +327,23 @@ export function create_Box_Plane(pos, rot, dim, scene, is_bound, name = null, nu
             else {   //other objects 
                 scene.remove(other_object)
 
-                if (curr_level == 0) {
-                    if (other_object.id_name == "Hitbox_pg_1") {
-                        pg_to_delete = false;
+
+                if(curr_level == 0){
+                    const index = level_1.group_1.indexOf(other_object);
+                    if (index > -1) {
+                        level_1.group_1.splice(index, 1);
                     }
                 }
-                if (curr_level == 1) {
-                    if (other_object.id_name != "Hitbox_pg_0") {
-                        pg_to_delete = false;
+                if(curr_level == 1){
+                    const index = level_2.group_1.indexOf(other_object);
+                    if (index > -1) {
+                        level_2.group_1.splice(index, 1);
                     }
                 }
-                if (curr_level == 2) {
-                    if (other_object.id_name.includes("Hitbox_pg_")) {
-                        pg_to_delete = false;
+                if(curr_level == 2){
+                    const index = level_3.group_3.indexOf(other_object);
+                    if (index > -1) {
+                        level_3.group_1.splice(index, 1);
                     }
                 }
 
@@ -1450,29 +1457,8 @@ export function remove_buttons(scene) {
 
 export function removeByGroup(group, scene) {
 
-    if (pg_to_delete) {
-        group.forEach(Element => scene.remove(Element));
-    } else {
-        group.forEach(Element => {
-            if (curr_level == 0) {
-                if (Element.id_name != "Hitbox_pg_1") {
-                    scene.remove(Element)
-                }
-            }
-            if (curr_level == 1) {
-                if (Element.id_name != "Hitbox_pg_0") {
-                    scene.remove(Element)
-                }
-            }
-            if (curr_level == 2) {
-                if (Element.id_name != undefined) {
-                    if (!Element.id_name.includes("Hitbox_pg_")) {
-                        scene.remove(Element)
-                    }
-                }
-            }
-        });
-    }
+    group.forEach(Element => scene.remove(Element));
+
     scene.simulate();
 }
 

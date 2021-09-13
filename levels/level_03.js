@@ -2,7 +2,7 @@ import * as utils from '../utils.js';
 
 utils.setLevel(3);
 //groups for the checkpoints
-var group_1 = [];
+export var group_1 = [];
 var group_2 = [];
 
 // falling lands variables
