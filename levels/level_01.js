@@ -5,7 +5,7 @@ utils.setLevel(1);
 
 //groups for the checkpoints
 export var group_1 = [];
-var group_2 = [];
+export var group_2 = [];
 
 // falling lands variables
 var fallen1 = false
