@@ -22,7 +22,7 @@ Student: Fabrizio Casadei Mat: `1952529`;
    The game has been used an open-source physics library called  PhysiJs  build on top of the  ammo.js.
 ## 🌐 Browsers
 
-|Browser|Performance|recommended|
+|Browser|Performance|Evaluation|
 |:---|:---|:---:|
 |Edge|Excellent|⭐⭐⭐|
 |Chrome|Good|⭐⭐|
