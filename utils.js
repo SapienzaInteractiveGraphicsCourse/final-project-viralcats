@@ -82,7 +82,7 @@ const cubes_type = {
     "Lava": ["crimson", "crimson_side", "crimson_bottom"],
     "Rock": ["rock", "rock", "rock"],
     "Amethyst": ["amethyst", "amethyst", "amethyst"],
-    "Terracotta": ["terracotta", "terracotta", "terracotta"]
+    "Terracotta": ["Terracotta", "Terracotta", "Terracotta"]
 }
 
 const pg_textType = {
